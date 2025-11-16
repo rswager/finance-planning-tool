@@ -25,6 +25,3 @@ def test_calculate_rounded_value(value, mod, round_up, expected):
 ])
 def test_round_value(amount, round_up, expected):
     assert round_value(amount, round_up) == expected
-
-if __name__ == '__main__':
-    pytest.main([__file__])

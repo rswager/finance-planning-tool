@@ -86,7 +86,3 @@ def test_date_triggered_returns_false_when_not_found(weekly_trigger):
     assert weekly_trigger.date_triggered(d) is False
     # Nothing new should be added
     assert weekly_trigger.trigger_date is None
-
-
-if __name__ == '__main__':
-    pytest.main([__file__])

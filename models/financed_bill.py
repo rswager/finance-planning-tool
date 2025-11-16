@@ -10,10 +10,47 @@ from models.utils import round_value
 from typing import Union
 
 class FinancedBill:
+    """
+    Represents a financed bill or loan with interest accrual, minimum payments,
+    and an associated ledger to track all transactions and interest applied.
+
+    This class handles daily interest calculation, minimum payment processing,
+    and integration with a payment method which can be either a BankAccount or
+    a RevolvingCreditBill.
+    """
+
     def __init__(self, name_in:str, balance_in:float, account_type_in: AccountType,
                  initial_pay_date_in: date, frequency_type_in: FrequencyType, minimum_payment_in:float,
                  payment_method_in: Union['RevolvingCreditBill', 'BankAccount'],
                  apr_rate_in: float, round_up: bool = False) -> None:
+        """
+        Initialize a FinancedBill instance.
+
+        Parameters
+        ----------
+            name_in : str
+                The name of the bill/loan.
+            balance_in : float
+                The initial balance owed. Positive balances are treated as debt.
+            account_type_in : AccountType
+                The type of account (e.g., LOAN, REVOLVING).
+            initial_pay_date_in : date
+                The first date a payment is due.
+            frequency_type_in : FrequencyType
+                The frequency with which payments are due (e.g., MONTHLY, BI_WEEKLY).
+            minimum_payment_in : float
+                The minimum amount to pay each cycle.
+            payment_method_in : Union[RevolvingCreditBill, BankAccount]
+                The account or credit source used to make payments.
+            apr_rate_in : float
+                The annual percentage rate for interest calculations (as a fraction, e.g., 0.05 for 5% APR).
+            round_up : bool, optional
+                Whether to round up the minimum payment for convenience, by default False.
+        Return
+        -------
+            None
+        """
+
         self._interest = Interest(apr_rate_in)
         self._minimum_payment = minimum_payment_in if not round_up \
             else round_value(minimum_payment_in, round_up=round_up)
@@ -26,31 +63,75 @@ class FinancedBill:
 
 
     @property
-    def ledger(self) -> list:
-        return self._ledger.ledger
-
-    @property
     def raw_copy_ledger(self) -> list:
+        """
+        Returns
+        -------
+            list
+                A deep copy of the ledger for safe inspection or external use.
+        """
         return self._ledger.raw_copy_ledger
 
     @property
     def ledger_col_count(self) -> int:
+        """
+        Returns
+        -------
+            int
+                The number of columns defined in the ledger.
+        """
         return self._ledger.col_count
 
     @property
     def loan_balance(self) -> float:
+        """
+        Returns
+        -------
+            float
+                The current outstanding balance of the financed bill.
+        """
         return self._accountInfo.balance
 
     @property
     def account_name(self) -> str:
+        """
+        Returns
+        -------
+            str
+                The name of this financed bill.
+        """
         return self._accountInfo.account_name
 
     @property
     def account_type(self) -> AccountType:
+        """
+        Returns
+        -------
+            AccountType
+                The type of this account (e.g., LOAN, REVOLVING).
+        """
         return self._accountInfo.account_type
 
     # Method to apply the payment to the balance
     def make_payment(self, date_in: date) -> None:
+        """
+        Apply the minimum payment to the bill and record the transaction.
+
+        Parameters
+        ----------
+        date_in : date
+            The date on which the payment is made.
+
+        Return
+        -------
+            None
+
+        Notes
+        -----
+        - If the remaining balance is less than the minimum payment, only the
+          remaining balance is paid.
+        - Payment is recorded in both this bill's ledger and the payment method's ledger.
+        """
         if self._accountInfo.balance != 0:
             min_payment = self._minimum_payment
             if abs(self._accountInfo.balance)<self._minimum_payment:
@@ -62,12 +143,45 @@ class FinancedBill:
                                                     credit=0, debit=min_payment)
 
     def apply_daily_interest(self, date_in: date) -> None:
+        """
+        Calculate and apply daily interest to the outstanding balance.
+
+        Parameters
+        ----------
+            date_in : date
+                The date on which interest is applied.
+
+        Returns
+        -------
+            None
+
+        Notes
+        -----
+        - Interest is added to the ledger and accumulated in the internal interest tracker.
+        """
         if self._accountInfo.balance != 0:
             self.make_a_transaction(date_in=date_in,action='Daily Interest',credit=0,
                                     debit=self._interest.calculate_daily_interest(
                                         balance_in=self._accountInfo.balance,date_in=date_in))
 
     def process_day(self, date_in) -> None:
+        """
+        Process all activities for a single day: apply interest and make scheduled payments.
+
+        Parameters
+        ----------
+            date_in : date
+                The date being processed.
+
+        Returns
+        -------
+            None
+
+        Notes
+        -----
+        - Daily interest is always applied.
+        - If the current day is a scheduled payment day, the minimum payment is applied.
+        """
         # We apply interest EVERY dat
         self.apply_daily_interest(date_in=date_in)
         if self._trigger_days.date_triggered(date_in):
@@ -75,6 +189,28 @@ class FinancedBill:
             self.make_payment(date_in=date_in)
 
     def make_a_transaction(self, date_in: date, action: str, credit: float, debit: float) -> None:
+        """
+        Record a transaction in the ledger and update the account balance.
+
+        Parameters
+        ----------
+            date_in : date
+                The date of the transaction.
+            action : str
+                A description of the transaction.
+            credit : float
+                Amount added to the account.
+            debit : float
+                Amount subtracted from the account.
+
+        Returns
+        -------
+            None
+
+        Notes
+        -----
+        - Ledger columns include: row number, date, action, credit, debit, balance, and interest to date.
+        """
         self._accountInfo.update_balance(credit=credit,debit=debit)
         #['No.', 'Date', 'Description', 'Credit', 'Debit', 'Balance', 'Interest To Date']
         self._ledger.add_entry_to_ledger([self._ledger.row_number, date_in, action, credit, debit,

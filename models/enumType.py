@@ -5,6 +5,8 @@ class FrequencyType(Enum):
     BI_WEEKLY = 2
     WEEKLY = 3
     DAILY = 4
+    YEARLY = 5
+    SINGULAR = 6 # We only Trigger Once
 
 class AccountType(Enum):
     CHECKING = 1

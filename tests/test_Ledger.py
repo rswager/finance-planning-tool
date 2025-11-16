@@ -23,13 +23,13 @@ def empty_ledger():
 
 def test_ledger_initialization(columns, ledger):
     """Ensure ledger initializes with given columns."""
-    assert ledger.ledger == [columns]
+    assert ledger.raw_copy_ledger == [columns]
 
 def test_add_valid_entry(ledger):
     """Adding a valid entry should append it to the ledger."""
     entry = ['2025-11-08', 'Deposit', 100.0]
     ledger.add_entry_to_ledger(entry)
-    assert ledger.ledger[-1] == entry
+    assert ledger.raw_copy_ledger[-1] == entry
 
 def test_add_invalid_entry_length(ledger):
     """Entries with wrong number of fields should raise ValueError."""
@@ -41,11 +41,11 @@ def test_ledger_returns_copy(ledger):
     """Ensure ledger property returns a copy, not direct reference."""
     copy = ledger.raw_copy_ledger
     copy.append(['2025-11-08', 'Deposit', 100.0])
-    assert len(ledger.ledger) == 1  # Ledger should remain unchanged
+    assert len(ledger.raw_copy_ledger) == 1  # Ledger should remain unchanged
 
 def test_empty_columns(empty_ledger):
     """Empty column list should initialize with empty schema."""
-    assert empty_ledger.ledger == [[]]
+    assert empty_ledger.raw_copy_ledger == [[]]
 
 def test_add_entry_to_empty_columns(empty_ledger):
     """Cannot add entry when there are no defined columns."""

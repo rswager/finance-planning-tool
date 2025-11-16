@@ -84,8 +84,3 @@ def test_invalid_apr_raises_value_error(invalid_apr):
     """APR outside 0-1 should raise ValueError."""
     with pytest.raises(ValueError):
         Interest(invalid_apr)
-
-
-
-if __name__ == '__main__':
-    pytest.main([__file__])

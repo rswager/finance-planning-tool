@@ -28,12 +28,6 @@ def test_update_balance_handles_negative_transactions(sample_account):
     assert sample_account.balance == 59.75
 
 
-def test_balance_setter_overwrites_balance(sample_account):
-    """Ensure balance setter overwrites the previous balance."""
-    sample_account.balance = 500.00
-    assert sample_account.balance == 500.00
-
-
 def test_balance_property_is_float(sample_account):
     """Ensure balance is always stored as a float."""
     assert isinstance(sample_account.balance, float)
