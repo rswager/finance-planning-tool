@@ -3,6 +3,7 @@ from datetime import date, timedelta
 from models.revolving_credit_bill import RevolvingCreditBill
 from models.bankAccount import BankAccount
 from models.enumType import AccountType, FrequencyType
+from models.utils import dollars_to_cents, money_cents, money_dollars
 
 # -------------------------------------------------------
 # Fixtures
@@ -10,21 +11,21 @@ from models.enumType import AccountType, FrequencyType
 
 @pytest.fixture
 def bank_account():
-    return BankAccount("Checking", 5000.0, AccountType.CHECKING)
+    return BankAccount("Checking", dollars_to_cents(money_dollars(5000.00)), AccountType.CHECKING)
 
 @pytest.fixture
 def credit_bill(bank_account):
     # Starting balance = $1000 owed
     return RevolvingCreditBill(
         name_in="Visa",
-        balance_in=1000.0,
+        balance_in=dollars_to_cents(money_dollars(1000.00)),
         account_type_in=AccountType.REVOLVING,
         initial_pay_date_in=date(2025, 1, 10),
         frequency_type_in=FrequencyType.MONTHLY,
-        minimum_payment_in=200.0,
+        minimum_payment_in=dollars_to_cents(money_dollars(200.00)),
         payment_method_in=bank_account,
         apr_rate_in=0.12,          # 12% APR
-        credit_limit_in=5000.0
+        credit_limit_in=dollars_to_cents(money_dollars(5000.00))
     )
 
 # -------------------------------------------------------
@@ -34,7 +35,7 @@ def credit_bill(bank_account):
 def test_initialization(credit_bill):
     assert credit_bill.account_name == "Visa"
     assert credit_bill.account_type == AccountType.REVOLVING
-    assert credit_bill.loan_balance == -1000.0  # stored as negative (owed)
+    assert credit_bill.loan_balance_dollars == -1000.0  # stored as negative (owed)
     assert credit_bill.ledger_col_count == 7
     assert len(credit_bill.raw_copy_ledger) == 1  # header only
 
@@ -49,14 +50,14 @@ def test_credit_limit_not_exceeded(credit_bill):
 def test_credit_limit_exceeded(bank_account):
     bill = RevolvingCreditBill(
         name_in="Card",
-        balance_in=6000.0,   # over the 5000 limit
+        balance_in=dollars_to_cents(money_dollars(6000.00)),   # over the 5000 limit
         account_type_in=AccountType.REVOLVING,
         initial_pay_date_in=date(2025, 1, 10),
         frequency_type_in=FrequencyType.MONTHLY,
-        minimum_payment_in=200.0,
+        minimum_payment_in=dollars_to_cents(money_dollars(200.00)),
         payment_method_in=bank_account,
         apr_rate_in=0.15,
-        credit_limit_in=5000.0
+        credit_limit_in=dollars_to_cents(money_dollars(5000.00))
     )
     assert bill.exceeded_credit_limit is True
 
@@ -84,8 +85,8 @@ def test_daily_interest_applied(credit_bill):
 
 def test_make_payment_reduces_balance_and_updates_ledgers(credit_bill, bank_account):
     pay_date = date(2025, 1, 10)
-    old_balance = credit_bill.loan_balance
-    bank_start = bank_account._accountInfo.balance
+    old_balance = credit_bill.loan_balance_cents
+    bank_start = bank_account.balance_cents
 
     credit_bill.make_payment(pay_date)
 
@@ -95,31 +96,31 @@ def test_make_payment_reduces_balance_and_updates_ledgers(credit_bill, bank_acco
     assert entry[2] == "Minimum Payment"
 
     # Balance increases (toward zero, because negative)
-    assert credit_bill.loan_balance == old_balance + 200.0
+    assert credit_bill.loan_balance_cents == old_balance + dollars_to_cents(money_dollars(200.00))
 
     # Bank account was charged
     bank_entry = bank_account.raw_copy_ledger[-1]
     assert bank_entry[4] == 200.0
-    assert bank_account._accountInfo.balance == bank_start - 200.0
+    assert bank_account.balance_cents == bank_start - dollars_to_cents(money_dollars(200.00))
 
 
 def test_payment_smaller_when_balance_less_than_minimum(bank_account):
     bill = RevolvingCreditBill(
         name_in="SmallDebt",
-        balance_in=50.0,     # only owes $50
+        balance_in=dollars_to_cents(money_dollars(50.00)),     # only owes $50
         account_type_in=AccountType.REVOLVING,
         initial_pay_date_in=date(2025, 1, 10),
         frequency_type_in=FrequencyType.MONTHLY,
-        minimum_payment_in=200.0,
+        minimum_payment_in=dollars_to_cents(money_dollars(200.00)),
         payment_method_in=bank_account,
         apr_rate_in=0.1,
-        credit_limit_in=2000.0
+        credit_limit_in=dollars_to_cents(money_dollars(2000.00))
     )
 
     bill.make_payment(date(2025, 1, 10))
 
     # Only charged $50
-    assert bill.loan_balance == 0
+    assert bill.loan_balance_cents == 0
     assert bill.raw_copy_ledger[-1][3] == 50.0
     assert bank_account.raw_copy_ledger[-1][4] == 50.0
 

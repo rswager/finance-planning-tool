@@ -2,6 +2,7 @@ from datetime import date
 from models.accountInformation import AccountInformation
 from models.enumType import AccountType
 from models.ledger import Ledger
+from models.utils import cents_to_dollars, money_cents, money_dollars
 
 
 class BankAccount:
@@ -14,7 +15,7 @@ class BankAccount:
     transaction activity.
     """
 
-    def __init__(self, name_in: str, balance_in: float, account_type_in: AccountType) -> None:
+    def __init__(self, name_in: str, balance_in: money_cents, account_type_in: AccountType) -> None:
         """
         Initialize a new BankAccount.
 
@@ -22,13 +23,33 @@ class BankAccount:
         ----------
             name_in : str
                 The name of the account.
-            balance_in : float
-                The starting balance of the account.
+            balance_in : money_cents(int)
+                The starting balance of the account in cents
             account_type_in : AccountType
                 The type of account (e.g., SAVINGS, CHECKING, CREDIT).
         """
         self._accountInfo = AccountInformation(name_in, balance_in, account_type_in)
         self._ledger = Ledger(columns=['No.', 'Date', 'Description', 'Credit', 'Debit', 'Balance'])
+
+    @property
+    def balance_cents(self) -> money_cents:
+        """
+        Returns
+        -------
+            money_cents
+                Returns the current balance in terms of cents
+        """
+        return self._accountInfo.balance
+
+    @property
+    def balance_dollars(self) -> money_dollars:
+        """
+        Returns
+        -------
+            money_cents
+                Returns the current balance in terms of dollars
+        """
+        return cents_to_dollars(self._accountInfo.balance)
 
     @property
     def raw_copy_ledger(self) -> list:
@@ -72,7 +93,7 @@ class BankAccount:
         """
         return self._accountInfo.account_type
 
-    def make_a_transaction(self, date_in: date, action: str, credit: float, debit: float) -> None:
+    def make_a_transaction(self, date_in: date, action: str, credit: money_cents, debit: money_cents) -> None:
         """
         Record a financial transaction and update the account balance and ledger.
 
@@ -82,9 +103,9 @@ class BankAccount:
                 The date of the transaction.
             action : str
                 A short description of the transaction (e.g., "Deposit", "Payment").
-            credit : float
+            credit : money_cents
                 Amount added to the account balance.
-            debit : float
+            debit : money_cents
                 Amount subtracted from the account balance.
 
         Notes
@@ -93,4 +114,7 @@ class BankAccount:
         - Ledger entries include a row number, date, description, credit, debit, and resulting balance.
         """
         self._accountInfo.update_balance(credit=credit,debit=debit)
-        self._ledger.add_entry_to_ledger([self._ledger.row_number, date_in, action,credit,debit, round(self._accountInfo.balance,2)])
+        self._ledger.add_entry_to_ledger([self._ledger.row_number, date_in, action,
+                                          cents_to_dollars(credit),
+                                          cents_to_dollars(debit),
+                                          self.balance_dollars])

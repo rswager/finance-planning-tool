@@ -5,7 +5,7 @@ from models.enumType import AccountType, FrequencyType
 from models.interest import Interest
 from models.ledger import Ledger
 from models.triggerDays import TriggerDays
-from models.utils import round_value
+from models.utils import cents_to_dollars, money_cents, money_dollars, round_value
 from typing import Union
 
 
@@ -18,24 +18,24 @@ class RevolvingCreditBill:
     Attributes
     ----------
         _interest : Interest
-            Interest calculator based on the APR.
-        _minimum_payment : float
+            calculator based on the APR.
+        _minimum_payment : money_cents
             Minimum required payment for each period.
-        _credit_limit : float
+        _credit_limit : money_cents
             Maximum allowed credit for the account.
         _accountInfo : AccountInformation
             Stores the account name, balance, and account type.
         _ledger : Ledger
-            Ledger for tracking all transactions and interest accrual.
+            for tracking all transactions and interest accrual.
         _trigger_days : TriggerDays
             Manages the schedule of payments.
         _payment_method : BankAccount | RevolvingCreditBill
             The account or bill used to make the payment.
     """
-    def __init__(self, name_in:str, balance_in:float, account_type_in: AccountType,
-                 initial_pay_date_in: date, frequency_type_in: FrequencyType, minimum_payment_in:float,
+    def __init__(self, name_in:str, balance_in: money_cents, account_type_in: AccountType,
+                 initial_pay_date_in: date, frequency_type_in: FrequencyType, minimum_payment_in:money_cents,
                  payment_method_in: Union['RevolvingCreditBill', 'BankAccount'],
-                 apr_rate_in: float, credit_limit_in: float,
+                 apr_rate_in: float, credit_limit_in: money_cents,
                  round_up: bool = False) -> None:
         """
         Initialize a RevolvingCreditBill instance.
@@ -44,7 +44,7 @@ class RevolvingCreditBill:
         ----------
         name_in : str
             The name of the revolving credit account.
-        balance_in : float
+        balance_in : money_cents
             The starting balance (amount owed).
         account_type_in : AccountType
             Type of the account (e.g., CREDIT, CHECKING).
@@ -52,22 +52,23 @@ class RevolvingCreditBill:
             The first date a minimum payment is due.
         frequency_type_in : FrequencyType
             Payment frequency (e.g., MONTHLY, BI_WEEKLY).
-        minimum_payment_in : float
+        minimum_payment_in : money_cents
             The required minimum payment per period.
         payment_method_in : BankAccount | RevolvingCreditBill
             The account used to make the payment.
         apr_rate_in : float
             The annual percentage rate as a decimal (e.g., 0.05 for 5% APR).
-        credit_limit_in : float
+        credit_limit_in : money_cents
             Maximum credit allowed on this account.
         round_up : bool, optional
             Whether to round the minimum payment up.
         """
         self._interest = Interest(apr_rate_in)
-        self._minimum_payment = minimum_payment_in if not round_up \
+        self._minimum_payment : money_cents = minimum_payment_in if not round_up \
             else round_value(minimum_payment_in, round_up=round_up)
-        self._credit_limit: float = credit_limit_in
-        self._accountInfo = AccountInformation(name_in=name_in,balance_in=-balance_in,account_type_in=account_type_in)
+        self._credit_limit: money_cents = credit_limit_in
+        self._accountInfo = AccountInformation(name_in=name_in,balance_in=-balance_in if balance_in>0 else balance_in,
+                                               account_type_in=account_type_in)
         self._ledger = Ledger(['No.','Date', 'Description', 'Credit', 'Debit', 'Balance', 'Interest To Date'])
         self._trigger_days = TriggerDays(frequency_in=frequency_type_in)
         self._trigger_days.trigger_date = initial_pay_date_in
@@ -89,11 +90,18 @@ class RevolvingCreditBill:
         return self._ledger.col_count
 
     @property
-    def loan_balance(self) -> float:
+    def loan_balance_cents(self) -> money_cents:
         """
-        float: Returns the current balance owed.
+        money_cents: Returns the current balance owed.
         """
         return self._accountInfo.balance
+
+    @property
+    def loan_balance_dollars(self) -> money_dollars:
+        """
+        money_cents: Returns the current balance owed.
+        """
+        return cents_to_dollars(self._accountInfo.balance)
 
     @property
     def exceeded_credit_limit(self) -> bool:
@@ -133,9 +141,9 @@ class RevolvingCreditBill:
                 min_payment = abs(self._accountInfo.balance)
 
             # Apply minimum Payment to the Bank Account
-            self.make_a_transaction(date_in=date_in, action='Minimum Payment',credit=min_payment,debit=0)
+            self.make_a_transaction(date_in=date_in, action='Minimum Payment',credit=min_payment,debit=money_cents(0))
             self._payment_method.make_a_transaction(date_in=date_in, action=f'{self.account_name}-Payment',
-                                                    credit=0, debit=min_payment)
+                                                    credit=money_cents(0), debit=min_payment)
 
     def apply_daily_interest(self, date_in: date) -> None:
         """
@@ -147,7 +155,7 @@ class RevolvingCreditBill:
                 The date the interest is applied.
         """
         if self._accountInfo.balance != 0:
-            self.make_a_transaction(date_in=date_in,action='Daily Interest',credit=0,
+            self.make_a_transaction(date_in=date_in,action='Daily Interest',credit=money_cents(0),
                                     debit=self._interest.calculate_daily_interest(
                                         balance_in=self._accountInfo.balance,date_in=date_in))
 
@@ -166,7 +174,7 @@ class RevolvingCreditBill:
             # Make minimum payment
             self.make_payment(date_in=date_in)
 
-    def make_a_transaction(self, date_in: date, action: str, credit: float, debit: float) -> None:
+    def make_a_transaction(self, date_in: date, action: str, credit: money_cents, debit: money_cents) -> None:
         """
         Record a transaction in the ledger and update the account balance.
 
@@ -176,13 +184,16 @@ class RevolvingCreditBill:
                 The date of the transaction.
             action : str
                 Description of the transaction.
-            credit : float
+            credit : money_cents
                 Amount credited to the account.
-            debit : float
+            debit : money_cents
                 Amount debited from the account.
         """
         self._accountInfo.update_balance(credit=credit,debit=debit)
         #['No.', 'Date', 'Description', 'Credit', 'Debit', 'Balance', 'Interest To Date']
-        self._ledger.add_entry_to_ledger([self._ledger.row_number, date_in, action, credit, debit,
-                                          self._accountInfo.balance, self._interest.interest_to_date])
+        self._ledger.add_entry_to_ledger([self._ledger.row_number, date_in, action,
+                                          cents_to_dollars(credit),
+                                          cents_to_dollars(debit),
+                                          self.loan_balance_dollars,
+                                          cents_to_dollars(self._interest.interest_to_date)])
 

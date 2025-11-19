@@ -1,17 +1,17 @@
 from datetime import date
+from math import floor
 from models.bankAccount import BankAccount
 from models.enumType import  FrequencyType
 from models.triggerDays import TriggerDays
-from models.utils import round_value
+from models.utils import money_cents, round_value
 from typing import List,Tuple
-
 
 class Income:
     """
     Represents a recurring income source that deposits funds into one or more bank accounts
     according to specified contribution percentages and payment frequency.
     """
-    def __init__(self, name_in: str, income_in: float, initial_pay_date_in: date,
+    def __init__(self, name_in: str, income_in: money_cents, initial_pay_date_in: date,
                  account_contributions_in:List[Tuple[BankAccount, float]],
                  frequency_type_in: FrequencyType, round_down=False) -> None:
         """
@@ -21,8 +21,8 @@ class Income:
         ----------
             name_in : str
                 The name of the income source (e.g., "Salary").
-            income_in : float
-                The total income amount per payment period.
+            income_in : money_cents
+                The total income amount per payment period in cents
             initial_pay_date_in : date
                 The date of the first payment.
             account_contributions_in : List[Tuple[BankAccount, float]]
@@ -113,6 +113,6 @@ class Income:
         """
         # Make Account Contribution
         for account_reference, contribution_percentage in self._account_contributions:
-            payment = self._income_amount * contribution_percentage
+            payment = floor(self._income_amount * contribution_percentage)
             account_reference.make_a_transaction(date_in=transaction_date, action=f'{self._income_name} - Check',
-                                                 credit=payment, debit=0)
+                                                 credit=payment, debit=money_cents(0))

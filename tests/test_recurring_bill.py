@@ -3,16 +3,17 @@ from datetime import date, timedelta
 from models.recurring_bill import RecurringBill
 from models.bankAccount import BankAccount
 from models.enumType import AccountType, FrequencyType
+from models.utils import cents_to_dollars, dollars_to_cents, money_cents, money_dollars
 
 @pytest.fixture
 def bank_account():
-    return BankAccount("Checking", 1000.0, AccountType.CHECKING)
+    return BankAccount("Checking", dollars_to_cents(money_dollars(1_000.00)), AccountType.CHECKING)
 
 @pytest.fixture
 def recurring_bill(bank_account):
     return RecurringBill(
         name_in="Electric Bill",
-        minimum_payment_in=100.0,
+        minimum_payment_in=dollars_to_cents(money_dollars(100.00)),
         account_type_in=AccountType.REOCCURRING,
         initial_pay_date_in=date(2025, 11, 10),
         frequency_type_in=FrequencyType.WEEKLY,
@@ -27,7 +28,7 @@ def test_initialization(recurring_bill, bank_account):
     assert recurring_bill.ledger_col_count == 5
     assert len(recurring_bill.raw_copy_ledger) == 1
     # Bank account balance unchanged initially
-    assert bank_account._accountInfo.balance == 1000.0
+    assert bank_account.balance_dollars == money_dollars(1_000.00)
 
 # --- Make payment ---
 def test_make_payment_updates_ledger_and_bank_account(recurring_bill, bank_account):
@@ -40,12 +41,12 @@ def test_make_payment_updates_ledger_and_bank_account(recurring_bill, bank_accou
     assert len(recurring_bill.raw_copy_ledger) == 2
     entry = recurring_bill.raw_copy_ledger[-1]
     assert entry[2] == "Minimum Payment"
-    assert entry[3] == recurring_bill._minimum_payment
+    assert entry[3] == cents_to_dollars(money_cents(recurring_bill._minimum_payment))
 
     # BankAccount ledger updated
     bank_entry = bank_account.raw_copy_ledger[-1]
     assert bank_entry[2] == "Electric Bill-Payment"
-    assert bank_entry[4] == recurring_bill._minimum_payment
+    assert bank_entry[4] == cents_to_dollars(money_cents(recurring_bill._minimum_payment))
     # Bank balance decreased
     assert bank_account._accountInfo.balance == initial_bank_balance - recurring_bill._minimum_payment
 
@@ -67,4 +68,4 @@ def test_process_day_trigger(recurring_bill, bank_account):
     assert len(recurring_bill.raw_copy_ledger) == 2
     assert recurring_bill.raw_copy_ledger[-1][2] == "Minimum Payment"
     # Bank account debited correctly
-    assert bank_account.raw_copy_ledger[-1][4] == recurring_bill._minimum_payment
+    assert bank_account.raw_copy_ledger[-1][4] == cents_to_dollars(money_cents(recurring_bill._minimum_payment))

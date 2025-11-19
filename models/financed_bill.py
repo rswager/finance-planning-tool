@@ -6,7 +6,7 @@ from models.interest import Interest
 from models.ledger import Ledger
 from models.revolving_credit_bill import RevolvingCreditBill
 from models.triggerDays import TriggerDays
-from models.utils import round_value
+from models.utils import round_value, money_cents, money_dollars, cents_to_dollars, dollars_to_cents
 from typing import Union
 
 class FinancedBill:
@@ -19,8 +19,8 @@ class FinancedBill:
     a RevolvingCreditBill.
     """
 
-    def __init__(self, name_in:str, balance_in:float, account_type_in: AccountType,
-                 initial_pay_date_in: date, frequency_type_in: FrequencyType, minimum_payment_in:float,
+    def __init__(self, name_in:str, balance_in: money_cents, account_type_in: AccountType,
+                 initial_pay_date_in: date, frequency_type_in: FrequencyType, minimum_payment_in: money_cents,
                  payment_method_in: Union['RevolvingCreditBill', 'BankAccount'],
                  apr_rate_in: float, round_up: bool = False) -> None:
         """
@@ -30,16 +30,16 @@ class FinancedBill:
         ----------
             name_in : str
                 The name of the bill/loan.
-            balance_in : float
-                The initial balance owed. Positive balances are treated as debt.
+            balance_in : money_cents
+                The initial balance owed. Positive balances are treated as debt. -> converted to cents
             account_type_in : AccountType
                 The type of account (e.g., LOAN, REVOLVING).
             initial_pay_date_in : date
                 The first date a payment is due.
             frequency_type_in : FrequencyType
                 The frequency with which payments are due (e.g., MONTHLY, BI_WEEKLY).
-            minimum_payment_in : float
-                The minimum amount to pay each cycle.
+            minimum_payment_in : money_cents
+                The minimum amount to pay each cycle. -> converted to cents
             payment_method_in : Union[RevolvingCreditBill, BankAccount]
                 The account or credit source used to make payments.
             apr_rate_in : float
@@ -83,14 +83,24 @@ class FinancedBill:
         return self._ledger.col_count
 
     @property
-    def loan_balance(self) -> float:
+    def loan_balance_cents(self) -> money_cents:
         """
         Returns
         -------
             float
-                The current outstanding balance of the financed bill.
+                The current outstanding balance of the financed bill in cents
         """
         return self._accountInfo.balance
+
+    @property
+    def loan_balance_dollars(self) -> money_dollars:
+        """
+        Returns
+        -------
+            float
+                The current outstanding balance of the financed bill in cents
+        """
+        return cents_to_dollars(self._accountInfo.balance)
 
     @property
     def account_name(self) -> str:
@@ -138,9 +148,9 @@ class FinancedBill:
                 min_payment = abs(self._accountInfo.balance)
 
             # Apply minimum Payment to the Bank Account
-            self.make_a_transaction(date_in=date_in, action='Minimum Payment',credit=min_payment,debit=0)
+            self.make_a_transaction(date_in=date_in, action='Minimum Payment',credit=min_payment,debit=money_cents(0))
             self._payment_method.make_a_transaction(date_in=date_in, action=f'{self.account_name}-Payment',
-                                                    credit=0, debit=min_payment)
+                                                    credit=money_cents(0), debit=min_payment)
 
     def apply_daily_interest(self, date_in: date) -> None:
         """
@@ -159,10 +169,10 @@ class FinancedBill:
         -----
         - Interest is added to the ledger and accumulated in the internal interest tracker.
         """
-        if self._accountInfo.balance != 0:
-            self.make_a_transaction(date_in=date_in,action='Daily Interest',credit=0,
+        if self.loan_balance_cents!= 0:
+            self.make_a_transaction(date_in=date_in,action='Daily Interest',credit=money_cents(0),
                                     debit=self._interest.calculate_daily_interest(
-                                        balance_in=self._accountInfo.balance,date_in=date_in))
+                                        balance_in=self.loan_balance_cents,date_in=date_in))
 
     def process_day(self, date_in) -> None:
         """
@@ -188,7 +198,7 @@ class FinancedBill:
             # Make minimum payment
             self.make_payment(date_in=date_in)
 
-    def make_a_transaction(self, date_in: date, action: str, credit: float, debit: float) -> None:
+    def make_a_transaction(self, date_in: date, action: str, credit: money_cents, debit: money_cents) -> None:
         """
         Record a transaction in the ledger and update the account balance.
 
@@ -213,5 +223,8 @@ class FinancedBill:
         """
         self._accountInfo.update_balance(credit=credit,debit=debit)
         #['No.', 'Date', 'Description', 'Credit', 'Debit', 'Balance', 'Interest To Date']
-        self._ledger.add_entry_to_ledger([self._ledger.row_number, date_in, action, credit, debit,
-                                          self._accountInfo.balance, self._interest.interest_to_date])
+        self._ledger.add_entry_to_ledger([self._ledger.row_number, date_in, action,
+                                          cents_to_dollars(credit),
+                                          cents_to_dollars(debit),
+                                          self.loan_balance_dollars,
+                                          cents_to_dollars(self._interest.interest_to_date)])

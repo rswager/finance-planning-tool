@@ -5,7 +5,7 @@ from models.enumType import AccountType, FrequencyType
 from models.ledger import Ledger
 from models.revolving_credit_bill import RevolvingCreditBill
 from models.triggerDays import TriggerDays
-from models.utils import round_value
+from models.utils import cents_to_dollars, money_cents, round_value
 from typing import Union
 
 
@@ -19,7 +19,7 @@ class RecurringBill:
         _accountInfo : AccountInformation
             Contains the bill's name, balance, and account type.
         _ledger : Ledger
-            Ledger for tracking payments made to this bill.
+            for tracking payments made to this bill.
         _minimum_payment : float
             The minimum amount to pay each cycle.
         _trigger_days : TriggerDays
@@ -27,7 +27,7 @@ class RecurringBill:
         _payment_method : BankAccount | RevolvingCreditBill
             The account or bill that receives the payment.
     """
-    def __init__(self, name_in: str, minimum_payment_in: float, account_type_in: AccountType,
+    def __init__(self, name_in: str, minimum_payment_in: money_cents, account_type_in: AccountType,
                  initial_pay_date_in: date, frequency_type_in: FrequencyType,
                  payment_method_in: Union['RevolvingCreditBill', 'BankAccount'],
                  round_up: bool=False) -> None:
@@ -38,8 +38,8 @@ class RecurringBill:
         ----------
             name_in : str
                 The name of the bill.
-            minimum_payment_in : float
-                The minimum payment amount per period.
+            minimum_payment_in : money_cents
+                The minimum payment amount per period -> in cents
             account_type_in : AccountType
                 Type of account associated with the bill (e.g., CHECKING, CREDIT).
             initial_pay_date_in : date
@@ -51,7 +51,7 @@ class RecurringBill:
             round_up : bool, optional
                 If True, rounds the minimum payment up to a desired precision.
         """
-        self._accountInfo = AccountInformation(name_in=name_in, balance_in=0, account_type_in=account_type_in)
+        self._accountInfo = AccountInformation(name_in=name_in, balance_in=money_cents(0), account_type_in=account_type_in)
         self._ledger = Ledger(columns=['No.', 'Date', 'Description', 'Credit', 'Total Paid To Date'])
         self._minimum_payment = minimum_payment_in if not round_up \
             else round_value(minimum_payment_in, round_up=round_up)
@@ -101,9 +101,10 @@ class RecurringBill:
         self._accountInfo.update_balance(credit=self._minimum_payment)
         #def make_a_transaction(self, date_in: date, action: str, credit: float, debit: float):
         self._payment_method.make_a_transaction(date_in=date_in, action=f'{self.account_name}-Payment',
-                                                credit=0, debit=self._minimum_payment)
+                                                credit=money_cents(0), debit=self._minimum_payment)
         self._ledger.add_entry_to_ledger([self._ledger.row_number, date_in, "Minimum Payment",
-                                          self._minimum_payment, self._accountInfo.balance])
+                                          cents_to_dollars(self._minimum_payment),
+                                          cents_to_dollars(self._accountInfo.balance)])
 
     def process_day(self, date_in:date) -> None:
         """
