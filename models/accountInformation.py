@@ -1,4 +1,5 @@
 from models.enumType import AccountType
+from models.utils import money_cents
 
 class AccountInformation:
     """
@@ -10,7 +11,7 @@ class AccountInformation:
     """
 
 
-    def __init__(self, name_in: str, balance_in: float, account_type_in: AccountType) -> None:
+    def __init__(self, name_in: str, balance_in: money_cents, account_type_in: AccountType) -> None:
         """
         Initialize a new AccountInformation instance.
 
@@ -18,8 +19,8 @@ class AccountInformation:
         ----------
             name_in : str
                 The display/name of the account.
-            balance_in : float
-                The starting balance.
+            balance_in : money_cents(int)
+                The starting balance in -> will be converted to cents
             account_type_in : AccountType
                 The type of account (checking, savings, investment, etc.).
 
@@ -27,17 +28,17 @@ class AccountInformation:
         -------
             None
         """
-        self._balance: float = balance_in
+        self._balance: money_cents = balance_in
         self._account_name: str = name_in
         self._account_type: AccountType = account_type_in
 
     @property
-    def balance(self) -> float:
+    def balance(self) -> money_cents:
         """
         Return
         -------
-            float
-                The current account balance.
+            money_cents(int)
+                The current account balance in cents
 
          Notes
         -------
@@ -47,6 +48,7 @@ class AccountInformation:
         """
         # immutable type
         return self._balance
+
 
     @property
     def is_overdrafted(self) -> bool:
@@ -66,7 +68,7 @@ class AccountInformation:
             return self._balance<0
         return False
 
-    def update_balance(self,credit:float=0, debit:float=0) -> None:
+    def update_balance(self,credit:money_cents=0, debit:money_cents=0) -> None:
         """
         Apply a credit or debit to the account balance.
 

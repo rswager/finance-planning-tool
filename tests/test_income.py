@@ -1,13 +1,15 @@
 import pytest
-from datetime import date, timedelta
+from datetime import date
+from math import floor
 from models.income import Income
 from models.bankAccount import BankAccount
 from models.enumType import FrequencyType, AccountType
+from models.utils import dollars_to_cents, money_cents, money_dollars
 
 @pytest.fixture
 def bank_accounts():
-    acc1 = BankAccount("Checking", 1000.0, AccountType.CHECKING)
-    acc2 = BankAccount("Savings", 500.0, AccountType.SAVINGS)
+    acc1 = BankAccount("Checking", dollars_to_cents(money_dollars(1_000.00)), AccountType.CHECKING)
+    acc2 = BankAccount("Savings", dollars_to_cents(money_dollars(500.00)), AccountType.SAVINGS)
     return acc1, acc2
 
 @pytest.fixture
@@ -15,7 +17,7 @@ def income(bank_accounts):
     acc1, acc2 = bank_accounts
     return Income(
         name_in="Salary",
-        income_in=1000.0,
+        income_in=dollars_to_cents(money_dollars(1_000.00)),
         initial_pay_date_in=date(2025, 11, 8),
         account_contributions_in=[(acc1, 0.6), (acc2, 0.4)],
         frequency_type_in=FrequencyType.WEEKLY
@@ -38,7 +40,7 @@ def test_invalid_contribution_percentage(bank_accounts):
     with pytest.raises(ValueError):
         Income(
             name_in="Salary",
-            income_in=1000.0,
+            income_in=dollars_to_cents(money_dollars(1_000.00)),
             initial_pay_date_in=date(2025, 11, 8),
             account_contributions_in=[(acc1, 1.5)],
             frequency_type_in=FrequencyType.WEEKLY
@@ -50,7 +52,7 @@ def test_total_contribution_exceeds_1(bank_accounts):
     with pytest.raises(ValueError):
         Income(
             name_in="Salary",
-            income_in=1000.0,
+            income_in=dollars_to_cents(money_dollars(1_000.00)),
             initial_pay_date_in=date(2025, 11, 8),
             account_contributions_in=[(acc1, 0.7), (acc2, 0.5)],
             frequency_type_in=FrequencyType.WEEKLY
@@ -61,10 +63,9 @@ def test_deposit_updates_accounts(income, bank_accounts):
     acc1, acc2 = bank_accounts
     deposit_date = date(2025, 11, 8)
     income.deposit(deposit_date)
-
     # Check balances updated correctly
-    assert acc1._accountInfo.balance == 1000 + 1000 * 0.6
-    assert acc2._accountInfo.balance == 500 + 1000 * 0.4
+    assert acc1.balance_cents == dollars_to_cents(money_dollars(1_000.00)) + floor(dollars_to_cents(money_dollars(1_000.00)) * 0.6)
+    assert acc2.balance_cents == dollars_to_cents(money_dollars(500.00)) + floor(dollars_to_cents(money_dollars(1_000.00)) * 0.4)
 
     # Check ledger entries
     assert acc1.raw_copy_ledger[-1][2] == "Salary - Check"
@@ -84,5 +85,5 @@ def test_process_day_triggers_deposit(income, bank_accounts):
     # Ledger updated on trigger day
     assert len(acc1.raw_copy_ledger) == 2
     assert len(acc2.raw_copy_ledger) == 2
-    assert acc1.raw_copy_ledger[-1][3] == 1000 * 0.6
-    assert acc2.raw_copy_ledger[-1][3] == 1000 * 0.4
+    assert acc1.raw_copy_ledger[-1][3] == 1_000 * 0.6
+    assert acc2.raw_copy_ledger[-1][3] == 1_000 * 0.4
