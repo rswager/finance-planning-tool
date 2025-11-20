@@ -68,7 +68,7 @@ def test_small_balance_rounding(interest_instance):
     interest = interest_instance.calculate_daily_interest(bal, test_date)
 
     # Should round to 2 decimal places
-    assert interest == ceil(money_cents(1) * (0.05 / 365))
+    assert interest == ceil(int(money_cents(1)) * (0.05 / 365))
 
 
 def test_valid_apr_does_not_raise():

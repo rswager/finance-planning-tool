@@ -1,5 +1,5 @@
 import pytest
-from datetime import date, timedelta
+from datetime import date
 from models.recurring_bill import RecurringBill
 from models.bankAccount import BankAccount
 from models.enumType import AccountType, FrequencyType

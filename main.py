@@ -35,7 +35,7 @@ def add_table(worksheet_in, table_name_in, data_in):
     for index, column_data in enumerate(data[0]):
         if type(column_data) in(float,int) and index != 0:
             column_def = {'header': header_in[index], 'format': accounting_format}
-        elif type(column_data) == date:
+        elif type(column_data) is date:
             column_def = {'header': header_in[index], 'format': date_format}
         else:
             column_def = {'header': header_in[index]}
