@@ -31,7 +31,7 @@ class TriggerDays:
         self._frequency:FrequencyType = frequency_in
 
     @property
-    def trigger_date(self) -> typing.Optional[None]:
+    def trigger_date(self) -> typing.Optional[date]:
         """
         date | None: The currently scheduled trigger date.
 
@@ -69,13 +69,16 @@ class TriggerDays:
         bool
             True if triggered, False otherwise.
         """
+        if self._trigger_date is None:
+            return False
+
         if processed_day == self._trigger_date:
               # now add the next date
             self._set_next_trigger_date(processed_day)
             return True
         return False
 
-    def _set_next_trigger_date(self, current_trigger_date:date) -> None:
+    def _set_next_trigger_date(self, current_trigger_date: date) -> None:
         """
         Advance the trigger date forward based on frequency.
 
@@ -92,27 +95,31 @@ class TriggerDays:
         # 1x a Month frequency
         if self._frequency == FrequencyType.MONTHLY:
             current_trigger_date = current_trigger_date + relativedelta(months=1)
+            self._trigger_date = current_trigger_date
         # Every other Week frequency (2x a month)
         elif self._frequency == FrequencyType.BI_WEEKLY:
             current_trigger_date = current_trigger_date + relativedelta(weeks=2)
+            self._trigger_date = current_trigger_date
         # Every Week frequency (1x a month)
         elif self._frequency == FrequencyType.WEEKLY:
             current_trigger_date = current_trigger_date + relativedelta(weeks=1)
+            self._trigger_date = current_trigger_date
         # Every Day Frequency
         elif self._frequency == FrequencyType.DAILY:
             current_trigger_date = current_trigger_date + relativedelta(days=1)
+            self._trigger_date = current_trigger_date
         # 1x a Year Frequency
         elif self._frequency == FrequencyType.YEARLY:
             current_trigger_date = current_trigger_date + relativedelta(years=1)
+            self._trigger_date = current_trigger_date
         # We only want to trigger once, so no frequency
         elif self._frequency == FrequencyType.SINGULAR:
-            current_trigger_date = None
-        # We are missing a Fequency Type:
+            self._trigger_date = None
+        # We are missing a Frequency Type:
         else:
             if self._frequency is None:
                 raise ValueError(f'Frequency wasn\'t set! {self._frequency=}')
             else:
                 raise ValueError(f'Received an Unexpected Frequency Type! {self._frequency=}')
-        self._trigger_date= current_trigger_date
 
     # def update_trigger_day_by

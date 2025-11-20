@@ -64,8 +64,8 @@ def test_deposit_updates_accounts(income, bank_accounts):
     deposit_date = date(2025, 11, 8)
     income.deposit(deposit_date)
     # Check balances updated correctly
-    assert acc1.balance_cents == dollars_to_cents(money_dollars(1_000.00)) + floor(dollars_to_cents(money_dollars(1_000.00)) * 0.6)
-    assert acc2.balance_cents == dollars_to_cents(money_dollars(500.00)) + floor(dollars_to_cents(money_dollars(1_000.00)) * 0.4)
+    assert acc1.balance_cents == dollars_to_cents(money_dollars(1_000.00)) + money_cents(floor(float(dollars_to_cents(money_dollars(1_000.00))) * 0.6))
+    assert acc2.balance_cents == dollars_to_cents(money_dollars(500.00)) + money_cents(floor(float(dollars_to_cents(money_dollars(1_000.00))) * 0.4))
 
     # Check ledger entries
     assert acc1.raw_copy_ledger[-1][2] == "Salary - Check"

@@ -3,7 +3,7 @@ from datetime import date, timedelta
 from models.revolving_credit_bill import RevolvingCreditBill
 from models.bankAccount import BankAccount
 from models.enumType import AccountType, FrequencyType
-from models.utils import dollars_to_cents, money_cents, money_dollars
+from models.utils import dollars_to_cents, money_dollars
 
 # -------------------------------------------------------
 # Fixtures
@@ -35,7 +35,7 @@ def credit_bill(bank_account):
 def test_initialization(credit_bill):
     assert credit_bill.account_name == "Visa"
     assert credit_bill.account_type == AccountType.REVOLVING
-    assert credit_bill.loan_balance_dollars == -1000.0  # stored as negative (owed)
+    assert credit_bill.loan_balance_dollars == money_dollars(-1000.0)  # stored as negative (owed)
     assert credit_bill.ledger_col_count == 7
     assert len(credit_bill.raw_copy_ledger) == 1  # header only
 

@@ -47,5 +47,5 @@ def test_cents_to_dollars(amount, expected):
     (money_dollars(-1.01), money_cents(-101)),
     (money_dollars(-100.00), money_cents(-10000)),
 ])
-def test_cents_to_dollars(amount, expected):
+def test_dollars_to_cents(amount, expected):
     assert dollars_to_cents(amount) == expected

@@ -64,10 +64,10 @@ class RevolvingCreditBill:
             Whether to round the minimum payment up.
         """
         self._interest = Interest(apr_rate_in)
-        self._minimum_payment : money_cents = minimum_payment_in if not round_up \
+        self._minimum_payment: money_cents = minimum_payment_in if not round_up \
             else round_value(minimum_payment_in, round_up=round_up)
         self._credit_limit: money_cents = credit_limit_in
-        self._accountInfo = AccountInformation(name_in=name_in,balance_in=-balance_in if balance_in>0 else balance_in,
+        self._accountInfo = AccountInformation(name_in=name_in,balance_in=money_cents(-balance_in if balance_in>0 else balance_in),
                                                account_type_in=account_type_in)
         self._ledger = Ledger(['No.','Date', 'Description', 'Credit', 'Debit', 'Balance', 'Interest To Date'])
         self._trigger_days = TriggerDays(frequency_in=frequency_type_in)
@@ -136,9 +136,9 @@ class RevolvingCreditBill:
                 The date the payment is made.
         """
         if self._accountInfo.balance != 0:
-            min_payment = self._minimum_payment
+            min_payment: money_cents = self._minimum_payment
             if abs(self._accountInfo.balance)<self._minimum_payment:
-                min_payment = abs(self._accountInfo.balance)
+                min_payment = money_cents(abs(self._accountInfo.balance))
 
             # Apply minimum Payment to the Bank Account
             self.make_a_transaction(date_in=date_in, action='Minimum Payment',credit=min_payment,debit=money_cents(0))

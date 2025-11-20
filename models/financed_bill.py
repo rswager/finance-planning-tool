@@ -6,7 +6,7 @@ from models.interest import Interest
 from models.ledger import Ledger
 from models.revolving_credit_bill import RevolvingCreditBill
 from models.triggerDays import TriggerDays
-from models.utils import round_value, money_cents, money_dollars, cents_to_dollars, dollars_to_cents
+from models.utils import round_value, money_cents, money_dollars, cents_to_dollars
 from typing import Union
 
 class FinancedBill:
@@ -52,9 +52,9 @@ class FinancedBill:
         """
 
         self._interest = Interest(apr_rate_in)
-        self._minimum_payment = minimum_payment_in if not round_up \
-            else round_value(minimum_payment_in, round_up=round_up)
-        self._accountInfo = AccountInformation(name_in=name_in,balance_in=-balance_in if balance_in>0 else balance_in
+        self._minimum_payment: money_cents = money_cents(minimum_payment_in if not round_up \
+            else round_value(minimum_payment_in, round_up=round_up))
+        self._accountInfo = AccountInformation(name_in=name_in,balance_in=money_cents(-balance_in if balance_in>0 else balance_in)
                                                ,account_type_in=account_type_in)
         self._ledger = Ledger(['No.','Date', 'Description', 'Credit', 'Debit', 'Balance', 'Interest To Date'])
         self._trigger_days = TriggerDays(frequency_in=frequency_type_in)
@@ -148,9 +148,9 @@ class FinancedBill:
                 min_payment = abs(self._accountInfo.balance)
 
             # Apply minimum Payment to the Bank Account
-            self.make_a_transaction(date_in=date_in, action='Minimum Payment',credit=min_payment,debit=money_cents(0))
+            self.make_a_transaction(date_in=date_in, action='Minimum Payment',credit=money_cents(min_payment),debit=money_cents(0))
             self._payment_method.make_a_transaction(date_in=date_in, action=f'{self.account_name}-Payment',
-                                                    credit=money_cents(0), debit=min_payment)
+                                                    credit=money_cents(0), debit=money_cents(min_payment))
 
     def apply_daily_interest(self, date_in: date) -> None:
         """

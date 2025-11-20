@@ -113,6 +113,6 @@ class Income:
         """
         # Make Account Contribution
         for account_reference, contribution_percentage in self._account_contributions:
-            payment = floor(self._income_amount * contribution_percentage)
+            payment: money_cents = money_cents(floor(int(self._income_amount) * contribution_percentage))
             account_reference.make_a_transaction(date_in=transaction_date, action=f'{self._income_name} - Check',
                                                  credit=payment, debit=money_cents(0))

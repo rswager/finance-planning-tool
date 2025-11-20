@@ -1,6 +1,6 @@
 from calendar import isleap
 from datetime import date
-from models.utils import cents_to_dollars, money_cents, money_dollars
+from models.utils import money_cents
 from math import ceil
 
 DAYS_IN_NON_LEAP_YEAR = 365
@@ -61,13 +61,13 @@ class Interest:
         - The cumulative interest (`_interest_to_date`) is updated with this amount.
         """
 
-        interest = 0
+        interest: money_cents = money_cents(0)
         if abs(balance_in) > 0:
             n_days = DAYS_IN_NON_LEAP_YEAR if not isleap(date_in.year) else DAYS_IN_LEAP_YEAR
             interest = money_cents(ceil(abs(balance_in) * (self._apr_rate / n_days)))
 
             # Update cumulative interest
-            self._interest_to_date += interest
+            self._interest_to_date = money_cents(self._interest_to_date + interest)
 
         return interest
 

@@ -3,7 +3,7 @@ from datetime import date
 from models.financed_bill import FinancedBill
 from models.enumType import AccountType, FrequencyType
 from models.bankAccount import BankAccount
-from models.utils import dollars_to_cents, money_cents, money_dollars
+from models.utils import dollars_to_cents, money_dollars
 
 
 @pytest.fixture

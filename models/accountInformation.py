@@ -64,11 +64,11 @@ class AccountInformation:
             with a balance below zero.
         """
         # We only want to show over draft on checking and savings accounts
-        if self._account_type in(AccountType.SAVINGS,AccountType.CHECKING):
-            return self._balance<0
+        if self._account_type in (AccountType.SAVINGS, AccountType.CHECKING):
+            return self._balance< money_cents(0)
         return False
 
-    def update_balance(self,credit:money_cents=0, debit:money_cents=0) -> None:
+    def update_balance(self,credit: money_cents=money_cents(0), debit: money_cents=money_cents(0)) -> None:
         """
         Apply a credit or debit to the account balance.
 
@@ -87,7 +87,7 @@ class AccountInformation:
         -------
             The function calculates: new_balance = old_balance + credit - debit
         """
-        self._balance = self._balance + credit - debit
+        self._balance = money_cents(self._balance + credit - debit)
 
     @property
     def account_name(self) -> str:
