@@ -31,6 +31,10 @@ class TriggerDays:
         self._frequency:FrequencyType = frequency_in
 
     @property
+    def frequency(self) -> FrequencyType:
+        return self._frequency
+
+    @property
     def trigger_date(self) -> typing.Optional[date]:
         """
         date | None: The currently scheduled trigger date.

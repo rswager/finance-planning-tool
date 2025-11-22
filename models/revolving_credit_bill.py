@@ -104,6 +104,18 @@ class RevolvingCreditBill:
         return cents_to_dollars(self._accountInfo.balance)
 
     @property
+    def credit_limit_dollars(self) -> money_dollars:
+        return cents_to_dollars(self._credit_limit)
+
+    @property
+    def min_payment_dollars(self) -> money_dollars:
+        return cents_to_dollars(self._minimum_payment)
+
+    @property
+    def frequency(self) -> FrequencyType:
+        return self._trigger_days.frequency
+
+    @property
     def exceeded_credit_limit(self) -> bool:
         """
         bool: Returns True if the current balance exceeds the credit limit.

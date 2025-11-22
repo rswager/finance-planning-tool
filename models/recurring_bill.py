@@ -5,7 +5,7 @@ from models.enumType import AccountType, FrequencyType
 from models.ledger import Ledger
 from models.revolving_credit_bill import RevolvingCreditBill
 from models.triggerDays import TriggerDays
-from models.utils import cents_to_dollars, money_cents, round_value
+from models.utils import cents_to_dollars, money_cents, money_dollars, round_value
 from typing import Union
 
 
@@ -86,6 +86,14 @@ class RecurringBill:
         AccountType: Returns the type of the bill's account.
         """
         return self._accountInfo.account_type
+
+    @property
+    def min_payment_dollars(self) -> money_dollars:
+        return cents_to_dollars(self._minimum_payment)
+
+    @property
+    def frequency(self) -> FrequencyType:
+        return self._trigger_days.frequency
 
     # Method to apply the payment to the balance
     def make_payment(self, date_in:date) -> None:

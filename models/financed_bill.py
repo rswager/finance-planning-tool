@@ -103,6 +103,14 @@ class FinancedBill:
         return cents_to_dollars(self._accountInfo.balance)
 
     @property
+    def min_payment_dollars(self) -> money_dollars:
+        return cents_to_dollars(self._minimum_payment)
+
+    @property
+    def frequency(self) -> FrequencyType:
+        return self._trigger_days.frequency
+
+    @property
     def account_name(self) -> str:
         """
         Returns

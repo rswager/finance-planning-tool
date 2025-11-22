@@ -95,8 +95,8 @@ bills = {
     'Mortgage': FinancedBill(name_in='Mortgage', balance_in=dollars_to_cents(money_dollars(132_367.00)),
                              account_type_in=AccountType.LOAN,
                              initial_pay_date_in=date(2025,11,1),
-                             frequency_type_in=FrequencyType.MONTHLY,
-                             minimum_payment_in=dollars_to_cents(money_dollars(924.35)),
+                             frequency_type_in=FrequencyType.BI_WEEKLY,
+                             minimum_payment_in=dollars_to_cents(money_dollars((924.35)/2)),
                              payment_method_in=accounts['primary_checking'],apr_rate_in=.0725,
                              round_up=round_up_down),
 
@@ -110,8 +110,8 @@ bills = {
     'Car_Payment_Ford': FinancedBill(name_in='Car Payment - Ford',
                              balance_in=dollars_to_cents(money_dollars(28_000.00)),
                              account_type_in=AccountType.LOAN,initial_pay_date_in=date(2025,11,15),
-                             frequency_type_in=FrequencyType.MONTHLY,
-                             minimum_payment_in=dollars_to_cents(money_dollars(450.00)),
+                             frequency_type_in=FrequencyType.BI_WEEKLY,
+                             minimum_payment_in=dollars_to_cents(money_dollars(250.00)),
                              payment_method_in=accounts['primary_checking'], apr_rate_in=.06,
                              round_up=round_up_down),
 
@@ -123,7 +123,7 @@ bills = {
                              round_up=round_up_down),
 
     'Netflix': RecurringBill(name_in='Netflix', minimum_payment_in=dollars_to_cents(money_dollars(12.99)),
-                             account_type_in=AccountType.REOCCURRING,
+                             account_type_in=AccountType.SUBSCRIPTION,
                              initial_pay_date_in=date(2025, 11, 9),
                              frequency_type_in=FrequencyType.MONTHLY,
                              payment_method_in=accounts['primary_checking'], round_up=round_up_down),
@@ -136,13 +136,13 @@ bills = {
 
 
     'CrunchyRoll': RecurringBill(name_in='CrunchyRoll', minimum_payment_in=dollars_to_cents(money_dollars(11.99)),
-                             account_type_in=AccountType.REOCCURRING,
+                             account_type_in=AccountType.SUBSCRIPTION,
                              initial_pay_date_in=date(2025, 11, 13),
                              frequency_type_in=FrequencyType.MONTHLY,
                              payment_method_in=revolving_credit['discover_card'], round_up=round_up_down),
 
-    'Spotify': RecurringBill(name_in='Spoify', minimum_payment_in=dollars_to_cents(money_dollars(11.99)),
-                             account_type_in=AccountType.REOCCURRING,
+    'Spotify': RecurringBill(name_in='Spotify', minimum_payment_in=dollars_to_cents(money_dollars(11.99)),
+                             account_type_in=AccountType.SUBSCRIPTION,
                              initial_pay_date_in=date(2025, 11, 13),
                              frequency_type_in=FrequencyType.MONTHLY,
                              payment_method_in=revolving_credit['discover_card'], round_up=round_up_down),

@@ -3,7 +3,7 @@ from math import floor
 from models.bankAccount import BankAccount
 from models.enumType import  FrequencyType
 from models.triggerDays import TriggerDays
-from models.utils import money_cents, round_value
+from models.utils import cents_to_dollars, money_cents, round_value
 from typing import List,Tuple
 
 class Income:
@@ -44,6 +44,18 @@ class Income:
         self._trigger_days.trigger_date=initial_pay_date_in
         self._account_contributions: List[Tuple[BankAccount, float]] = []
         self.set_account_contribution(account_contributions_in)
+
+    @property
+    def account_name(self):
+        return self._income_name
+
+    @property
+    def income_amount_dollars(self):
+        return cents_to_dollars(self._income_amount)
+
+    @property
+    def frequency(self) -> FrequencyType:
+        return self._trigger_days.frequency
 
     def set_account_contribution(self, contributions:List[Tuple[BankAccount, float]]) -> None:
         """
