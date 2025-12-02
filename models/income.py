@@ -11,6 +11,21 @@ class Income:
     Represents a recurring income source that deposits funds into one or more bank accounts
     according to specified contribution percentages and payment frequency.
     """
+
+    @classmethod
+    def from_dict(cls,dict_in) -> Self :
+        try:
+            return cls(
+                name_in = dict_in['name_in'],
+                income_in = dict_in['income_in'],
+                initial_pay_date_in = dict_in['initial_pay_date_in'],
+                account_contributions_in = dict_in['account_contributions_in'],
+                frequency_type_in = dict_in['frequency_type_in'],
+                round_down = dict_in['round_down']
+            )
+        except KeyError as e:
+            raise KeyError(f"Missing required field: {e.args[0]}")
+
     def __init__(self, name_in: str, income_in: money_cents, initial_pay_date_in: date,
                  account_contributions_in:List[Tuple[BankAccount, float]],
                  frequency_type_in: FrequencyType, round_down=False) -> None:

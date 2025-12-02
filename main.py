@@ -95,7 +95,7 @@ bills = {
     'Mortgage': FinancedBill(name_in='Mortgage', balance_in=dollars_to_cents(money_dollars(132_367.00)),
                              account_type_in=AccountType.LOAN,
                              initial_pay_date_in=date(2025,11,1),
-                             frequency_type_in=FrequencyType.BI_WEEKLY,
+                             frequency_type_in=FrequencyType.MONTHLY,
                              minimum_payment_in=dollars_to_cents(money_dollars((924.35)/2)),
                              payment_method_in=accounts['primary_checking'],apr_rate_in=.0725,
                              round_up=round_up_down),
@@ -198,7 +198,7 @@ bills = {
 
 
 today = date(2025, 11, 1)
-end_date = date(2035, 11, 1)
+end_date = date(2055, 11, 1)
 # Walk Through Each day until we reach last day
 while today < end_date:
     if today.day == 1:

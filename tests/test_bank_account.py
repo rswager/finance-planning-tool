@@ -1,5 +1,8 @@
 import pytest
 from datetime import date
+
+from six import assertCountEqual
+
 from models.bankAccount import BankAccount
 from models.enumType import AccountType
 from models.utils import dollars_to_cents,money_cents,money_dollars
@@ -73,3 +76,14 @@ def test_zero_transaction(bank_account):
     bank_account.make_a_transaction(tx_date, "No Change", credit=money_cents(0), debit=money_cents(0))
     ledger = bank_account.raw_copy_ledger
     assert ledger[1][5] == money_dollars(1000.00)  # balance unchanged
+
+# --- Make from Dict
+@pytest.mark.parametrize("dict,name,balance,type", [
+    ({'name_in':'primary_checking','balance_in':1_000_00,'account_type_in':1}, 'primary_checking',1_000.0,1),
+    ({'name_in': 'primary_savings', 'balance_in': 1_999_99, 'account_type_in': 2}, 'primary_savings', 1_999.99, 2)
+])
+def test_from_dict(dict,name,balance,type):
+    account = BankAccount.from_dict(dict)
+    assert account.account_name == name
+    assert account.balance_dollars == balance
+    assert account.account_type == AccountType(type)

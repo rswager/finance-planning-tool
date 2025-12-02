@@ -7,7 +7,7 @@ from models.ledger import Ledger
 from models.revolving_credit_bill import RevolvingCreditBill
 from models.triggerDays import TriggerDays
 from models.utils import round_value, money_cents, money_dollars, cents_to_dollars
-from typing import Union
+from typing import Self, Union
 
 class FinancedBill:
     """
@@ -18,6 +18,31 @@ class FinancedBill:
     and integration with a payment method which can be either a BankAccount or
     a RevolvingCreditBill.
     """
+
+    @classmethod
+    def from_dict(cls,dict_in, bank_account_model, revolving_credit_model) -> Self :
+        payment_method = dict_in['payment_method_in']
+        if payment_method in bank_account_model:
+            payment_method = bank_account_model[payment_method]
+        elif payment_method in revolving_credit_model:
+            payment_method = revolving_credit_model[payment_method]
+        else:
+            raise ValueError(f"Need to provide valid payment method, Currently providing {payment_method}")
+
+        try:
+            return cls(
+                name_in = dict_in['name_in'],
+                balance_in = money_cents(dict_in['balance_in']),
+                account_type_in = AccountType(dict_in['account_type_in']),
+                initial_pay_date_in = dict_in['initial_pay_date_in'],
+                frequency_type_in = dict_in['frequency_type_in'],
+                minimum_payment_in = dict_in['minimum_payment_in'],
+                payment_method_in = payment_method,
+                apr_rate_in = dict_in['apr_rate_in'],
+                round_up = dict_in['round_up']
+            )
+        except KeyError as e:
+            raise KeyError(f"Missing required field: {e.args[0]}")
 
     def __init__(self, name_in:str, balance_in: money_cents, account_type_in: AccountType,
                  initial_pay_date_in: date, frequency_type_in: FrequencyType, minimum_payment_in: money_cents,
