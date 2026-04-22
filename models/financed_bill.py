@@ -8,27 +8,23 @@ from models.interest import Interest
 from models.ledger import Ledger
 from models.revolving_credit_bill import RevolvingCreditBill
 from models.triggerDays import TriggerDays
-from models.utils import cents_to_dollars, money_cents, money_dollars, round_value
+from models.utils import MajorUnit, MinorUnit, round_value
 
 
 class FinancedBill:
     """
     Represents a financed bill or loan with interest accrual, minimum payments,
     and an associated ledger to track all transactions and interest applied.
-
-    This class handles daily interest calculation, minimum payment processing,
-    and integration with a payment method which can be either a BankAccount or
-    a RevolvingCreditBill.
     """
 
     def __init__(
         self,
         name_in: str,
-        balance_in: money_cents,
+        balance_in: MinorUnit,
         account_type_in: AccountType,
         initial_pay_date_in: date,
         frequency_type_in: FrequencyType,
-        minimum_payment_in: money_cents,
+        minimum_payment_in: MinorUnit,
         payment_method_in: Union["RevolvingCreditBill", "BankAccount"],
         apr_rate_in: float,
         round_up: bool = False,
@@ -40,34 +36,30 @@ class FinancedBill:
         ----------
             name_in : str
                 The name of the bill/loan.
-            balance_in : money_cents
-                The initial balance owed. Positive balances are treated as debt. -> converted to cents
+            balance_in : MinorUnit
+                The initial balance owed. Positive balances are treated as debt.
             account_type_in : AccountType
                 The type of account (e.g., LOAN, REVOLVING).
             initial_pay_date_in : date
                 The first date a payment is due.
             frequency_type_in : FrequencyType
                 The frequency with which payments are due (e.g., MONTHLY, BI_WEEKLY).
-            minimum_payment_in : money_cents
-                The minimum amount to pay each cycle. -> converted to cents
+            minimum_payment_in : MinorUnit
+                The minimum amount to pay each cycle in minor units.
             payment_method_in : Union[RevolvingCreditBill, BankAccount]
                 The account or credit source used to make payments.
             apr_rate_in : float
-                The annual percentage rate for interest calculations (as a fraction, e.g., 0.05 for 5% APR).
+                The annual percentage rate as a fraction (e.g., 0.05 for 5% APR).
             round_up : bool, optional
-                Whether to round up the minimum payment for convenience, by default False.
-        Return
-        -------
-            None
+                Whether to round up the minimum payment for conservative budgeting.
         """
-
         self._interest = Interest(apr_rate_in)
-        self._minimum_payment: money_cents = money_cents(
+        self._minimum_payment: MinorUnit = (
             minimum_payment_in if not round_up else round_value(minimum_payment_in, round_up=round_up)
         )
         self._accountInfo = AccountInformation(
             name_in=name_in,
-            balance_in=money_cents(-balance_in if balance_in > 0 else balance_in),
+            balance_in=-balance_in if balance_in > 0 else balance_in,
             account_type_in=account_type_in,
         )
         self._ledger = Ledger(["No.", "Date", "Description", "Credit", "Debit", "Balance", "Interest To Date"])
@@ -77,150 +69,76 @@ class FinancedBill:
 
     @property
     def raw_copy_ledger(self) -> list:
-        """
-        Returns
-        -------
-            list
-                A deep copy of the ledger for safe inspection or external use.
-        """
+        """list: A deep copy of the ledger for safe inspection or external use."""
         return self._ledger.raw_copy_ledger
 
     @property
     def ledger_col_count(self) -> int:
-        """
-        Returns
-        -------
-            int
-                The number of columns defined in the ledger.
-        """
+        """int: The number of columns defined in the ledger."""
         return self._ledger.col_count
 
     @property
-    def loan_balance_cents(self) -> money_cents:
-        """
-        Returns
-        -------
-            float
-                The current outstanding balance of the financed bill in cents
-        """
+    def loan_balance_minor(self) -> MinorUnit:
+        """MinorUnit: The current outstanding balance in minor units (e.g. cents)."""
         return self._accountInfo.balance
 
     @property
-    def loan_balance_dollars(self) -> money_dollars:
-        """
-        Returns
-        -------
-            float
-                The current outstanding balance of the financed bill in cents
-        """
-        return cents_to_dollars(self._accountInfo.balance)
+    def loan_balance_major(self) -> MajorUnit:
+        """MajorUnit: The current outstanding balance in major units (e.g. dollars)."""
+        return self._accountInfo.balance.to_major()
 
     @property
     def account_name(self) -> str:
-        """
-        Returns
-        -------
-            str
-                The name of this financed bill.
-        """
+        """str: The name of this financed bill."""
         return self._accountInfo.account_name
 
     @property
     def account_type(self) -> AccountType:
-        """
-        Returns
-        -------
-            AccountType
-                The type of this account (e.g., LOAN, REVOLVING).
-        """
+        """AccountType: The type of this account (e.g., LOAN, REVOLVING)."""
         return self._accountInfo.account_type
 
-    # Method to apply the payment to the balance
     def make_payment(self, date_in: date) -> None:
         """
         Apply the minimum payment to the bill and record the transaction.
 
-        Parameters
-        ----------
-        date_in : date
-            The date on which the payment is made.
-
-        Return
-        -------
-            None
-
-        Notes
-        -----
-        - If the remaining balance is less than the minimum payment, only the
-          remaining balance is paid.
-        - Payment is recorded in both this bill's ledger and the payment method's ledger.
+        If the remaining balance is less than the minimum payment, only the
+        remaining balance is paid.
         """
         if self._accountInfo.balance != 0:
             min_payment = self._minimum_payment
             if abs(self._accountInfo.balance) < self._minimum_payment:
                 min_payment = abs(self._accountInfo.balance)
 
-            # Apply minimum Payment to the Bank Account
-            self.make_a_transaction(
-                date_in=date_in, action="Minimum Payment", credit=money_cents(min_payment), debit=money_cents(0)
-            )
+            self.make_a_transaction(date_in=date_in, action="Minimum Payment", credit=min_payment, debit=MinorUnit(0))
             self._payment_method.make_a_transaction(
                 date_in=date_in,
                 action=f"{self.account_name}-Payment",
-                credit=money_cents(0),
-                debit=money_cents(min_payment),
+                credit=MinorUnit(0),
+                debit=min_payment,
             )
 
     def apply_daily_interest(self, date_in: date) -> None:
-        """
-        Calculate and apply daily interest to the outstanding balance.
-
-        Parameters
-        ----------
-            date_in : date
-                The date on which interest is applied.
-
-        Returns
-        -------
-            None
-
-        Notes
-        -----
-        - Interest is added to the ledger and accumulated in the internal interest tracker.
-        """
-        if self.loan_balance_cents != 0:
+        """Calculate and apply daily interest to the outstanding balance."""
+        if self.loan_balance_minor != 0:
             self.make_a_transaction(
                 date_in=date_in,
                 action="Daily Interest",
-                credit=money_cents(0),
-                debit=self._interest.calculate_daily_interest(balance_in=self.loan_balance_cents, date_in=date_in),
+                credit=MinorUnit(0),
+                debit=self._interest.calculate_daily_interest(balance_in=self.loan_balance_minor, date_in=date_in),
             )
 
-    def process_day(self, date_in) -> None:
+    def process_day(self, date_in: date) -> None:
         """
         Process all activities for a single day: apply interest and make scheduled payments.
 
-        Parameters
-        ----------
-            date_in : date
-                The date being processed.
-
-        Returns
-        -------
-            None
-
-        Notes
-        -----
-        - Daily interest is always applied.
-        - If the current day is a scheduled payment day, the minimum payment is applied.
+        Daily interest is always applied. If today is a scheduled payment day, the
+        minimum payment is also applied.
         """
-        # We apply interest EVERY dat
         self.apply_daily_interest(date_in=date_in)
         if self._trigger_days.date_triggered(date_in):
-            # Make minimum payment
             self.make_payment(date_in=date_in)
 
-    def make_a_transaction(self, date_in: date, action: str, credit: money_cents, debit: money_cents) -> None:
+    def make_a_transaction(self, date_in: date, action: str, credit: MinorUnit, debit: MinorUnit) -> None:
         """
         Record a transaction in the ledger and update the account balance.
 
@@ -230,29 +148,20 @@ class FinancedBill:
                 The date of the transaction.
             action : str
                 A description of the transaction.
-            credit : float
+            credit : MinorUnit
                 Amount added to the account.
-            debit : float
+            debit : MinorUnit
                 Amount subtracted from the account.
-
-        Returns
-        -------
-            None
-
-        Notes
-        -----
-        - Ledger columns include: row number, date, action, credit, debit, balance, and interest to date.
         """
         self._accountInfo.update_balance(credit=credit, debit=debit)
-        # ['No.', 'Date', 'Description', 'Credit', 'Debit', 'Balance', 'Interest To Date']
         self._ledger.add_entry_to_ledger(
             [
                 self._ledger.row_number,
                 date_in,
                 action,
-                cents_to_dollars(credit),
-                cents_to_dollars(debit),
-                self.loan_balance_dollars,
-                cents_to_dollars(self._interest.interest_to_date),
+                credit.to_major(),
+                debit.to_major(),
+                self.loan_balance_major,
+                self._interest.interest_to_date.to_major(),
             ]
         )

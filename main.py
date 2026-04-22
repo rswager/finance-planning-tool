@@ -9,7 +9,7 @@ from models.financed_bill import FinancedBill
 from models.income import Income
 from models.recurring_bill import RecurringBill
 from models.revolving_credit_bill import RevolvingCreditBill
-from models.utils import dollars_to_cents, money_dollars
+from models.utils import MinorUnit
 
 
 def get_col(col_num_in):
@@ -98,26 +98,26 @@ accounts = {
     "primary_checking": BankAccount(
         name_in="Primary Checking",
         account_type_in=AccountType.CHECKING,
-        balance_in=dollars_to_cents(money_dollars(2_261.33)),
+        balance_in=MinorUnit.from_major(2_261.33),
     ),
     "primary_savings": BankAccount(
         name_in="Primary Savings",
         account_type_in=AccountType.SAVINGS,
-        balance_in=dollars_to_cents(money_dollars(3_286.11)),
+        balance_in=MinorUnit.from_major(3_286.11),
     ),
 }
 
 revolving_credit = {
     "discover_card": RevolvingCreditBill(
         name_in="Discovery",
-        balance_in=dollars_to_cents(money_dollars(693.65)),
+        balance_in=MinorUnit.from_major(693.65),
         account_type_in=AccountType.REVOLVING,
         initial_pay_date_in=date(2025, 11, 28),
         frequency_type_in=FrequencyType.MONTHLY,
-        minimum_payment_in=dollars_to_cents(money_dollars(400.00)),
+        minimum_payment_in=MinorUnit.from_major(400.00),
         payment_method_in=accounts["primary_checking"],
         apr_rate_in=0.15,
-        credit_limit_in=dollars_to_cents(money_dollars(30_000.00)),
+        credit_limit_in=MinorUnit.from_major(30_000.00),
         round_up=round_up_down,
     )
 }
@@ -125,7 +125,7 @@ revolving_credit = {
 incomes = {
     "primary_Income": Income(
         name_in="Primary Job",
-        income_in=dollars_to_cents(money_dollars(2_557.31)),
+        income_in=MinorUnit.from_major(2_557.31),
         initial_pay_date_in=date(2025, 11, 6),
         account_contributions_in=[
             (accounts["primary_checking"], 0.9),  # 90% to primary checking
@@ -139,18 +139,18 @@ incomes = {
 bills = {
     "Mortgage": FinancedBill(
         name_in="Mortgage",
-        balance_in=dollars_to_cents(money_dollars(132_367.00)),
+        balance_in=MinorUnit.from_major(132_367.00),
         account_type_in=AccountType.LOAN,
         initial_pay_date_in=date(2025, 11, 1),
         frequency_type_in=FrequencyType.MONTHLY,
-        minimum_payment_in=dollars_to_cents(money_dollars(924.35)),
+        minimum_payment_in=MinorUnit.from_major(924.35),
         payment_method_in=accounts["primary_checking"],
         apr_rate_in=0.0725,
         round_up=round_up_down,
     ),
     "Mortgage_Escrow": RecurringBill(
         name_in="Mortgage_Escrow",
-        minimum_payment_in=dollars_to_cents(money_dollars(924.35)),
+        minimum_payment_in=MinorUnit.from_major(924.35),
         account_type_in=AccountType.REOCCURRING,
         initial_pay_date_in=date(2025, 11, 1),
         frequency_type_in=FrequencyType.MONTHLY,
@@ -159,29 +159,29 @@ bills = {
     ),
     "Car_Payment_Ford": FinancedBill(
         name_in="Car Payment - Ford",
-        balance_in=dollars_to_cents(money_dollars(28_000.00)),
+        balance_in=MinorUnit.from_major(28_000.00),
         account_type_in=AccountType.LOAN,
         initial_pay_date_in=date(2025, 11, 15),
         frequency_type_in=FrequencyType.MONTHLY,
-        minimum_payment_in=dollars_to_cents(money_dollars(450.00)),
+        minimum_payment_in=MinorUnit.from_major(450.00),
         payment_method_in=accounts["primary_checking"],
         apr_rate_in=0.06,
         round_up=round_up_down,
     ),
     "Student_Loans": FinancedBill(
         name_in="Student Loans",
-        balance_in=dollars_to_cents(money_dollars(35_000.00)),
+        balance_in=MinorUnit.from_major(35_000.00),
         account_type_in=AccountType.LOAN,
         initial_pay_date_in=date(2025, 11, 18),
         frequency_type_in=FrequencyType.MONTHLY,
-        minimum_payment_in=dollars_to_cents(money_dollars(461.00)),
+        minimum_payment_in=MinorUnit.from_major(461.00),
         payment_method_in=accounts["primary_checking"],
         apr_rate_in=0.03,
         round_up=round_up_down,
     ),
     "Netflix": RecurringBill(
         name_in="Netflix",
-        minimum_payment_in=dollars_to_cents(money_dollars(12.99)),
+        minimum_payment_in=MinorUnit.from_major(12.99),
         account_type_in=AccountType.REOCCURRING,
         initial_pay_date_in=date(2025, 11, 9),
         frequency_type_in=FrequencyType.MONTHLY,
@@ -190,7 +190,7 @@ bills = {
     ),
     "Car_Insurance": RecurringBill(
         name_in="Car Insurance",
-        minimum_payment_in=dollars_to_cents(money_dollars(300.00)),
+        minimum_payment_in=MinorUnit.from_major(300.00),
         account_type_in=AccountType.REOCCURRING,
         initial_pay_date_in=date(2025, 11, 16),
         frequency_type_in=FrequencyType.MONTHLY,
@@ -199,7 +199,7 @@ bills = {
     ),
     "CrunchyRoll": RecurringBill(
         name_in="CrunchyRoll",
-        minimum_payment_in=dollars_to_cents(money_dollars(11.99)),
+        minimum_payment_in=MinorUnit.from_major(11.99),
         account_type_in=AccountType.REOCCURRING,
         initial_pay_date_in=date(2025, 11, 13),
         frequency_type_in=FrequencyType.MONTHLY,
@@ -208,7 +208,7 @@ bills = {
     ),
     "Spotify": RecurringBill(
         name_in="Spoify",
-        minimum_payment_in=dollars_to_cents(money_dollars(11.99)),
+        minimum_payment_in=MinorUnit.from_major(11.99),
         account_type_in=AccountType.REOCCURRING,
         initial_pay_date_in=date(2025, 11, 13),
         frequency_type_in=FrequencyType.MONTHLY,
@@ -217,7 +217,7 @@ bills = {
     ),
     "Internet": RecurringBill(
         name_in="Internet",
-        minimum_payment_in=dollars_to_cents(money_dollars(59.99)),
+        minimum_payment_in=MinorUnit.from_major(59.99),
         account_type_in=AccountType.REOCCURRING,
         initial_pay_date_in=date(2025, 11, 3),
         frequency_type_in=FrequencyType.MONTHLY,
@@ -226,7 +226,7 @@ bills = {
     ),
     "Utilities": RecurringBill(
         name_in="Utilities",
-        minimum_payment_in=dollars_to_cents(money_dollars(150.00)),
+        minimum_payment_in=MinorUnit.from_major(150.00),
         account_type_in=AccountType.REOCCURRING,
         initial_pay_date_in=date(2025, 11, 1),
         frequency_type_in=FrequencyType.MONTHLY,
@@ -235,7 +235,7 @@ bills = {
     ),
     "ADT": RecurringBill(
         name_in="ADT",
-        minimum_payment_in=dollars_to_cents(money_dollars(50.00)),
+        minimum_payment_in=MinorUnit.from_major(50.00),
         account_type_in=AccountType.REOCCURRING,
         initial_pay_date_in=date(2025, 11, 15),
         frequency_type_in=FrequencyType.MONTHLY,
@@ -244,7 +244,7 @@ bills = {
     ),
     "Food": RecurringBill(
         name_in="Food",
-        minimum_payment_in=dollars_to_cents(money_dollars(75.00)),
+        minimum_payment_in=MinorUnit.from_major(75.00),
         account_type_in=AccountType.REOCCURRING,
         initial_pay_date_in=date(2025, 11, 1),
         frequency_type_in=FrequencyType.WEEKLY,
@@ -253,7 +253,7 @@ bills = {
     ),
     "Fun": RecurringBill(
         name_in="Fun",
-        minimum_payment_in=dollars_to_cents(money_dollars(25.00)),
+        minimum_payment_in=MinorUnit.from_major(25.00),
         account_type_in=AccountType.REOCCURRING,
         initial_pay_date_in=date(2025, 11, 1),
         frequency_type_in=FrequencyType.WEEKLY,
@@ -262,7 +262,7 @@ bills = {
     ),
     "Gas": RecurringBill(
         name_in="Gas",
-        minimum_payment_in=dollars_to_cents(money_dollars(10.00)),
+        minimum_payment_in=MinorUnit.from_major(10.00),
         account_type_in=AccountType.REOCCURRING,
         initial_pay_date_in=date(2025, 11, 1),
         frequency_type_in=FrequencyType.WEEKLY,
@@ -271,7 +271,7 @@ bills = {
     ),
     "Therapy": RecurringBill(
         name_in="Therapy",
-        minimum_payment_in=dollars_to_cents(money_dollars(30.00)),
+        minimum_payment_in=MinorUnit.from_major(30.00),
         account_type_in=AccountType.REOCCURRING,
         initial_pay_date_in=date(2025, 11, 8),
         frequency_type_in=FrequencyType.BI_WEEKLY,
@@ -280,7 +280,7 @@ bills = {
     ),
     "Cat_Bill": RecurringBill(
         name_in="Cat_Bill",
-        minimum_payment_in=dollars_to_cents(money_dollars(60.00)),
+        minimum_payment_in=MinorUnit.from_major(60.00),
         account_type_in=AccountType.REOCCURRING,
         initial_pay_date_in=date(2025, 11, 28),
         frequency_type_in=FrequencyType.BI_WEEKLY,

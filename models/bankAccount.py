@@ -3,7 +3,7 @@ from datetime import date
 from models.accountInformation import AccountInformation
 from models.enumType import AccountType
 from models.ledger import Ledger
-from models.utils import cents_to_dollars, money_cents, money_dollars
+from models.utils import MajorUnit, MinorUnit
 
 
 class BankAccount:
@@ -16,7 +16,7 @@ class BankAccount:
     transaction activity.
     """
 
-    def __init__(self, name_in: str, balance_in: money_cents, account_type_in: AccountType) -> None:
+    def __init__(self, name_in: str, balance_in: MinorUnit, account_type_in: AccountType) -> None:
         """
         Initialize a new BankAccount.
 
@@ -24,8 +24,8 @@ class BankAccount:
         ----------
             name_in : str
                 The name of the account.
-            balance_in : money_cents(int)
-                The starting balance of the account in cents
+            balance_in : MinorUnit
+                The starting balance of the account in minor units (e.g. cents).
             account_type_in : AccountType
                 The type of account (e.g., SAVINGS, CHECKING, CREDIT).
         """
@@ -33,68 +33,36 @@ class BankAccount:
         self._ledger = Ledger(columns=["No.", "Date", "Description", "Credit", "Debit", "Balance"])
 
     @property
-    def balance_cents(self) -> money_cents:
-        """
-        Returns
-        -------
-            money_cents
-                Returns the current balance in terms of cents
-        """
+    def balance_minor(self) -> MinorUnit:
+        """MinorUnit: The current balance in minor units (e.g. cents)."""
         return self._accountInfo.balance
 
     @property
-    def balance_dollars(self) -> money_dollars:
-        """
-        Returns
-        -------
-            money_cents
-                Returns the current balance in terms of dollars
-        """
-        return cents_to_dollars(self._accountInfo.balance)
+    def balance_major(self) -> MajorUnit:
+        """MajorUnit: The current balance in major units (e.g. dollars)."""
+        return self._accountInfo.balance.to_major()
 
     @property
     def raw_copy_ledger(self) -> list:
-        """
-        Returns
-        -------
-            list
-                A deep copy of the ledger. Safe to modify without affecting
-                the original ledger data.
-        """
-        # returns a deepcopy of the ledger
+        """list: A deep copy of the ledger, safe to modify without affecting the original."""
         return self._ledger.raw_copy_ledger
 
     @property
     def ledger_col_count(self) -> int:
-        """
-        Returns
-        -------
-            int
-                The number of columns defined in the ledger.
-        """
+        """int: The number of columns defined in the ledger."""
         return self._ledger.col_count
 
     @property
     def account_name(self) -> str:
-        """
-        Returns
-        -------
-            str
-                The name assigned to this account.
-        """
+        """str: The name assigned to this account."""
         return self._accountInfo.account_name
 
     @property
     def account_type(self) -> AccountType:
-        """
-        Returns
-        -------
-            AccountType
-                The type/category of this account.
-        """
+        """AccountType: The type/category of this account."""
         return self._accountInfo.account_type
 
-    def make_a_transaction(self, date_in: date, action: str, credit: money_cents, debit: money_cents) -> None:
+    def make_a_transaction(self, date_in: date, action: str, credit: MinorUnit, debit: MinorUnit) -> None:
         """
         Record a financial transaction and update the account balance and ledger.
 
@@ -104,15 +72,10 @@ class BankAccount:
                 The date of the transaction.
             action : str
                 A short description of the transaction (e.g., "Deposit", "Payment").
-            credit : money_cents
+            credit : MinorUnit
                 Amount added to the account balance.
-            debit : money_cents
+            debit : MinorUnit
                 Amount subtracted from the account balance.
-
-        Notes
-        -----
-        - The account balance is updated before writing the ledger entry.
-        - Ledger entries include a row number, date, description, credit, debit, and resulting balance.
         """
         self._accountInfo.update_balance(credit=credit, debit=debit)
         self._ledger.add_entry_to_ledger(
@@ -120,8 +83,8 @@ class BankAccount:
                 self._ledger.row_number,
                 date_in,
                 action,
-                cents_to_dollars(credit),
-                cents_to_dollars(debit),
-                self.balance_dollars,
+                credit.to_major(),
+                debit.to_major(),
+                self.balance_major,
             ]
         )

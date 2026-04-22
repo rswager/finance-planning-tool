@@ -4,87 +4,64 @@ from math import ceil
 import pytest
 
 from models.interest import Interest
-from models.utils import dollars_to_cents, money_cents, money_dollars
+from models.utils import MinorUnit
 
 
 @pytest.fixture
 def interest_instance():
-    """Create an Interest instance with 5% APR."""
     return Interest(0.05)
 
 
-# --- Basic Daily Interest Calculation ---
 def test_daily_interest_non_leap(interest_instance):
-    bal = dollars_to_cents(money_dollars(1_000.00))
-    test_date = date(2025, 11, 8)  # non-leap year
-    expected_interest = ceil(abs(bal) * (0.05 / 365))
-
-    interest = interest_instance.calculate_daily_interest(bal, test_date)
-    assert interest == expected_interest
+    bal = MinorUnit.from_major(1_000.00)
+    test_date = date(2025, 11, 8)
+    expected_interest = ceil(int(abs(bal)) * (0.05 / 365))
+    assert interest_instance.calculate_daily_interest(bal, test_date) == expected_interest
 
 
-# --- Leap Year Handling ---
 def test_daily_interest_leap_year(interest_instance):
-    bal = dollars_to_cents(money_dollars(1_000.00))
-    test_date = date(2024, 2, 29)  # leap year
-    expected_interest = ceil(abs(bal) * (0.05 / 366))
-
-    interest = interest_instance.calculate_daily_interest(bal, test_date)
-    assert interest == expected_interest
+    bal = MinorUnit.from_major(1_000.00)
+    test_date = date(2024, 2, 29)
+    expected_interest = ceil(int(abs(bal)) * (0.05 / 366))
+    assert interest_instance.calculate_daily_interest(bal, test_date) == expected_interest
 
 
-# --- Zero Balance ---
-def test_zero_balance_no_ledger_entry(interest_instance):
-    bal = money_cents(0)
-    test_date = date(2025, 11, 8)
-    interest = interest_instance.calculate_daily_interest(bal, test_date)
-
-    assert interest == money_cents(0)
+def test_zero_balance_no_interest(interest_instance):
+    interest = interest_instance.calculate_daily_interest(MinorUnit(0), date(2025, 11, 8))
+    assert interest == MinorUnit(0)
 
 
-# --- Negative Balance ---
 def test_negative_balance_interest_positive(interest_instance):
-    bal = dollars_to_cents(money_dollars(-2_000.00))
+    bal = MinorUnit.from_major(-2_000.00)
     test_date = date(2025, 11, 8)
-    expected_interest = ceil(abs(bal) * (0.05 / 365))
-
-    interest = interest_instance.calculate_daily_interest(bal, test_date)
-    assert interest == expected_interest
+    expected_interest = ceil(int(abs(bal)) * (0.05 / 365))
+    assert interest_instance.calculate_daily_interest(bal, test_date) == expected_interest
 
 
-# --- Cumulative Interest Tracking ---
 def test_cumulative_interest_multiple_calls(interest_instance):
-    bal = dollars_to_cents(money_dollars(1_000.00))
+    bal = MinorUnit.from_major(1_000.00)
     test_date = date(2025, 11, 8)
-
     interest1 = interest_instance.calculate_daily_interest(bal, test_date)
     interest2 = interest_instance.calculate_daily_interest(bal, test_date)
-
     assert interest_instance._interest_to_date == interest1 + interest2
 
 
-# --- Rounding Edge Case ---
 def test_small_balance_rounding(interest_instance):
-    bal = money_cents(1)
-    test_date = date(2025, 11, 8)
-    interest = interest_instance.calculate_daily_interest(bal, test_date)
-
-    # Should round to 2 decimal places
-    assert interest == ceil(int(money_cents(1)) * (0.05 / 365))
+    bal = MinorUnit(1)
+    interest = interest_instance.calculate_daily_interest(bal, date(2025, 11, 8))
+    assert interest == ceil(int(bal) * (0.05 / 365))
 
 
 def test_valid_apr_does_not_raise():
-    """APR between 0 and 1 should initialize correctly."""
     try:
-        _ = Interest(0.05)  # 5%
-        _ = Interest(0.0)  # 0%
-        _ = Interest(1.0)  # 100%
+        Interest(0.05)
+        Interest(0.0)
+        Interest(1.0)
     except ValueError:
         pytest.fail("Valid APR raised ValueError unexpectedly")
 
 
 @pytest.mark.parametrize("invalid_apr", [-0.01, -5, 1.01, 2, 100])
 def test_invalid_apr_raises_value_error(invalid_apr):
-    """APR outside 0-1 should raise ValueError."""
     with pytest.raises(ValueError):
         Interest(invalid_apr)

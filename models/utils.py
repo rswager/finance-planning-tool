@@ -1,71 +1,95 @@
-from typing import NewType
+from __future__ import annotations
 
-money_cents = NewType("money_cents", int)
-money_dollars = NewType("money_dollars", float)
+from dataclasses import dataclass
+from enum import Enum
+from typing import ClassVar, NewType
 
 
-def _calculate_rounded_value(value_in: money_cents, mod_value: int, round_up: bool) -> money_cents:
+@dataclass(frozen=True)
+class Currency:
+    symbol: str
+    conversion: int  # minor units per major unit
+
+
+class CurrencyType(Enum):
+    USD = Currency(symbol="$", conversion=100)
+    GBP = Currency(symbol="£", conversion=100)
+    EUR = Currency(symbol="€", conversion=100)
+    JPY = Currency(symbol="¥", conversion=1)
+
+
+MajorUnit = NewType("MajorUnit", float)
+
+
+class MinorUnit(int):
     """
-    Round a numeric value to the nearest multiple of a given modulus.
+    Integer type representing the smallest denomination of the active currency
+    (e.g. cents for USD, pence for GBP). All monetary arithmetic is done in
+    this unit to avoid floating-point errors.
 
-    This helper function first casts the input value to an integer and
-    then rounds it either up or down to the nearest multiple of `mod_value`.
-
-    Parameters
-    ----------
-        value_in : float
-            The value to be rounded. The decimal portion is discarded before rounding.
-        mod_value : int
-            The modulus to round to (e.g., 10, 100).
-        round_up : bool
-            If True, round up to the next multiple of `mod_value`.
-            If False, round down to the previous multiple.
-
-    Returns
-    -------
-        float
-            The rounded integer value.
+    The active currency defaults to USD and can be changed for the entire
+    application by calling MinorUnit.set_currency(CurrencyType.GBP).
     """
-    value_in = value_in
-    if value_in % mod_value == 0:
-        return value_in
-    # Round UP
-    elif round_up:
-        return money_cents(value_in + (mod_value - (value_in % mod_value)))
-    # Round Down
-    else:
-        return money_cents(value_in - (value_in % mod_value))
+
+    _currency: ClassVar[Currency] = CurrencyType.USD.value
+
+    def __new__(cls, value: int | float) -> MinorUnit:
+        return super().__new__(cls, int(value))
+
+    def __add__(self, other: int) -> MinorUnit:
+        return MinorUnit(int.__add__(self, other))
+
+    def __sub__(self, other: int) -> MinorUnit:
+        return MinorUnit(int.__sub__(self, other))
+
+    def __neg__(self) -> MinorUnit:
+        return MinorUnit(int.__neg__(self))
+
+    def __abs__(self) -> MinorUnit:
+        return MinorUnit(int.__abs__(self))
+
+    def __mul__(self, other: int | float) -> MinorUnit:
+        return MinorUnit(int(int(self) * other))
+
+    def __truediv__(self, other: int | float) -> MinorUnit:
+        return MinorUnit(int(int(self) / other))
+
+    def to_major(self) -> MajorUnit:
+        """Convert to the major unit (e.g. dollars) for display."""
+        return MajorUnit(int(self) / self._currency.conversion)
+
+    @classmethod
+    def from_major(cls, value: float) -> MinorUnit:
+        """Convert from the major unit (e.g. dollars) into minor units."""
+        return cls(int(value * cls._currency.conversion))
+
+    @classmethod
+    def set_currency(cls, currency: CurrencyType) -> None:
+        """Switch the active currency for all MinorUnit instances."""
+        cls._currency = currency.value
+
+    @property
+    def symbol(self) -> str:
+        return self._currency.symbol
 
 
-def round_value(amount_in: money_cents, round_up: bool = False) -> money_cents:
+def round_value(amount_in: MinorUnit, round_up: bool = False) -> MinorUnit:
     """
     Round a monetary amount to the appropriate precision based on its size.
 
-    Amounts ≥ 1,000 are rounded to the nearest hundred.
-    Amounts < 1,000 are rounded to the nearest ten.
-
-    Parameters
-    ----------
-    amount_in : float
-        The monetary value to round.
-    round_up : bool, optional
-        If True, round upward. If False (default), round downward.
-
-    Returns
-    -------
-    float
-        The rounded value.
+    Amounts >= 1,000 major units are rounded to the nearest 100 major units.
+    Amounts < 1,000 major units are rounded to the nearest 10 major units.
     """
-    # If we are grater than $1_000, round to the nearest $100
-    if amount_in >= 1_000_00:
-        return _calculate_rounded_value(amount_in, 100_00, round_up)
-    # Else we round to the nearest $10
-    return _calculate_rounded_value(amount_in, 10_00, round_up)
+    conversion = MinorUnit._currency.conversion
+    if amount_in >= 1_000 * conversion:
+        return _calculate_rounded_value(amount_in, 100 * conversion, round_up)
+    return _calculate_rounded_value(amount_in, 10 * conversion, round_up)
 
 
-def dollars_to_cents(dollars_in: money_dollars) -> money_cents:
-    return money_cents(int(dollars_in * 100))
-
-
-def cents_to_dollars(cents_in: money_cents) -> money_dollars:
-    return money_dollars(cents_in / 100)
+def _calculate_rounded_value(value_in: MinorUnit, mod_value: int, round_up: bool) -> MinorUnit:
+    if value_in % mod_value == 0:
+        return value_in
+    elif round_up:
+        return MinorUnit(value_in + (mod_value - (value_in % mod_value)))
+    else:
+        return MinorUnit(value_in - (value_in % mod_value))
