@@ -21,14 +21,14 @@ repos:
     hooks:
       - id: ty
         name: ty type check
-        entry: ty check
+        entry: pixi run typecheck
         language: system
         types: [python]
         pass_filenames: false
 
       - id: pytest
         name: pytest
-        entry: pytest
+        entry: pixi run test
         language: system
         types: [python]
         pass_filenames: false

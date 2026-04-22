@@ -1,9 +1,9 @@
-from models.enumType import FrequencyType, AccountType
-
+from models.enumType import AccountType, FrequencyType
 
 # ----------------------------
 # FrequencyType Tests
 # ----------------------------
+
 
 def test_frequencytype_values():
     """Ensure FrequencyType enum members have correct assigned values."""
@@ -46,6 +46,7 @@ def test_frequencytype_membership():
 # ----------------------------
 # AccountType Tests
 # ----------------------------
+
 
 def test_accounttype_values():
     """Ensure AccountType enum members have correct assigned values."""

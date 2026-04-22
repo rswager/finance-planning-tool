@@ -1,4 +1,5 @@
 from datetime import date
+
 from models.accountInformation import AccountInformation
 from models.enumType import AccountType
 from models.ledger import Ledger
@@ -29,7 +30,7 @@ class BankAccount:
                 The type of account (e.g., SAVINGS, CHECKING, CREDIT).
         """
         self._accountInfo = AccountInformation(name_in, balance_in, account_type_in)
-        self._ledger = Ledger(columns=['No.', 'Date', 'Description', 'Credit', 'Debit', 'Balance'])
+        self._ledger = Ledger(columns=["No.", "Date", "Description", "Credit", "Debit", "Balance"])
 
     @property
     def balance_cents(self) -> money_cents:
@@ -113,8 +114,14 @@ class BankAccount:
         - The account balance is updated before writing the ledger entry.
         - Ledger entries include a row number, date, description, credit, debit, and resulting balance.
         """
-        self._accountInfo.update_balance(credit=credit,debit=debit)
-        self._ledger.add_entry_to_ledger([self._ledger.row_number, date_in, action,
-                                          cents_to_dollars(credit),
-                                          cents_to_dollars(debit),
-                                          self.balance_dollars])
+        self._accountInfo.update_balance(credit=credit, debit=debit)
+        self._ledger.add_entry_to_ledger(
+            [
+                self._ledger.row_number,
+                date_in,
+                action,
+                cents_to_dollars(credit),
+                cents_to_dollars(debit),
+                self.balance_dollars,
+            ]
+        )

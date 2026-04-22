@@ -1,19 +1,23 @@
 from datetime import date
-from dateutil.relativedelta import relativedelta
-from models.triggerDays import TriggerDays
-from models.enumType import FrequencyType
-import pytest
 
+import pytest
+from dateutil.relativedelta import relativedelta
+
+from models.enumType import FrequencyType
+from models.triggerDays import TriggerDays
 
 # --- Fixtures ---
+
 
 @pytest.fixture
 def monthly_trigger():
     return TriggerDays(FrequencyType.MONTHLY)
 
+
 @pytest.fixture
 def biweekly_trigger():
     return TriggerDays(FrequencyType.BI_WEEKLY)
+
 
 @pytest.fixture
 def weekly_trigger():
@@ -24,14 +28,14 @@ def weekly_trigger():
 def test_trigger_date_setter(monthly_trigger):
     """Dates <= 28 should be added as-is."""
     d = date(2025, 1, 20)
-    monthly_trigger.trigger_date=d
+    monthly_trigger.trigger_date = d
     assert monthly_trigger.trigger_date == d
 
 
 def test_date_triggered_removes_and_adds_next_monthly(monthly_trigger):
     """When triggered, the current date is removed and next month added."""
     d = date(2025, 1, 15)
-    monthly_trigger.trigger_date=d
+    monthly_trigger.trigger_date = d
 
     # Trigger that date
     result = monthly_trigger.date_triggered(d)
@@ -49,7 +53,7 @@ def test_date_triggered_removes_and_adds_next_monthly(monthly_trigger):
 def test_date_triggered_removes_and_adds_next_biweekly(biweekly_trigger):
     """When triggered, it should remove and add +14 days."""
     d = date(2025, 1, 1)
-    biweekly_trigger.trigger_date=d
+    biweekly_trigger.trigger_date = d
 
     # Trigger that date
     result = biweekly_trigger.date_triggered(d)
@@ -66,7 +70,7 @@ def test_date_triggered_removes_and_adds_next_biweekly(biweekly_trigger):
 def test_date_triggered_removes_and_adds_next_weekly(weekly_trigger):
     """When triggered, it should remove and add +7 days."""
     d = date(2025, 1, 8)
-    weekly_trigger.trigger_date=d
+    weekly_trigger.trigger_date = d
 
     # Trigger that date
     result = weekly_trigger.date_triggered(d)

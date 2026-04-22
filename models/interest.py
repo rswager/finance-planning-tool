@@ -1,7 +1,8 @@
 from calendar import isleap
 from datetime import date
-from models.utils import money_cents
 from math import ceil
+
+from models.utils import money_cents
 
 DAYS_IN_NON_LEAP_YEAR = 365
 DAYS_IN_LEAP_YEAR = 366
@@ -9,14 +10,14 @@ DAYS_IN_LEAP_YEAR = 366
 
 class Interest:
     """
-        Represents an interest calculation utility for financial accounts using a fixed APR.
+    Represents an interest calculation utility for financial accounts using a fixed APR.
 
-        Attributes
-        ----------
-            _apr_rate : float
-                Annual Percentage Rate as a fraction (e.g., 5% → 0.05).
-            _interest_to_date : float
-                Cumulative interest accrued over time.
+    Attributes
+    ----------
+        _apr_rate : float
+            Annual Percentage Rate as a fraction (e.g., 5% → 0.05).
+        _interest_to_date : float
+            Cumulative interest accrued over time.
     """
 
     def __init__(self, apr_rate_in: float) -> None:

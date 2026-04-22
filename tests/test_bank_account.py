@@ -1,8 +1,11 @@
-import pytest
 from datetime import date
+
+import pytest
+
 from models.bankAccount import BankAccount
 from models.enumType import AccountType
-from models.utils import dollars_to_cents,money_cents,money_dollars
+from models.utils import dollars_to_cents, money_cents, money_dollars
+
 
 @pytest.fixture
 def bank_account():

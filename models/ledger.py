@@ -1,5 +1,6 @@
 from copy import deepcopy
 
+
 class Ledger:
     """
     Represents a simple ledger for tracking financial transactions.
@@ -12,7 +13,7 @@ class Ledger:
             The number of columns in the ledger.
     """
 
-    def __init__(self, columns:list) -> None:
+    def __init__(self, columns: list) -> None:
         """
         Initialize a Ledger with column headers.
 

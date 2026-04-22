@@ -1,6 +1,7 @@
 from models.enumType import AccountType
 from models.utils import money_cents
 
+
 class AccountInformation:
     """
     Represents a financial account with a name, balance, and account type.
@@ -9,7 +10,6 @@ class AccountInformation:
     credit/debit updates. The balance, name, and type are stored internally,
     with the name and type treated as immutable after initialization.
     """
-
 
     def __init__(self, name_in: str, balance_in: money_cents, account_type_in: AccountType) -> None:
         """
@@ -49,7 +49,6 @@ class AccountInformation:
         # immutable type
         return self._balance
 
-
     @property
     def is_overdrafted(self) -> bool:
         """
@@ -65,10 +64,10 @@ class AccountInformation:
         """
         # We only want to show over draft on checking and savings accounts
         if self._account_type in (AccountType.SAVINGS, AccountType.CHECKING):
-            return self._balance< money_cents(0)
+            return self._balance < money_cents(0)
         return False
 
-    def update_balance(self,credit: money_cents=money_cents(0), debit: money_cents=money_cents(0)) -> None:
+    def update_balance(self, credit: money_cents = money_cents(0), debit: money_cents = money_cents(0)) -> None:
         """
         Apply a credit or debit to the account balance.
 
