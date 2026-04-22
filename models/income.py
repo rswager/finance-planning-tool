@@ -5,7 +5,7 @@ from typing import List, Tuple
 from models.bankAccount import BankAccount
 from models.enumType import FrequencyType
 from models.triggerDays import TriggerDays
-from models.utils import money_cents, round_value
+from models.utils import MinorUnit, round_value
 
 
 class Income:
@@ -17,11 +17,11 @@ class Income:
     def __init__(
         self,
         name_in: str,
-        income_in: money_cents,
+        income_in: MinorUnit,
         initial_pay_date_in: date,
         account_contributions_in: List[Tuple[BankAccount, float]],
         frequency_type_in: FrequencyType,
-        round_down=False,
+        round_down: bool = False,
     ) -> None:
         """
         Initialize an Income instance.
@@ -30,8 +30,8 @@ class Income:
         ----------
             name_in : str
                 The name of the income source (e.g., "Salary").
-            income_in : money_cents
-                The total income amount per payment period in cents
+            income_in : MinorUnit
+                The total income amount per payment period in minor units (e.g. cents).
             initial_pay_date_in : date
                 The date of the first payment.
             account_contributions_in : List[Tuple[BankAccount, float]]
@@ -40,11 +40,7 @@ class Income:
             frequency_type_in : FrequencyType
                 The frequency of payments (e.g., MONTHLY, BI_WEEKLY).
             round_down : bool, optional
-                Whether to round down the income amount for convenience, by default False.
-
-        Returns
-        -------
-            None
+                Whether to round down the income amount for conservative budgeting, by default False.
         """
         self._income_name = name_in
         self._income_amount = income_in if not round_down else round_value(income_in, round_up=not round_down)
@@ -61,10 +57,6 @@ class Income:
         ----------
             contributions : List[Tuple[BankAccount, float]]
                 A list of tuples pairing a BankAccount with a fraction of the income to deposit.
-
-        Returns
-        -------
-            None
 
         Raises
         ------
@@ -83,23 +75,14 @@ class Income:
 
     def process_day(self, date_in: date) -> None:
         """
-        Process income for a given day.
+        Process income for a given day, depositing funds if it is a trigger date.
 
         Parameters
         ----------
         date_in : date
             The day to process.
-
-        Returns
-        -------
-            None
-
-        Notes
-        -----
-        - If the day matches a trigger day, the income is deposited to the assigned accounts.
         """
         if self._trigger_days.date_triggered(date_in):
-            # Make Account Contribution
             self.deposit(transaction_date=date_in)
 
     def deposit(self, transaction_date: date) -> None:
@@ -110,18 +93,12 @@ class Income:
         ----------
         transaction_date : date
             The date of the deposit.
-
-        Returns
-        -------
-            None
-
-        Notes
-        -----
-        - Deposits are recorded as transactions in each BankAccount's ledger.
         """
-        # Make Account Contribution
         for account_reference, contribution_percentage in self._account_contributions:
-            payment: money_cents = money_cents(floor(int(self._income_amount) * contribution_percentage))
+            payment = MinorUnit(floor(int(self._income_amount) * contribution_percentage))
             account_reference.make_a_transaction(
-                date_in=transaction_date, action=f"{self._income_name} - Check", credit=payment, debit=money_cents(0)
+                date_in=transaction_date,
+                action=f"{self._income_name} - Check",
+                credit=payment,
+                debit=MinorUnit(0),
             )
