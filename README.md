@@ -133,6 +133,28 @@ pixi run pre-commit autoupdate
 
 ---
 
+## Contributing
+
+### Branch naming
+
+Branches follow the pattern `{action}/{username}/{description}`:
+
+| Action | When to use |
+|---|---|
+| `feature` | New functionality |
+| `bugfix` | Bug fix |
+| `debt` | Tech debt / refactoring |
+| `docs` | Documentation only |
+| `chore` | Tooling, config, housekeeping |
+
+Examples:
+- `feature/rswager/add-gui`
+- `bugfix/rswager/fix-add-table-crash`
+- `debt/rswager/base-class-financed-bills`
+- `docs/rswager/add-project-conventions`
+
+---
+
 ## Project Structure
 
 ```

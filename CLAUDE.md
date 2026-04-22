@@ -20,6 +20,22 @@ Code must be correct, reliable, performant, and well-tested.
 
 First drafts are drafts. Refactoring toward simplicity is part of the work, not gold-plating.
 
+## Branch naming
+
+```
+{action}/{username}/{description}
+```
+
+| Action | When to use |
+|---|---|
+| `feature` | New functionality |
+| `bugfix` | Bug fix |
+| `debt` | Tech debt / refactoring |
+| `docs` | Documentation only |
+| `chore` | Tooling, config, housekeeping |
+
+Examples: `feature/rswager/add-gui`, `bugfix/rswager/fix-add-table-crash`, `docs/rswager/add-project-conventions`
+
 ## Commit messages
 
 Use imperative mood: "Add feature" not "Added feature". Do not add `Co-Authored-By` trailers. Explain the "why" in the commit body for non-trivial changes.
