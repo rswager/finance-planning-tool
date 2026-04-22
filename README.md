@@ -158,3 +158,5 @@ finance-planning-tool/
 ```
 
 > **Note:** The pixi environment is currently configured for `win-64` only. Running `pixi install` on macOS or Linux will require adding the appropriate platform to `pyproject.toml`.
+
+> **AI assistants:** See `CLAUDE.md` for project conventions and guidelines.
