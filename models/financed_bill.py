@@ -1,13 +1,15 @@
 from datetime import date
+from typing import Union
+
 from models.accountInformation import AccountInformation
-from models.bankAccount import  BankAccount
+from models.bankAccount import BankAccount
 from models.enumType import AccountType, FrequencyType
 from models.interest import Interest
 from models.ledger import Ledger
 from models.revolving_credit_bill import RevolvingCreditBill
 from models.triggerDays import TriggerDays
-from models.utils import round_value, money_cents, money_dollars, cents_to_dollars
-from typing import Union
+from models.utils import cents_to_dollars, money_cents, money_dollars, round_value
+
 
 class FinancedBill:
     """
@@ -19,10 +21,18 @@ class FinancedBill:
     a RevolvingCreditBill.
     """
 
-    def __init__(self, name_in:str, balance_in: money_cents, account_type_in: AccountType,
-                 initial_pay_date_in: date, frequency_type_in: FrequencyType, minimum_payment_in: money_cents,
-                 payment_method_in: Union['RevolvingCreditBill', 'BankAccount'],
-                 apr_rate_in: float, round_up: bool = False) -> None:
+    def __init__(
+        self,
+        name_in: str,
+        balance_in: money_cents,
+        account_type_in: AccountType,
+        initial_pay_date_in: date,
+        frequency_type_in: FrequencyType,
+        minimum_payment_in: money_cents,
+        payment_method_in: Union["RevolvingCreditBill", "BankAccount"],
+        apr_rate_in: float,
+        round_up: bool = False,
+    ) -> None:
         """
         Initialize a FinancedBill instance.
 
@@ -52,15 +62,18 @@ class FinancedBill:
         """
 
         self._interest = Interest(apr_rate_in)
-        self._minimum_payment: money_cents = money_cents(minimum_payment_in if not round_up \
-            else round_value(minimum_payment_in, round_up=round_up))
-        self._accountInfo = AccountInformation(name_in=name_in,balance_in=money_cents(-balance_in if balance_in>0 else balance_in)
-                                               ,account_type_in=account_type_in)
-        self._ledger = Ledger(['No.','Date', 'Description', 'Credit', 'Debit', 'Balance', 'Interest To Date'])
+        self._minimum_payment: money_cents = money_cents(
+            minimum_payment_in if not round_up else round_value(minimum_payment_in, round_up=round_up)
+        )
+        self._accountInfo = AccountInformation(
+            name_in=name_in,
+            balance_in=money_cents(-balance_in if balance_in > 0 else balance_in),
+            account_type_in=account_type_in,
+        )
+        self._ledger = Ledger(["No.", "Date", "Description", "Credit", "Debit", "Balance", "Interest To Date"])
         self._trigger_days = TriggerDays(frequency_in=frequency_type_in)
-        self._trigger_days.trigger_date =initial_pay_date_in
-        self._payment_method: Union['RevolvingCreditBill','BankAccount'] = payment_method_in
-
+        self._trigger_days.trigger_date = initial_pay_date_in
+        self._payment_method: Union["RevolvingCreditBill", "BankAccount"] = payment_method_in
 
     @property
     def raw_copy_ledger(self) -> list:
@@ -144,13 +157,19 @@ class FinancedBill:
         """
         if self._accountInfo.balance != 0:
             min_payment = self._minimum_payment
-            if abs(self._accountInfo.balance)<self._minimum_payment:
+            if abs(self._accountInfo.balance) < self._minimum_payment:
                 min_payment = abs(self._accountInfo.balance)
 
             # Apply minimum Payment to the Bank Account
-            self.make_a_transaction(date_in=date_in, action='Minimum Payment',credit=money_cents(min_payment),debit=money_cents(0))
-            self._payment_method.make_a_transaction(date_in=date_in, action=f'{self.account_name}-Payment',
-                                                    credit=money_cents(0), debit=money_cents(min_payment))
+            self.make_a_transaction(
+                date_in=date_in, action="Minimum Payment", credit=money_cents(min_payment), debit=money_cents(0)
+            )
+            self._payment_method.make_a_transaction(
+                date_in=date_in,
+                action=f"{self.account_name}-Payment",
+                credit=money_cents(0),
+                debit=money_cents(min_payment),
+            )
 
     def apply_daily_interest(self, date_in: date) -> None:
         """
@@ -169,10 +188,13 @@ class FinancedBill:
         -----
         - Interest is added to the ledger and accumulated in the internal interest tracker.
         """
-        if self.loan_balance_cents!= 0:
-            self.make_a_transaction(date_in=date_in,action='Daily Interest',credit=money_cents(0),
-                                    debit=self._interest.calculate_daily_interest(
-                                        balance_in=self.loan_balance_cents,date_in=date_in))
+        if self.loan_balance_cents != 0:
+            self.make_a_transaction(
+                date_in=date_in,
+                action="Daily Interest",
+                credit=money_cents(0),
+                debit=self._interest.calculate_daily_interest(balance_in=self.loan_balance_cents, date_in=date_in),
+            )
 
     def process_day(self, date_in) -> None:
         """
@@ -221,10 +243,16 @@ class FinancedBill:
         -----
         - Ledger columns include: row number, date, action, credit, debit, balance, and interest to date.
         """
-        self._accountInfo.update_balance(credit=credit,debit=debit)
-        #['No.', 'Date', 'Description', 'Credit', 'Debit', 'Balance', 'Interest To Date']
-        self._ledger.add_entry_to_ledger([self._ledger.row_number, date_in, action,
-                                          cents_to_dollars(credit),
-                                          cents_to_dollars(debit),
-                                          self.loan_balance_dollars,
-                                          cents_to_dollars(self._interest.interest_to_date)])
+        self._accountInfo.update_balance(credit=credit, debit=debit)
+        # ['No.', 'Date', 'Description', 'Credit', 'Debit', 'Balance', 'Interest To Date']
+        self._ledger.add_entry_to_ledger(
+            [
+                self._ledger.row_number,
+                date_in,
+                action,
+                cents_to_dollars(credit),
+                cents_to_dollars(debit),
+                self.loan_balance_dollars,
+                cents_to_dollars(self._interest.interest_to_date),
+            ]
+        )

@@ -1,9 +1,10 @@
 from typing import NewType
 
-money_cents = NewType('money_cents', int)
-money_dollars = NewType('money_dollars', float)
+money_cents = NewType("money_cents", int)
+money_dollars = NewType("money_dollars", float)
 
-def _calculate_rounded_value(value_in:money_cents, mod_value:int, round_up: bool) -> money_cents:
+
+def _calculate_rounded_value(value_in: money_cents, mod_value: int, round_up: bool) -> money_cents:
     """
     Round a numeric value to the nearest multiple of a given modulus.
 
@@ -35,7 +36,8 @@ def _calculate_rounded_value(value_in:money_cents, mod_value:int, round_up: bool
     else:
         return money_cents(value_in - (value_in % mod_value))
 
-def round_value(amount_in: money_cents, round_up:bool = False) -> money_cents:
+
+def round_value(amount_in: money_cents, round_up: bool = False) -> money_cents:
     """
     Round a monetary amount to the appropriate precision based on its size.
 
@@ -56,12 +58,14 @@ def round_value(amount_in: money_cents, round_up:bool = False) -> money_cents:
     """
     # If we are grater than $1_000, round to the nearest $100
     if amount_in >= 1_000_00:
-        return _calculate_rounded_value(amount_in, 100_00,round_up)
+        return _calculate_rounded_value(amount_in, 100_00, round_up)
     # Else we round to the nearest $10
-    return _calculate_rounded_value(amount_in, 10_00,round_up)
+    return _calculate_rounded_value(amount_in, 10_00, round_up)
+
 
 def dollars_to_cents(dollars_in: money_dollars) -> money_cents:
     return money_cents(int(dollars_in * 100))
 
+
 def cents_to_dollars(cents_in: money_cents) -> money_dollars:
-    return money_dollars(cents_in/100)
+    return money_dollars(cents_in / 100)

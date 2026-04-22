@@ -1,4 +1,6 @@
 from datetime import date
+from typing import Union
+
 from models.accountInformation import AccountInformation
 from models.bankAccount import BankAccount
 from models.enumType import AccountType, FrequencyType
@@ -6,7 +8,6 @@ from models.ledger import Ledger
 from models.revolving_credit_bill import RevolvingCreditBill
 from models.triggerDays import TriggerDays
 from models.utils import cents_to_dollars, money_cents, round_value
-from typing import Union
 
 
 class RecurringBill:
@@ -27,10 +28,17 @@ class RecurringBill:
         _payment_method : BankAccount | RevolvingCreditBill
             The account or bill that receives the payment.
     """
-    def __init__(self, name_in: str, minimum_payment_in: money_cents, account_type_in: AccountType,
-                 initial_pay_date_in: date, frequency_type_in: FrequencyType,
-                 payment_method_in: Union['RevolvingCreditBill', 'BankAccount'],
-                 round_up: bool=False) -> None:
+
+    def __init__(
+        self,
+        name_in: str,
+        minimum_payment_in: money_cents,
+        account_type_in: AccountType,
+        initial_pay_date_in: date,
+        frequency_type_in: FrequencyType,
+        payment_method_in: Union["RevolvingCreditBill", "BankAccount"],
+        round_up: bool = False,
+    ) -> None:
         """
         Initialize a RecurringBill instance.
 
@@ -51,13 +59,16 @@ class RecurringBill:
             round_up : bool, optional
                 If True, rounds the minimum payment up to a desired precision.
         """
-        self._accountInfo = AccountInformation(name_in=name_in, balance_in=money_cents(0), account_type_in=account_type_in)
-        self._ledger = Ledger(columns=['No.', 'Date', 'Description', 'Credit', 'Total Paid To Date'])
-        self._minimum_payment = minimum_payment_in if not round_up \
-            else round_value(minimum_payment_in, round_up=round_up)
+        self._accountInfo = AccountInformation(
+            name_in=name_in, balance_in=money_cents(0), account_type_in=account_type_in
+        )
+        self._ledger = Ledger(columns=["No.", "Date", "Description", "Credit", "Total Paid To Date"])
+        self._minimum_payment = (
+            minimum_payment_in if not round_up else round_value(minimum_payment_in, round_up=round_up)
+        )
         self._trigger_days = TriggerDays(frequency_in=frequency_type_in)
         self._trigger_days.trigger_date = initial_pay_date_in
-        self._payment_method: Union['RevolvingCreditBill','BankAccount'] = payment_method_in
+        self._payment_method: Union["RevolvingCreditBill", "BankAccount"] = payment_method_in
 
     @property
     def raw_copy_ledger(self) -> list:
@@ -88,7 +99,7 @@ class RecurringBill:
         return self._accountInfo.account_type
 
     # Method to apply the payment to the balance
-    def make_payment(self, date_in:date) -> None:
+    def make_payment(self, date_in: date) -> None:
         """
         Apply the minimum payment to the bill and record it in the ledger.
 
@@ -99,14 +110,21 @@ class RecurringBill:
         """
         # Apply minimum Payment to the Bank Account
         self._accountInfo.update_balance(credit=self._minimum_payment)
-        #def make_a_transaction(self, date_in: date, action: str, credit: float, debit: float):
-        self._payment_method.make_a_transaction(date_in=date_in, action=f'{self.account_name}-Payment',
-                                                credit=money_cents(0), debit=self._minimum_payment)
-        self._ledger.add_entry_to_ledger([self._ledger.row_number, date_in, "Minimum Payment",
-                                          cents_to_dollars(self._minimum_payment),
-                                          cents_to_dollars(self._accountInfo.balance)])
+        # def make_a_transaction(self, date_in: date, action: str, credit: float, debit: float):
+        self._payment_method.make_a_transaction(
+            date_in=date_in, action=f"{self.account_name}-Payment", credit=money_cents(0), debit=self._minimum_payment
+        )
+        self._ledger.add_entry_to_ledger(
+            [
+                self._ledger.row_number,
+                date_in,
+                "Minimum Payment",
+                cents_to_dollars(self._minimum_payment),
+                cents_to_dollars(self._accountInfo.balance),
+            ]
+        )
 
-    def process_day(self, date_in:date) -> None:
+    def process_day(self, date_in: date) -> None:
         """
         Process a single day, applying a payment if it matches a trigger date.
 

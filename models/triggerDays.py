@@ -1,8 +1,10 @@
 import typing
 from datetime import date
+
 from dateutil.relativedelta import relativedelta
 
 from models.enumType import FrequencyType
+
 
 class TriggerDays:
     """
@@ -28,7 +30,7 @@ class TriggerDays:
             How often the trigger should occur.
         """
         self._trigger_date: typing.Optional[date] = None
-        self._frequency:FrequencyType = frequency_in
+        self._frequency: FrequencyType = frequency_in
 
     @property
     def trigger_date(self) -> typing.Optional[date]:
@@ -54,7 +56,7 @@ class TriggerDays:
         """
         self._trigger_date = date_in
 
-    def date_triggered(self, processed_day:date) -> bool:
+    def date_triggered(self, processed_day: date) -> bool:
         """
         Check whether the given date matches the scheduled trigger date.
         If triggered, the next date is automatically calculated based on frequency.
@@ -73,7 +75,7 @@ class TriggerDays:
             return False
 
         if processed_day == self._trigger_date:
-              # now add the next date
+            # now add the next date
             self._set_next_trigger_date(processed_day)
             return True
         return False
@@ -118,8 +120,8 @@ class TriggerDays:
         # We are missing a Frequency Type:
         else:
             if self._frequency is None:
-                raise ValueError(f'Frequency wasn\'t set! {self._frequency=}')
+                raise ValueError(f"Frequency wasn't set! {self._frequency=}")
             else:
-                raise ValueError(f'Received an Unexpected Frequency Type! {self._frequency=}')
+                raise ValueError(f"Received an Unexpected Frequency Type! {self._frequency=}")
 
     # def update_trigger_day_by

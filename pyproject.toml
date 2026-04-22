@@ -1,0 +1,50 @@
+[project]
+name = "finance-planning-tool"
+version = "0.1.0"
+description = "A financial modeling tool for multi-year personal finance projections."
+requires-python = ">=3.13"
+dependencies = [
+    "python-dateutil>=2.9",
+    "xlsxwriter>=3.2",
+    "PyQt6>=6.9",
+]
+
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+platforms = ["win-64"]
+
+[tool.pixi.dependencies]
+python = ">=3.13"
+python-dateutil = ">=2.9"
+xlsxwriter = ">=3.2"
+pyqt6 = ">=6.9"
+
+[tool.pixi.feature.dev.dependencies]
+pytest = ">=8.3"
+pre-commit = ">=4.0"
+ruff = ">=0.11"
+
+[tool.pixi.feature.dev.pypi-dependencies]
+ty = ">=0.0.1"
+
+[tool.pixi.feature.dev.tasks]
+setup       = "pre-commit install"
+check       = "pre-commit run --all-files"
+typecheck   = "ty check"
+ruff        = "ruff check ."
+ruff-fix    = "ruff check . --fix"
+ruff-format = "ruff format ."
+test        = "pytest tests/"
+
+[tool.pixi.environments]
+default = { features = ["dev"], solve-group = "default" }
+
+[tool.ruff]
+line-length = 120
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

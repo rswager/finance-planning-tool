@@ -1,14 +1,17 @@
-import pytest
 from datetime import date
-from models.financed_bill import FinancedBill
-from models.enumType import AccountType, FrequencyType
+
+import pytest
+
 from models.bankAccount import BankAccount
+from models.enumType import AccountType, FrequencyType
+from models.financed_bill import FinancedBill
 from models.utils import dollars_to_cents, money_dollars
 
 
 @pytest.fixture
 def bank_account():
     return BankAccount("Checking", dollars_to_cents(money_dollars(1000.00)), AccountType.CHECKING)
+
 
 @pytest.fixture
 def financed_bill(bank_account):
@@ -20,8 +23,9 @@ def financed_bill(bank_account):
         frequency_type_in=FrequencyType.WEEKLY,
         minimum_payment_in=dollars_to_cents(money_dollars(50.00)),
         payment_method_in=bank_account,
-        apr_rate_in=0.05
+        apr_rate_in=0.05,
     )
+
 
 # --- Initialization ---
 def test_initialization(financed_bill, bank_account):
@@ -32,6 +36,7 @@ def test_initialization(financed_bill, bank_account):
     assert len(financed_bill.raw_copy_ledger) == 1
     # Bank account balance unchanged
     assert bank_account.balance_cents == dollars_to_cents(money_dollars(1000.00))
+
 
 # --- Daily interest application ---
 def test_apply_daily_interest(financed_bill):
@@ -44,6 +49,7 @@ def test_apply_daily_interest(financed_bill):
     assert entry[2] == "Daily Interest"
     # Balance should increase by interest
     assert abs(entry[5]) > abs(start_balance)
+
 
 # --- Minimum payment application ---
 def test_make_payment(financed_bill, bank_account):
@@ -62,6 +68,7 @@ def test_make_payment(financed_bill, bank_account):
     # Bank account recorded transaction
     assert bank_account.raw_copy_ledger[-1][4] > 0  # debit recorded
 
+
 # --- Process a day that is not a trigger day ---
 def test_process_day_no_trigger(financed_bill):
     test_date = date(2025, 11, 8)
@@ -70,6 +77,7 @@ def test_process_day_no_trigger(financed_bill):
     # Only interest applied
     assert len(financed_bill.raw_copy_ledger) == 2
     assert abs(financed_bill.loan_balance_cents) > abs(initial_loan_balance)
+
 
 # --- Process a trigger day (payment day) ---
 def test_process_day_with_trigger(financed_bill, bank_account):
@@ -88,6 +96,7 @@ def test_process_day_with_trigger(financed_bill, bank_account):
     assert bank_account.balance_cents < initial_bank_balance
     # Bank account recorded transaction
     assert bank_account.raw_copy_ledger[-1][4] > 0  # debit recorded
+
 
 # --- Minimum payment capped at remaining balance ---
 def test_min_payment_capped(financed_bill, bank_account):

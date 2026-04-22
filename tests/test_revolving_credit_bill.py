@@ -1,17 +1,21 @@
-import pytest
 from datetime import date, timedelta
-from models.revolving_credit_bill import RevolvingCreditBill
+
+import pytest
+
 from models.bankAccount import BankAccount
 from models.enumType import AccountType, FrequencyType
+from models.revolving_credit_bill import RevolvingCreditBill
 from models.utils import dollars_to_cents, money_dollars
 
 # -------------------------------------------------------
 # Fixtures
 # -------------------------------------------------------
 
+
 @pytest.fixture
 def bank_account():
     return BankAccount("Checking", dollars_to_cents(money_dollars(5000.00)), AccountType.CHECKING)
+
 
 @pytest.fixture
 def credit_bill(bank_account):
@@ -24,13 +28,15 @@ def credit_bill(bank_account):
         frequency_type_in=FrequencyType.MONTHLY,
         minimum_payment_in=dollars_to_cents(money_dollars(200.00)),
         payment_method_in=bank_account,
-        apr_rate_in=0.12,          # 12% APR
-        credit_limit_in=dollars_to_cents(money_dollars(5000.00))
+        apr_rate_in=0.12,  # 12% APR
+        credit_limit_in=dollars_to_cents(money_dollars(5000.00)),
     )
+
 
 # -------------------------------------------------------
 # Initialization Tests
 # -------------------------------------------------------
+
 
 def test_initialization(credit_bill):
     assert credit_bill.account_name == "Visa"
@@ -44,20 +50,22 @@ def test_initialization(credit_bill):
 # Credit Limit Tests
 # -------------------------------------------------------
 
+
 def test_credit_limit_not_exceeded(credit_bill):
     assert credit_bill.exceeded_credit_limit is False
+
 
 def test_credit_limit_exceeded(bank_account):
     bill = RevolvingCreditBill(
         name_in="Card",
-        balance_in=dollars_to_cents(money_dollars(6000.00)),   # over the 5000 limit
+        balance_in=dollars_to_cents(money_dollars(6000.00)),  # over the 5000 limit
         account_type_in=AccountType.REVOLVING,
         initial_pay_date_in=date(2025, 1, 10),
         frequency_type_in=FrequencyType.MONTHLY,
         minimum_payment_in=dollars_to_cents(money_dollars(200.00)),
         payment_method_in=bank_account,
         apr_rate_in=0.15,
-        credit_limit_in=dollars_to_cents(money_dollars(5000.00))
+        credit_limit_in=dollars_to_cents(money_dollars(5000.00)),
     )
     assert bill.exceeded_credit_limit is True
 
@@ -65,6 +73,7 @@ def test_credit_limit_exceeded(bank_account):
 # -------------------------------------------------------
 # Daily Interest Tests
 # -------------------------------------------------------
+
 
 def test_daily_interest_applied(credit_bill):
     day = date(2025, 1, 5)
@@ -75,13 +84,14 @@ def test_daily_interest_applied(credit_bill):
 
     entry = credit_bill.raw_copy_ledger[-1]
     assert entry[2] == "Daily Interest"
-    assert entry[3] == 0      # credit
-    assert entry[4] > 0       # debit (interest added)
+    assert entry[3] == 0  # credit
+    assert entry[4] > 0  # debit (interest added)
 
 
 # -------------------------------------------------------
 # Minimum Payment Tests
 # -------------------------------------------------------
+
 
 def test_make_payment_reduces_balance_and_updates_ledgers(credit_bill, bank_account):
     pay_date = date(2025, 1, 10)
@@ -107,14 +117,14 @@ def test_make_payment_reduces_balance_and_updates_ledgers(credit_bill, bank_acco
 def test_payment_smaller_when_balance_less_than_minimum(bank_account):
     bill = RevolvingCreditBill(
         name_in="SmallDebt",
-        balance_in=dollars_to_cents(money_dollars(50.00)),     # only owes $50
+        balance_in=dollars_to_cents(money_dollars(50.00)),  # only owes $50
         account_type_in=AccountType.REVOLVING,
         initial_pay_date_in=date(2025, 1, 10),
         frequency_type_in=FrequencyType.MONTHLY,
         minimum_payment_in=dollars_to_cents(money_dollars(200.00)),
         payment_method_in=bank_account,
         apr_rate_in=0.1,
-        credit_limit_in=dollars_to_cents(money_dollars(2000.00))
+        credit_limit_in=dollars_to_cents(money_dollars(2000.00)),
     )
 
     bill.make_payment(date(2025, 1, 10))
@@ -128,6 +138,7 @@ def test_payment_smaller_when_balance_less_than_minimum(bank_account):
 # -------------------------------------------------------
 # Process Day Tests
 # -------------------------------------------------------
+
 
 def test_process_day_no_trigger(credit_bill):
     non_trigger_day = date(2025, 1, 5)

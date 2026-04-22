@@ -1,8 +1,11 @@
-import pytest
 from datetime import date
+from math import ceil
+
+import pytest
+
 from models.interest import Interest
 from models.utils import dollars_to_cents, money_cents, money_dollars
-from math import ceil
+
 
 @pytest.fixture
 def interest_instance():
@@ -28,7 +31,6 @@ def test_daily_interest_leap_year(interest_instance):
 
     interest = interest_instance.calculate_daily_interest(bal, test_date)
     assert interest == expected_interest
-
 
 
 # --- Zero Balance ---
@@ -79,6 +81,7 @@ def test_valid_apr_does_not_raise():
         _ = Interest(1.0)  # 100%
     except ValueError:
         pytest.fail("Valid APR raised ValueError unexpectedly")
+
 
 @pytest.mark.parametrize("invalid_apr", [-0.01, -5, 1.01, 2, 100])
 def test_invalid_apr_raises_value_error(invalid_apr):

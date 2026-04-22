@@ -1,13 +1,17 @@
-import pytest
 from datetime import date
-from models.recurring_bill import RecurringBill
+
+import pytest
+
 from models.bankAccount import BankAccount
 from models.enumType import AccountType, FrequencyType
+from models.recurring_bill import RecurringBill
 from models.utils import cents_to_dollars, dollars_to_cents, money_cents, money_dollars
+
 
 @pytest.fixture
 def bank_account():
     return BankAccount("Checking", dollars_to_cents(money_dollars(1_000.00)), AccountType.CHECKING)
+
 
 @pytest.fixture
 def recurring_bill(bank_account):
@@ -17,8 +21,9 @@ def recurring_bill(bank_account):
         account_type_in=AccountType.REOCCURRING,
         initial_pay_date_in=date(2025, 11, 10),
         frequency_type_in=FrequencyType.WEEKLY,
-        payment_method_in=bank_account
+        payment_method_in=bank_account,
     )
+
 
 # --- Initialization ---
 def test_initialization(recurring_bill, bank_account):
@@ -29,6 +34,7 @@ def test_initialization(recurring_bill, bank_account):
     assert len(recurring_bill.raw_copy_ledger) == 1
     # Bank account balance unchanged initially
     assert bank_account.balance_dollars == money_dollars(1_000.00)
+
 
 # --- Make payment ---
 def test_make_payment_updates_ledger_and_bank_account(recurring_bill, bank_account):
@@ -50,6 +56,7 @@ def test_make_payment_updates_ledger_and_bank_account(recurring_bill, bank_accou
     # Bank balance decreased
     assert bank_account._accountInfo.balance == initial_bank_balance - recurring_bill._minimum_payment
 
+
 # --- Process a non-trigger day ---
 def test_process_day_no_trigger(recurring_bill, bank_account):
     normal_day = date(2025, 11, 9)  # day before trigger
@@ -58,6 +65,7 @@ def test_process_day_no_trigger(recurring_bill, bank_account):
     # No ledger entries should be added
     assert len(recurring_bill.raw_copy_ledger) == 1
     assert len(bank_account.raw_copy_ledger) == 1
+
 
 # --- Process a trigger day ---
 def test_process_day_trigger(recurring_bill, bank_account):

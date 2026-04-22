@@ -1,6 +1,7 @@
+import pytest
+
 from models.accountInformation import AccountInformation
 from models.enumType import AccountType
-import pytest
 from models.utils import dollars_to_cents, money_cents, money_dollars
 
 
@@ -50,6 +51,7 @@ def test_balance_independent_of_bill_name_and_type():
     assert acc.account_name == "Electric"
     assert acc.account_type == AccountType.REOCCURRING
 
+
 def test_is_overdrafted_initial_false(sample_account):
     """Account with positive balance is not overdrafted."""
     assert sample_account.is_overdrafted is False
@@ -81,26 +83,30 @@ def test_is_overdrafted_property_updates_with_balance(sample_account):
     sample_account.update_balance(credit=dollars_to_cents(money_dollars(300.00)))
     assert sample_account.is_overdrafted is False
 
-@pytest.mark.parametrize("name,balance,type,expected", [
-    ('Primary_Checking' , dollars_to_cents(money_dollars(-100.00))  , AccountType.CHECKING      , True),
-    ('Primary_Checking' , dollars_to_cents(money_dollars(100.00))   , AccountType.CHECKING      , False),
-    ('Primary_Checking' , dollars_to_cents(money_dollars(0))     , AccountType.CHECKING      , False),
-    ('Primary_Savings'  , dollars_to_cents(money_dollars(-100.00))  , AccountType.SAVINGS       , True),
-    ('Primary_Savings'  , dollars_to_cents(money_dollars(100.00))   , AccountType.SAVINGS       , False),
-    ('Primary_Savings'  , dollars_to_cents(money_dollars(0))     , AccountType.SAVINGS       , False),
-    ('Netflix'          , dollars_to_cents(money_dollars(-100.00))  , AccountType.SUBSCRIPTION  , False),
-    ('Netflix'          , dollars_to_cents(money_dollars(100.00))   , AccountType.SUBSCRIPTION  , False),
-    ('Netflix'          , dollars_to_cents(money_dollars(0))    , AccountType.SUBSCRIPTION  , False),
-    ('Utilities'        , dollars_to_cents(money_dollars(-100.00))  , AccountType.REOCCURRING   , False),
-    ('Utilities'        , dollars_to_cents(money_dollars(100.00))   , AccountType.REOCCURRING   , False),
-    ('Utilities'        , dollars_to_cents(money_dollars(0))     , AccountType.REOCCURRING   , False),
-    ('Car-Loan'         , dollars_to_cents(money_dollars(-100.00))  , AccountType.LOAN          , False),
-    ('Car-Loan'         , dollars_to_cents(money_dollars(100.00))   , AccountType.LOAN          , False),
-    ('Car-Loan'         , dollars_to_cents(money_dollars(0))    , AccountType.LOAN          , False),
-    ('Discover'         , dollars_to_cents(money_dollars(-100.00)) , AccountType.REVOLVING     , False),
-    ('Discover'         , dollars_to_cents(money_dollars(100.00))   , AccountType.REVOLVING, False),
-    ('Discover'         , dollars_to_cents(money_dollars(0))    , AccountType.REVOLVING, False)
-])
-def test_is_overdrafted(name,balance,type,expected):
+
+@pytest.mark.parametrize(
+    "name,balance,type,expected",
+    [
+        ("Primary_Checking", dollars_to_cents(money_dollars(-100.00)), AccountType.CHECKING, True),
+        ("Primary_Checking", dollars_to_cents(money_dollars(100.00)), AccountType.CHECKING, False),
+        ("Primary_Checking", dollars_to_cents(money_dollars(0)), AccountType.CHECKING, False),
+        ("Primary_Savings", dollars_to_cents(money_dollars(-100.00)), AccountType.SAVINGS, True),
+        ("Primary_Savings", dollars_to_cents(money_dollars(100.00)), AccountType.SAVINGS, False),
+        ("Primary_Savings", dollars_to_cents(money_dollars(0)), AccountType.SAVINGS, False),
+        ("Netflix", dollars_to_cents(money_dollars(-100.00)), AccountType.SUBSCRIPTION, False),
+        ("Netflix", dollars_to_cents(money_dollars(100.00)), AccountType.SUBSCRIPTION, False),
+        ("Netflix", dollars_to_cents(money_dollars(0)), AccountType.SUBSCRIPTION, False),
+        ("Utilities", dollars_to_cents(money_dollars(-100.00)), AccountType.REOCCURRING, False),
+        ("Utilities", dollars_to_cents(money_dollars(100.00)), AccountType.REOCCURRING, False),
+        ("Utilities", dollars_to_cents(money_dollars(0)), AccountType.REOCCURRING, False),
+        ("Car-Loan", dollars_to_cents(money_dollars(-100.00)), AccountType.LOAN, False),
+        ("Car-Loan", dollars_to_cents(money_dollars(100.00)), AccountType.LOAN, False),
+        ("Car-Loan", dollars_to_cents(money_dollars(0)), AccountType.LOAN, False),
+        ("Discover", dollars_to_cents(money_dollars(-100.00)), AccountType.REVOLVING, False),
+        ("Discover", dollars_to_cents(money_dollars(100.00)), AccountType.REVOLVING, False),
+        ("Discover", dollars_to_cents(money_dollars(0)), AccountType.REVOLVING, False),
+    ],
+)
+def test_is_overdrafted(name, balance, type, expected):
     account = AccountInformation(name, balance, type)
     assert account.is_overdrafted == expected

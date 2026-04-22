@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class FrequencyType(Enum):
     """
     Enumeration of schedule frequencies used to determine how often an event
@@ -20,6 +21,7 @@ class FrequencyType(Enum):
     SINGULAR : int
         Trigger occurs only once and does not repeat.
     """
+
     MONTHLY = 1
     BI_WEEKLY = 2
     WEEKLY = 3
@@ -47,6 +49,7 @@ class AccountType(Enum):
     REOCCURRING : int
         Account for recurring charges or payments that repeat on a schedule.
     """
+
     CHECKING = 1
     SAVINGS = 2
     LOAN = 3
