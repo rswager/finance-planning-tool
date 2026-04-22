@@ -214,3 +214,6 @@ __marimo__/
 
 # ignore idea folder
 .idea/
+
+# Local task tracking (session-specific, not for version control)
+TODO.local.md

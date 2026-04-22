@@ -34,7 +34,19 @@ This resolves and installs all dependencies (including dev tools) into an isolat
 
 ---
 
-## Running the project
+## Running the application
+
+`main.py` is the simulation entry point. It walks through every day between a start and end date, processing income deposits, interest accrual, and bill payments for each configured account. When the simulation finishes it writes a multi-sheet Excel workbook to `C:\Users\<username>\Downloads\Output_Analysis.xlsx` — one sheet per account or bill, each with a transaction ledger table and a projected balance line chart.
+
+```bash
+pixi run python main.py
+```
+
+The start date, end date, account balances, and all bill/income parameters are configured directly in `main.py`.
+
+---
+
+## Development tasks
 
 ```bash
 pixi run test          # run the test suite
@@ -121,6 +133,28 @@ pixi run pre-commit autoupdate
 
 ---
 
+## Contributing
+
+### Branch naming
+
+Branches follow the pattern `{action}/{username}/{description}`:
+
+| Action | When to use |
+|---|---|
+| `feature` | New functionality |
+| `bugfix` | Bug fix |
+| `debt` | Tech debt / refactoring |
+| `docs` | Documentation only |
+| `chore` | Tooling, config, housekeeping |
+
+Examples:
+- `feature/rswager/add-gui`
+- `bugfix/rswager/fix-add-table-crash`
+- `debt/rswager/base-class-financed-bills`
+- `docs/rswager/add-project-conventions`
+
+---
+
 ## Project Structure
 
 ```
@@ -140,5 +174,11 @@ finance-planning-tool/
 ├── tests/                   # pytest unit tests
 ├── main.py                  # simulation entry point (outputs Excel workbook)
 ├── pyproject.toml           # project metadata, dependencies, tool config
-└── .pre-commit-config.yaml  # pre-commit hook definitions
+├── pixi.lock                # fully resolved dependency lockfile
+├── .pre-commit-config.yaml  # pre-commit hook definitions
+└── TODO.md                  # known issues and design improvements
 ```
+
+> **Note:** The pixi environment is currently configured for `win-64` only. Running `pixi install` on macOS or Linux will require adding the appropriate platform to `pyproject.toml`.
+
+> **AI assistants:** See `CLAUDE.md` for project conventions and guidelines.
