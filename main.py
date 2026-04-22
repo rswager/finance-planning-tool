@@ -207,7 +207,7 @@ bills = {
         round_up=round_up_down,
     ),
     "Spotify": RecurringBill(
-        name_in="Spoify",
+        name_in="Spotify",
         minimum_payment_in=MinorUnit.from_major(11.99),
         account_type_in=AccountType.REOCCURRING,
         initial_pay_date_in=date(2025, 11, 13),
