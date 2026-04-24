@@ -81,6 +81,10 @@ def test_minor_unit_arithmetic_preserves_type():
     assert isinstance(a * 0.5, MinorUnit)
     assert isinstance(a / 2, MinorUnit)
     assert isinstance(a / 0.5, MinorUnit)
+    assert isinstance(a % 3, MinorUnit)
+    assert isinstance(a // 3, MinorUnit)
+    assert isinstance(sum([a, b]), MinorUnit)
+    assert isinstance(round(a, 0), MinorUnit)
 
 
 def test_minor_unit_arithmetic_correctness():
@@ -126,6 +130,50 @@ def test_truediv_correctness(value, divisor, expected):
 )
 def test_to_major_negative(minor, expected_major):
     assert minor.to_major() == expected_major
+
+
+@pytest.mark.parametrize(
+    "value,divisor,expected",
+    [
+        (MinorUnit(1000), 3, MinorUnit(333)),
+        (MinorUnit(1000), 4, MinorUnit(250)),
+        (MinorUnit(500), 2.0, MinorUnit(250)),
+    ],
+)
+def test_floordiv_correctness(value, divisor, expected):
+    assert value // divisor == expected
+
+
+@pytest.mark.parametrize(
+    "value,divisor,expected",
+    [
+        (MinorUnit(1000), 3, MinorUnit(1)),
+        (MinorUnit(1001), 10, MinorUnit(1)),
+        (MinorUnit(1000), 10, MinorUnit(0)),
+    ],
+)
+def test_mod_correctness(value, divisor, expected):
+    assert value % divisor == expected
+
+
+def test_radd_via_sum():
+    values = [MinorUnit(100), MinorUnit(200), MinorUnit(300)]
+    result = sum(values)
+    assert result == MinorUnit(600)
+    assert isinstance(result, MinorUnit)
+
+
+@pytest.mark.parametrize(
+    "value,ndigits,expected",
+    [
+        (MinorUnit(1234), 0, MinorUnit(1234)),
+        (MinorUnit(1234), -2, MinorUnit(1200)),
+        (MinorUnit(1250), -2, MinorUnit(1200)),
+        (MinorUnit(1350), -2, MinorUnit(1400)),
+    ],
+)
+def test_round_correctness(value, ndigits, expected):
+    assert round(value, ndigits) == expected
 
 
 def test_set_currency_changes_conversion():

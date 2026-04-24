@@ -1,5 +1,4 @@
 from datetime import date
-from math import floor
 
 import pytest
 
@@ -66,8 +65,8 @@ def test_deposit_updates_accounts(income, bank_accounts):
     income_minor = MinorUnit.from_major(1_000.00)
     income.deposit(date(2025, 11, 8))
 
-    assert acc1.balance_minor == MinorUnit.from_major(1_000.00) + MinorUnit(floor(int(income_minor) * 0.6))
-    assert acc2.balance_minor == MinorUnit.from_major(500.00) + MinorUnit(floor(int(income_minor) * 0.4))
+    assert acc1.balance_minor == MinorUnit.from_major(1_000.00) + income_minor * 0.6
+    assert acc2.balance_minor == MinorUnit.from_major(500.00) + income_minor * 0.4
     assert acc1.raw_copy_ledger[-1][2] == "Salary - Check"
     assert acc2.raw_copy_ledger[-1][2] == "Salary - Check"
 
