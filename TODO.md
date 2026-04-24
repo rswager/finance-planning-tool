@@ -2,9 +2,8 @@
 
 ## Bugs
 
-| Priority | Item |
-|---|---|
-| 🟡 Medium | `Income.deposit()` silently loses cents — `floor()` on each contribution drops fractional cents (~$26 lost over a 10-year projection on a biweekly $2,557.31 paycheck) |
+*No open bugs.*
+
 
 ## Design
 

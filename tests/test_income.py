@@ -72,6 +72,22 @@ def test_deposit_updates_accounts(income, bank_accounts):
     assert acc2.raw_copy_ledger[-1][2] == "Salary - Check"
 
 
+def test_deposit_preserves_full_amount(bank_accounts):
+    acc1, acc2 = bank_accounts
+    income = Income(
+        name_in="Paycheck",
+        income_in=MinorUnit.from_major(2_557.31),
+        initial_pay_date_in=date(2025, 11, 6),
+        account_contributions_in=[(acc1, 0.9), (acc2, 0.1)],
+        frequency_type_in=FrequencyType.BI_WEEKLY,
+    )
+    income.deposit(date(2025, 11, 6))
+    total_deposited = (acc1.balance_minor - MinorUnit.from_major(1_000.00)) + (
+        acc2.balance_minor - MinorUnit.from_major(500.00)
+    )
+    assert total_deposited == MinorUnit.from_major(2_557.31)
+
+
 def test_process_day_triggers_deposit(income, bank_accounts):
     acc1, acc2 = bank_accounts
 
