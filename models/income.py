@@ -94,8 +94,14 @@ class Income:
         transaction_date : date
             The date of the deposit.
         """
-        for account_reference, contribution_percentage in self._account_contributions:
-            payment = MinorUnit(floor(int(self._income_amount) * contribution_percentage))
+        total = int(self._income_amount)
+        allocated = 0
+        for i, (account_reference, contribution_percentage) in enumerate(self._account_contributions):
+            if i < len(self._account_contributions) - 1:
+                payment = MinorUnit(floor(total * contribution_percentage))
+                allocated += int(payment)
+            else:
+                payment = MinorUnit(total - allocated)
             account_reference.make_a_transaction(
                 date_in=transaction_date,
                 action=f"{self._income_name} - Check",

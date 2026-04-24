@@ -2,10 +2,7 @@
 
 ## Bugs
 
-| Priority | Item |
-|---|---|
-| 🔴 High | `add_table()` crashes with `IndexError` on an empty ledger — `data[0]` is accessed after `data.pop(0)` with no length check |
-| 🟡 Medium | `Income.deposit()` silently loses cents — `floor()` on each contribution drops fractional cents (~$26 lost over a 10-year projection on a biweekly $2,557.31 paycheck) |
+*No open bugs.*
 
 ## Design
 
