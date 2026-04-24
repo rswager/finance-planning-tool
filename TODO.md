@@ -4,15 +4,13 @@
 
 *No open bugs.*
 
+
 ## Design
 
 | Priority | Item |
 |---|---|
 | 🟡 Medium | `main.py` has no `if __name__ == '__main__':` guard — the entire simulation runs on import, which will conflict with future GUI work |
 | 🟡 Medium | `FinancedBill` and `RevolvingCreditBill` are ~80% identical — `make_payment`, `apply_daily_interest`, `process_day`, and all display properties are duplicated verbatim; extract a shared base class |
-| 🟡 Medium | `add_table()` mutates its input via `data.pop(0)` — works today because `raw_copy_ledger` returns a deep copy, but the hidden side effect is fragile; replace with `data = data_in[1:]` |
-| 🟡 Medium | `get_col()` returns `False` (bool) for out-of-range input but `str` otherwise — inconsistent return type; should raise `ValueError` instead |
-| 🟢 Low | `get_col()` reimplements `xlsxwriter.utility.xl_col_to_name()` which already exists in the dependency |
 | 🟢 Low | `round_up_down = False` is a confusing name for a single bool that controls two inverse parameters (`round_up` / `round_down`) |
 | 🟢 Low | `ledger.py` type annotations are too generic — `columns: list` and `entry: list` should be `list[str]` and `list[Any]` |
-| 🟢 Low | `get_col()`, `add_table()`, `add_chart()` in `main.py` have no type annotations |
+| 🟢 Low | `add_table()`, `add_chart()` in `main.py` have no type annotations |
