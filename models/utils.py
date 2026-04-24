@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import ClassVar, NewType
+from typing import ClassVar, NewType, SupportsIndex
 
 
 @dataclass(frozen=True)
@@ -54,6 +54,18 @@ class MinorUnit(int):
     def __truediv__(self, other: int | float) -> MinorUnit:
         return MinorUnit(int(int(self) / other))
 
+    def __radd__(self, other: int) -> MinorUnit:
+        return MinorUnit(int.__add__(self, other))
+
+    def __mod__(self, other: int) -> MinorUnit:
+        return MinorUnit(int.__mod__(self, other))
+
+    def __floordiv__(self, other: int | float) -> MinorUnit:
+        return MinorUnit(int(int(self) // other))
+
+    def __round__(self, ndigits: SupportsIndex = 0) -> MinorUnit:
+        return MinorUnit(int.__round__(self, ndigits))
+
     def to_major(self) -> MajorUnit:
         """Convert to the major unit (e.g. dollars) for display."""
         return MajorUnit(int(self) / self._currency.conversion)
@@ -90,6 +102,6 @@ def _calculate_rounded_value(value_in: MinorUnit, mod_value: int, round_up: bool
     if value_in % mod_value == 0:
         return value_in
     elif round_up:
-        return MinorUnit(value_in + (mod_value - (value_in % mod_value)))
+        return value_in + (mod_value - (value_in % mod_value))
     else:
-        return MinorUnit(value_in - (value_in % mod_value))
+        return value_in - (value_in % mod_value)
