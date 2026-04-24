@@ -2,6 +2,7 @@ import os
 from datetime import date, timedelta
 
 import xlsxwriter
+from xlsxwriter.utility import xl_col_to_name
 
 from models.bankAccount import BankAccount
 from models.enumType import AccountType, FrequencyType
@@ -12,62 +13,22 @@ from models.revolving_credit_bill import RevolvingCreditBill
 from models.utils import MinorUnit
 
 
-def get_col(col_num_in):
-    col = [
-        "A",
-        "B",
-        "C",
-        "D",
-        "E",
-        "F",
-        "G",
-        "H",
-        "I",
-        "J",
-        "K",
-        "L",
-        "M",
-        "N",
-        "O",
-        "P",
-        "Q",
-        "R",
-        "S",
-        "T",
-        "U",
-        "V",
-        "W",
-        "X",
-        "Y",
-        "Z",
-    ]
-
-    if col_num_in < 26:
-        return col[col_num_in]
-    elif col_num_in > 701:
-        return False
-    else:
-        factor = int(col_num_in / 26) - 1
-        remain = col_num_in % 26
-        return str(col[factor]) + str(col[remain])
-
-
 def add_table(worksheet_in, table_name_in, data_in):
-    data = data_in
-    header_in = data.pop(0)
+    header_in, *data = data_in
+    if not data:
+        return
     header = []
-    # first row of data
     for index, column_data in enumerate(data[0]):
-        if type(column_data) in (float, int) and index != 0:
+        if isinstance(column_data, (float, int)) and index != 0:
             column_def = {"header": header_in[index], "format": accounting_format}
-        elif type(column_data) is date:
+        elif isinstance(column_data, date):
             column_def = {"header": header_in[index], "format": date_format}
         else:
             column_def = {"header": header_in[index]}
         header.append(column_def)
 
     worksheet_in.add_table(
-        f"A1:{get_col(len(header) - 1)}{len(data) + 1}",
+        f"A1:{xl_col_to_name(len(header) - 1)}{len(data) + 1}",
         {
             "header_row": True,
             "data": data,
@@ -323,7 +284,7 @@ for each in accounts:
         workbook_in=workbook,
         worksheet_in=worksheet,
         table_name_in=each,
-        col_in=get_col(accounts[each].ledger_col_count + 1),
+        col_in=xl_col_to_name(accounts[each].ledger_col_count + 1),
     )
 
 
@@ -334,7 +295,7 @@ for each in revolving_credit:
         workbook_in=workbook,
         worksheet_in=worksheet,
         table_name_in=each,
-        col_in=get_col(revolving_credit[each].ledger_col_count + 1),
+        col_in=xl_col_to_name(revolving_credit[each].ledger_col_count + 1),
     )
 
 for each in bills:
@@ -345,7 +306,7 @@ for each in bills:
             workbook_in=workbook,
             worksheet_in=worksheet,
             table_name_in=each,
-            col_in=get_col(bills[each].ledger_col_count + 1),
+            col_in=xl_col_to_name(bills[each].ledger_col_count + 1),
         )
 
 workbook.close()
