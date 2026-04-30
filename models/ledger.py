@@ -1,4 +1,45 @@
+import dataclasses
 from copy import deepcopy
+from dataclasses import astuple, dataclass
+from datetime import date
+from typing import Any, ClassVar, Iterator
+
+from models.utils import MajorUnit
+
+
+@dataclass(frozen=True)
+class StandardLedgerRow:
+    row_number: int
+    date: date
+    description: str
+    credit: MajorUnit
+    COLUMNS: ClassVar[list[str]] = ["No.", "Date", "Description", "Credit"]
+
+    def __iter__(self) -> Iterator[Any]:
+        return iter(astuple(self))
+
+    def __len__(self) -> int:
+        return len(dataclasses.fields(self))
+
+
+@dataclass(frozen=True)
+class BankAccountLedgerRow(StandardLedgerRow):
+    debit: MajorUnit
+    balance: MajorUnit
+    COLUMNS: ClassVar[list[str]] = StandardLedgerRow.COLUMNS + ["Debit", "Balance"]
+
+
+@dataclass(frozen=True)
+class InterestLedgerRow(BankAccountLedgerRow):
+    interest_to_date: MajorUnit
+    COLUMNS: ClassVar[list[str]] = BankAccountLedgerRow.COLUMNS + ["Interest To Date"]
+
+
+@dataclass(frozen=True)
+class RecurringLedgerRow(StandardLedgerRow):
+    debit: MajorUnit
+    paid_to_date: MajorUnit
+    COLUMNS: ClassVar[list[str]] = StandardLedgerRow.COLUMNS + ["Debit", "Total Paid To Date"]
 
 
 class Ledger:
@@ -7,31 +48,39 @@ class Ledger:
 
     Attributes
     ----------
-        _ledger : list
-            The internal ledger data including column headers and transaction entries.
+        _header : list[str]
+            A list of columns for the ledger.
+        _ledger : list[StandardLedgerRow]
+            The internal ledger data including transaction entries,
+            as StandardLedgerRow (including inherited Dataclasses)
         _col_count : int
             The number of columns in the ledger.
     """
 
-    def __init__(self, columns: list) -> None:
+    def __init__(self, columns: list[str]) -> None:
         """
         Initialize a Ledger with column headers.
 
         Parameters
         ----------
-        columns : list
+        columns : list[str]
             A list of column names for the ledger.
         """
-        self._ledger = [columns]
-        self._col_count = len(columns)
+        self._header: list[str] = columns
+        self._ledger: list[StandardLedgerRow] = []
+        self._col_count = len(self._header)
 
     @property
-    def raw_copy_ledger(self) -> list:
+    def raw_copy_ledger(self) -> list[StandardLedgerRow]:
         """
         list: Returns a deep copy of the ledger to prevent modifications to the original.
         """
         # return a copy
         return deepcopy(self._ledger)
+
+    @property
+    def header(self) -> list[str]:
+        return self._header
 
     @property
     def col_count(self) -> int:
@@ -40,14 +89,14 @@ class Ledger:
         """
         return self._col_count
 
-    def add_entry_to_ledger(self, entry: list) -> None:
+    def add_entry_to_ledger(self, entry: StandardLedgerRow) -> None:
         """
         Append a new entry to the ledger.
 
         Parameters
         ----------
-        entry : list
-            A list of values corresponding to each column in the ledger.
+        entry : StandardLedgerRow
+            A StandardLedgerRow (and Inherited Dataclasses) of values corresponding to each column in the ledger.
 
         Raises
         ------
@@ -55,9 +104,8 @@ class Ledger:
             If the entry does not match the number of columns in the ledger.
         """
         # Append a new entry to the ledger
-        expected_length = len(self._ledger[0])
-        if len(entry) != expected_length:
-            raise ValueError(f"Entry must have {expected_length} elements. {len(entry)} elements in entry")
+        if len(entry) != self._col_count:
+            raise ValueError(f"Entry must have {self._col_count} elements. {len(entry)} elements in entry")
         self._ledger.append(entry)
 
     @property
@@ -67,3 +115,16 @@ class Ledger:
         Starts at 1 because row 0 contains column headers.
         """
         return len(self._ledger)
+
+
+if __name__ == "__main__":
+    my_ledge = StandardLedgerRow(row_number=1, date=date(2021, 1, 1), description="My Ledger", credit=MajorUnit(100))
+    my_bank = BankAccountLedgerRow(
+        row_number=1,
+        date=date(2021, 1, 1),
+        description="My Ledger",
+        credit=MajorUnit(100),
+        debit=MajorUnit(100),
+        balance=MajorUnit(0),
+    )
+    print(my_bank.row_number)

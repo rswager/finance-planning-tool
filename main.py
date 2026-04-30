@@ -1,20 +1,25 @@
 import os
+from collections.abc import Sequence
 from datetime import date, timedelta
 
-import xlsxwriter
 from xlsxwriter.utility import xl_col_to_name
+from xlsxwriter.workbook import Workbook
+from xlsxwriter.worksheet import Worksheet
 
 from models.bankAccount import BankAccount
 from models.enumType import AccountType, FrequencyType
 from models.financed_bill import FinancedBill
 from models.income import Income
+from models.ledger import StandardLedgerRow
 from models.recurring_bill import RecurringBill
 from models.revolving_credit_bill import RevolvingCreditBill
 from models.utils import MinorUnit
 
 
-def add_table(worksheet_in, table_name_in, data_in):
-    header_in, *data = data_in
+def add_table(
+    worksheet_in: Worksheet, table_name_in: str, header_in: list[str], data_in: Sequence[StandardLedgerRow]
+) -> None:
+    data = [list(row) for row in data_in]
     if not data:
         return
     header = []
@@ -28,8 +33,11 @@ def add_table(worksheet_in, table_name_in, data_in):
         header.append(column_def)
 
     worksheet_in.add_table(
-        f"A1:{xl_col_to_name(len(header) - 1)}{len(data) + 1}",
-        {
+        first_row=0,
+        first_col=0,
+        last_row=len(data),
+        last_col=len(header) - 1,
+        options={
             "header_row": True,
             "data": data,
             "total_row": False,
@@ -274,12 +282,17 @@ while today < end_date:
 
 downloads_folder = os.path.join(os.path.expanduser("~"), "Downloads")
 output_path = os.path.join(downloads_folder, "Output_Analysis.xlsx")
-workbook = xlsxwriter.Workbook(output_path)
+workbook = Workbook(output_path)
 accounting_format = workbook.add_format({"num_format": 44})
 date_format = workbook.add_format({"num_format": 14})
 for each in accounts:
     worksheet = workbook.add_worksheet(f"{each}_Table")
-    add_table(worksheet_in=worksheet, table_name_in=each, data_in=accounts[each].raw_copy_ledger)
+    add_table(
+        worksheet_in=worksheet,
+        table_name_in=each,
+        header_in=accounts[each].ledger_header,
+        data_in=accounts[each].raw_copy_ledger,
+    )
     add_chart(
         workbook_in=workbook,
         worksheet_in=worksheet,
@@ -290,7 +303,12 @@ for each in accounts:
 
 for each in revolving_credit:
     worksheet = workbook.add_worksheet(f"{each}_Table")
-    add_table(worksheet_in=worksheet, table_name_in=each, data_in=revolving_credit[each].raw_copy_ledger)
+    add_table(
+        worksheet_in=worksheet,
+        table_name_in=each,
+        header_in=revolving_credit[each].ledger_header,
+        data_in=revolving_credit[each].raw_copy_ledger,
+    )
     add_chart(
         workbook_in=workbook,
         worksheet_in=worksheet,
@@ -300,7 +318,12 @@ for each in revolving_credit:
 
 for each in bills:
     worksheet = workbook.add_worksheet(f"{each}_Table")
-    add_table(worksheet_in=worksheet, table_name_in=each, data_in=bills[each].raw_copy_ledger)
+    add_table(
+        worksheet_in=worksheet,
+        table_name_in=each,
+        header_in=bills[each].ledger_header,
+        data_in=bills[each].raw_copy_ledger,
+    )
     if isinstance(bills[each], FinancedBill):
         add_chart(
             workbook_in=workbook,
@@ -310,3 +333,7 @@ for each in bills:
         )
 
 workbook.close()
+
+
+if __name__ == "__main__":
+    pass
