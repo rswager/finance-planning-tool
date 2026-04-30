@@ -67,19 +67,19 @@ accounts = {
     "primary_checking": BankAccount(
         name_in="Primary Checking",
         account_type_in=AccountType.CHECKING,
-        balance_in=MinorUnit.from_major(2_261.33),
+        balance_in=MinorUnit.from_major(571.75),
     ),
     "primary_savings": BankAccount(
         name_in="Primary Savings",
         account_type_in=AccountType.SAVINGS,
-        balance_in=MinorUnit.from_major(3_286.11),
+        balance_in=MinorUnit.from_major(15_380.29),
     ),
 }
 
 revolving_credit = {
     "discover_card": RevolvingCreditBill(
         name_in="Discovery",
-        balance_in=MinorUnit.from_major(693.65),
+        balance_in=MinorUnit.from_major(10_923.60),
         account_type_in=AccountType.REVOLVING,
         initial_pay_date_in=date(2025, 11, 28),
         frequency_type_in=FrequencyType.MONTHLY,
@@ -94,7 +94,7 @@ revolving_credit = {
 incomes = {
     "primary_Income": Income(
         name_in="Primary Job",
-        income_in=MinorUnit.from_major(2_557.31),
+        income_in=MinorUnit.from_major(2_604.9),
         initial_pay_date_in=date(2025, 11, 6),
         account_contributions_in=[
             (accounts["primary_checking"], 0.9),  # 90% to primary checking
@@ -108,7 +108,7 @@ incomes = {
 bills = {
     "Mortgage": FinancedBill(
         name_in="Mortgage",
-        balance_in=MinorUnit.from_major(132_367.00),
+        balance_in=MinorUnit.from_major(131_315.21),
         account_type_in=AccountType.LOAN,
         initial_pay_date_in=date(2025, 11, 1),
         frequency_type_in=FrequencyType.MONTHLY,
@@ -128,11 +128,11 @@ bills = {
     ),
     "Car_Payment_Ford": FinancedBill(
         name_in="Car Payment - Ford",
-        balance_in=MinorUnit.from_major(28_000.00),
+        balance_in=MinorUnit.from_major(25_578.05),
         account_type_in=AccountType.LOAN,
-        initial_pay_date_in=date(2025, 11, 15),
+        initial_pay_date_in=date(2025, 11, 18),
         frequency_type_in=FrequencyType.MONTHLY,
-        minimum_payment_in=MinorUnit.from_major(450.00),
+        minimum_payment_in=MinorUnit.from_major(650.00),
         payment_method_in=accounts["primary_checking"],
         apr_rate_in=0.06,
         round_up=round_up_down,
@@ -186,7 +186,7 @@ bills = {
     ),
     "Internet": RecurringBill(
         name_in="Internet",
-        minimum_payment_in=MinorUnit.from_major(59.99),
+        minimum_payment_in=MinorUnit.from_major(69.99),
         account_type_in=AccountType.REOCCURRING,
         initial_pay_date_in=date(2025, 11, 3),
         frequency_type_in=FrequencyType.MONTHLY,
@@ -195,7 +195,7 @@ bills = {
     ),
     "Utilities": RecurringBill(
         name_in="Utilities",
-        minimum_payment_in=MinorUnit.from_major(150.00),
+        minimum_payment_in=MinorUnit.from_major(200.00),
         account_type_in=AccountType.REOCCURRING,
         initial_pay_date_in=date(2025, 11, 1),
         frequency_type_in=FrequencyType.MONTHLY,
@@ -220,30 +220,12 @@ bills = {
         payment_method_in=accounts["primary_checking"],
         round_up=round_up_down,
     ),
-    "Fun": RecurringBill(
-        name_in="Fun",
-        minimum_payment_in=MinorUnit.from_major(25.00),
-        account_type_in=AccountType.REOCCURRING,
-        initial_pay_date_in=date(2025, 11, 1),
-        frequency_type_in=FrequencyType.WEEKLY,
-        payment_method_in=accounts["primary_checking"],
-        round_up=round_up_down,
-    ),
     "Gas": RecurringBill(
         name_in="Gas",
         minimum_payment_in=MinorUnit.from_major(10.00),
         account_type_in=AccountType.REOCCURRING,
         initial_pay_date_in=date(2025, 11, 1),
         frequency_type_in=FrequencyType.WEEKLY,
-        payment_method_in=accounts["primary_checking"],
-        round_up=round_up_down,
-    ),
-    "Therapy": RecurringBill(
-        name_in="Therapy",
-        minimum_payment_in=MinorUnit.from_major(30.00),
-        account_type_in=AccountType.REOCCURRING,
-        initial_pay_date_in=date(2025, 11, 8),
-        frequency_type_in=FrequencyType.BI_WEEKLY,
         payment_method_in=accounts["primary_checking"],
         round_up=round_up_down,
     ),
@@ -260,7 +242,7 @@ bills = {
 
 
 today = date(2025, 11, 1)
-end_date = date(2035, 11, 1)
+end_date = date(today.year + 10, today.month, today.day)
 # Walk Through Each day until we reach last day
 while today < end_date:
     if today.day == 1:
