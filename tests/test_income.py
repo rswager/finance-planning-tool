@@ -10,8 +10,10 @@ from models.utils import MinorUnit
 
 @pytest.fixture
 def bank_accounts():
-    acc1 = BankAccount("Checking", MinorUnit.from_major(1_000.00), AccountType.CHECKING)
-    acc2 = BankAccount("Savings", MinorUnit.from_major(500.00), AccountType.SAVINGS)
+    acc1 = BankAccount(
+        name_in="Checking", balance_in=MinorUnit.from_major(1_000.00), account_type_in=AccountType.CHECKING
+    )
+    acc2 = BankAccount(name_in="Savings", balance_in=MinorUnit.from_major(500.00), account_type_in=AccountType.SAVINGS)
     return acc1, acc2
 
 
@@ -67,8 +69,8 @@ def test_deposit_updates_accounts(income, bank_accounts):
 
     assert acc1.balance_minor == MinorUnit.from_major(1_000.00) + income_minor * 0.6
     assert acc2.balance_minor == MinorUnit.from_major(500.00) + income_minor * 0.4
-    assert acc1.raw_copy_ledger[-1][2] == "Salary - Check"
-    assert acc2.raw_copy_ledger[-1][2] == "Salary - Check"
+    assert acc1.raw_copy_ledger[-1].description == "Salary - Check"
+    assert acc2.raw_copy_ledger[-1].description == "Salary - Check"
 
 
 def test_deposit_preserves_full_amount(bank_accounts):
@@ -91,11 +93,11 @@ def test_process_day_triggers_deposit(income, bank_accounts):
     acc1, acc2 = bank_accounts
 
     income.process_day(date(2025, 11, 7))
-    assert len(acc1.raw_copy_ledger) == 1
-    assert len(acc2.raw_copy_ledger) == 1
+    assert len(acc1.raw_copy_ledger) == 0
+    assert len(acc2.raw_copy_ledger) == 0
 
     income.process_day(date(2025, 11, 8))
-    assert len(acc1.raw_copy_ledger) == 2
-    assert len(acc2.raw_copy_ledger) == 2
-    assert acc1.raw_copy_ledger[-1][3] == 1_000 * 0.6
-    assert acc2.raw_copy_ledger[-1][3] == 1_000 * 0.4
+    assert len(acc1.raw_copy_ledger) == 1
+    assert len(acc2.raw_copy_ledger) == 1
+    assert acc1.raw_copy_ledger[-1].credit == 1_000 * 0.6
+    assert acc2.raw_copy_ledger[-1].credit == 1_000 * 0.4

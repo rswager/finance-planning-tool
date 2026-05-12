@@ -1,11 +1,11 @@
 from datetime import date
-from typing import Union
+from typing import Union, cast
 
 from models.accountInformation import AccountInformation
 from models.bankAccount import BankAccount
 from models.enumType import AccountType, FrequencyType
 from models.interest import Interest
-from models.ledger import Ledger
+from models.ledger import InterestLedgerRow, Ledger
 from models.revolving_credit_bill import RevolvingCreditBill
 from models.triggerDays import TriggerDays
 from models.utils import MajorUnit, MinorUnit, round_value
@@ -25,7 +25,7 @@ class FinancedBill:
         initial_pay_date_in: date,
         frequency_type_in: FrequencyType,
         minimum_payment_in: MinorUnit,
-        payment_method_in: Union["RevolvingCreditBill", "BankAccount"],
+        payment_method_in: Union[RevolvingCreditBill, BankAccount],
         apr_rate_in: float,
         round_up: bool = False,
     ) -> None:
@@ -62,20 +62,24 @@ class FinancedBill:
             balance_in=-balance_in if balance_in > 0 else balance_in,
             account_type_in=account_type_in,
         )
-        self._ledger = Ledger(["No.", "Date", "Description", "Credit", "Debit", "Balance", "Interest To Date"])
+        self._ledger = Ledger(columns=InterestLedgerRow.COLUMNS)
         self._trigger_days = TriggerDays(frequency_in=frequency_type_in)
         self._trigger_days.trigger_date = initial_pay_date_in
-        self._payment_method: Union["RevolvingCreditBill", "BankAccount"] = payment_method_in
+        self._payment_method: Union[RevolvingCreditBill, BankAccount] = payment_method_in
 
     @property
-    def raw_copy_ledger(self) -> list:
+    def raw_copy_ledger(self) -> list[InterestLedgerRow]:
         """list: A deep copy of the ledger for safe inspection or external use."""
-        return self._ledger.raw_copy_ledger
+        return cast(list[InterestLedgerRow], self._ledger.raw_copy_ledger)
 
     @property
     def ledger_col_count(self) -> int:
         """int: The number of columns defined in the ledger."""
         return self._ledger.col_count
+
+    @property
+    def ledger_header(self) -> list[str]:
+        return self._ledger.header
 
     @property
     def loan_balance_minor(self) -> MinorUnit:
@@ -155,13 +159,13 @@ class FinancedBill:
         """
         self._accountInfo.update_balance(credit=credit, debit=debit)
         self._ledger.add_entry_to_ledger(
-            [
-                self._ledger.row_number,
-                date_in,
-                action,
-                credit.to_major(),
-                debit.to_major(),
-                self.loan_balance_major,
-                self._interest.interest_to_date.to_major(),
-            ]
+            InterestLedgerRow(
+                row_number=self._ledger.row_number,
+                date=date_in,
+                description=action,
+                credit=credit.to_major(),
+                debit=debit.to_major(),
+                balance=self._accountInfo.balance.to_major(),
+                interest_to_date=self._interest.interest_to_date.to_major(),
+            )
         )

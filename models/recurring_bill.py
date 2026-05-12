@@ -1,13 +1,13 @@
 from datetime import date
-from typing import Union
+from typing import Union, cast
 
 from models.accountInformation import AccountInformation
 from models.bankAccount import BankAccount
 from models.enumType import AccountType, FrequencyType
-from models.ledger import Ledger
+from models.ledger import Ledger, RecurringLedgerRow
 from models.revolving_credit_bill import RevolvingCreditBill
 from models.triggerDays import TriggerDays
-from models.utils import MinorUnit, round_value
+from models.utils import MajorUnit, MinorUnit, round_value
 
 
 class RecurringBill:
@@ -23,7 +23,7 @@ class RecurringBill:
         account_type_in: AccountType,
         initial_pay_date_in: date,
         frequency_type_in: FrequencyType,
-        payment_method_in: Union["RevolvingCreditBill", "BankAccount"],
+        payment_method_in: Union[RevolvingCreditBill, BankAccount],
         round_up: bool = False,
     ) -> None:
         """
@@ -49,23 +49,27 @@ class RecurringBill:
         self._accountInfo = AccountInformation(
             name_in=name_in, balance_in=MinorUnit(0), account_type_in=account_type_in
         )
-        self._ledger = Ledger(columns=["No.", "Date", "Description", "Credit", "Total Paid To Date"])
+        self._ledger = Ledger(columns=RecurringLedgerRow.COLUMNS)
         self._minimum_payment = (
             minimum_payment_in if not round_up else round_value(minimum_payment_in, round_up=round_up)
         )
         self._trigger_days = TriggerDays(frequency_in=frequency_type_in)
         self._trigger_days.trigger_date = initial_pay_date_in
-        self._payment_method: Union["RevolvingCreditBill", "BankAccount"] = payment_method_in
+        self._payment_method: Union[RevolvingCreditBill, BankAccount] = payment_method_in
 
     @property
-    def raw_copy_ledger(self) -> list:
+    def raw_copy_ledger(self) -> list[RecurringLedgerRow]:
         """list: A deep copy of the ledger to prevent accidental modification."""
-        return self._ledger.raw_copy_ledger
+        return cast(list[RecurringLedgerRow], self._ledger.raw_copy_ledger)
 
     @property
     def ledger_col_count(self) -> int:
         """int: The number of columns in the ledger."""
         return self._ledger.col_count
+
+    @property
+    def ledger_header(self) -> list[str]:
+        return self._ledger.header
 
     @property
     def account_name(self) -> str:
@@ -94,13 +98,14 @@ class RecurringBill:
             debit=self._minimum_payment,
         )
         self._ledger.add_entry_to_ledger(
-            [
-                self._ledger.row_number,
-                date_in,
-                "Minimum Payment",
-                self._minimum_payment.to_major(),
-                self._accountInfo.balance.to_major(),
-            ]
+            RecurringLedgerRow(
+                row_number=self._ledger.row_number,
+                date=date_in,
+                description="Minimum Payment",
+                credit=self._minimum_payment.to_major(),
+                debit=MajorUnit(0),
+                paid_to_date=self._accountInfo.balance.to_major(),
+            )
         )
 
     def process_day(self, date_in: date) -> None:

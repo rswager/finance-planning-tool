@@ -1,8 +1,9 @@
 from datetime import date
+from typing import cast
 
 from models.accountInformation import AccountInformation
 from models.enumType import AccountType
-from models.ledger import Ledger
+from models.ledger import BankAccountLedgerRow, Ledger
 from models.utils import MajorUnit, MinorUnit
 
 
@@ -30,7 +31,7 @@ class BankAccount:
                 The type of account (e.g., SAVINGS, CHECKING, CREDIT).
         """
         self._accountInfo = AccountInformation(name_in, balance_in, account_type_in)
-        self._ledger = Ledger(columns=["No.", "Date", "Description", "Credit", "Debit", "Balance"])
+        self._ledger = Ledger(columns=BankAccountLedgerRow.COLUMNS)
 
     @property
     def balance_minor(self) -> MinorUnit:
@@ -43,14 +44,18 @@ class BankAccount:
         return self._accountInfo.balance.to_major()
 
     @property
-    def raw_copy_ledger(self) -> list:
+    def raw_copy_ledger(self) -> list[BankAccountLedgerRow]:
         """list: A deep copy of the ledger, safe to modify without affecting the original."""
-        return self._ledger.raw_copy_ledger
+        return cast(list[BankAccountLedgerRow], self._ledger.raw_copy_ledger)
 
     @property
     def ledger_col_count(self) -> int:
         """int: The number of columns defined in the ledger."""
         return self._ledger.col_count
+
+    @property
+    def ledger_header(self) -> list[str]:
+        return self._ledger.header
 
     @property
     def account_name(self) -> str:
@@ -79,12 +84,12 @@ class BankAccount:
         """
         self._accountInfo.update_balance(credit=credit, debit=debit)
         self._ledger.add_entry_to_ledger(
-            [
-                self._ledger.row_number,
-                date_in,
-                action,
-                credit.to_major(),
-                debit.to_major(),
-                self.balance_major,
-            ]
+            BankAccountLedgerRow(
+                row_number=self._ledger.row_number,
+                date=date_in,
+                description=action,
+                credit=credit.to_major(),
+                debit=debit.to_major(),
+                balance=self._accountInfo.balance.to_major(),
+            )
         )

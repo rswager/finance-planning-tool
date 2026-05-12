@@ -1,20 +1,25 @@
 import os
+from collections.abc import Sequence
 from datetime import date, timedelta
 
-import xlsxwriter
 from xlsxwriter.utility import xl_col_to_name
+from xlsxwriter.workbook import Workbook
+from xlsxwriter.worksheet import Worksheet
 
 from models.bankAccount import BankAccount
 from models.enumType import AccountType, FrequencyType
 from models.financed_bill import FinancedBill
 from models.income import Income
+from models.ledger import StandardLedgerRow
 from models.recurring_bill import RecurringBill
 from models.revolving_credit_bill import RevolvingCreditBill
 from models.utils import MinorUnit
 
 
-def add_table(worksheet_in, table_name_in, data_in):
-    header_in, *data = data_in
+def add_table(
+    worksheet_in: Worksheet, table_name_in: str, header_in: list[str], data_in: Sequence[StandardLedgerRow]
+) -> None:
+    data = [list(row) for row in data_in]
     if not data:
         return
     header = []
@@ -28,8 +33,11 @@ def add_table(worksheet_in, table_name_in, data_in):
         header.append(column_def)
 
     worksheet_in.add_table(
-        f"A1:{xl_col_to_name(len(header) - 1)}{len(data) + 1}",
-        {
+        first_row=0,
+        first_col=0,
+        last_row=len(data),
+        last_col=len(header) - 1,
+        options={
             "header_row": True,
             "data": data,
             "total_row": False,
@@ -59,19 +67,19 @@ accounts = {
     "primary_checking": BankAccount(
         name_in="Primary Checking",
         account_type_in=AccountType.CHECKING,
-        balance_in=MinorUnit.from_major(2_261.33),
+        balance_in=MinorUnit.from_major(571.75),
     ),
     "primary_savings": BankAccount(
         name_in="Primary Savings",
         account_type_in=AccountType.SAVINGS,
-        balance_in=MinorUnit.from_major(3_286.11),
+        balance_in=MinorUnit.from_major(15_380.29),
     ),
 }
 
 revolving_credit = {
     "discover_card": RevolvingCreditBill(
         name_in="Discovery",
-        balance_in=MinorUnit.from_major(693.65),
+        balance_in=MinorUnit.from_major(10_923.60),
         account_type_in=AccountType.REVOLVING,
         initial_pay_date_in=date(2025, 11, 28),
         frequency_type_in=FrequencyType.MONTHLY,
@@ -86,7 +94,7 @@ revolving_credit = {
 incomes = {
     "primary_Income": Income(
         name_in="Primary Job",
-        income_in=MinorUnit.from_major(2_557.31),
+        income_in=MinorUnit.from_major(2_604.9),
         initial_pay_date_in=date(2025, 11, 6),
         account_contributions_in=[
             (accounts["primary_checking"], 0.9),  # 90% to primary checking
@@ -100,7 +108,7 @@ incomes = {
 bills = {
     "Mortgage": FinancedBill(
         name_in="Mortgage",
-        balance_in=MinorUnit.from_major(132_367.00),
+        balance_in=MinorUnit.from_major(131_315.21),
         account_type_in=AccountType.LOAN,
         initial_pay_date_in=date(2025, 11, 1),
         frequency_type_in=FrequencyType.MONTHLY,
@@ -120,11 +128,11 @@ bills = {
     ),
     "Car_Payment_Ford": FinancedBill(
         name_in="Car Payment - Ford",
-        balance_in=MinorUnit.from_major(28_000.00),
+        balance_in=MinorUnit.from_major(25_578.05),
         account_type_in=AccountType.LOAN,
-        initial_pay_date_in=date(2025, 11, 15),
+        initial_pay_date_in=date(2025, 11, 18),
         frequency_type_in=FrequencyType.MONTHLY,
-        minimum_payment_in=MinorUnit.from_major(450.00),
+        minimum_payment_in=MinorUnit.from_major(650.00),
         payment_method_in=accounts["primary_checking"],
         apr_rate_in=0.06,
         round_up=round_up_down,
@@ -178,7 +186,7 @@ bills = {
     ),
     "Internet": RecurringBill(
         name_in="Internet",
-        minimum_payment_in=MinorUnit.from_major(59.99),
+        minimum_payment_in=MinorUnit.from_major(69.99),
         account_type_in=AccountType.REOCCURRING,
         initial_pay_date_in=date(2025, 11, 3),
         frequency_type_in=FrequencyType.MONTHLY,
@@ -187,7 +195,7 @@ bills = {
     ),
     "Utilities": RecurringBill(
         name_in="Utilities",
-        minimum_payment_in=MinorUnit.from_major(150.00),
+        minimum_payment_in=MinorUnit.from_major(200.00),
         account_type_in=AccountType.REOCCURRING,
         initial_pay_date_in=date(2025, 11, 1),
         frequency_type_in=FrequencyType.MONTHLY,
@@ -212,30 +220,12 @@ bills = {
         payment_method_in=accounts["primary_checking"],
         round_up=round_up_down,
     ),
-    "Fun": RecurringBill(
-        name_in="Fun",
-        minimum_payment_in=MinorUnit.from_major(25.00),
-        account_type_in=AccountType.REOCCURRING,
-        initial_pay_date_in=date(2025, 11, 1),
-        frequency_type_in=FrequencyType.WEEKLY,
-        payment_method_in=accounts["primary_checking"],
-        round_up=round_up_down,
-    ),
     "Gas": RecurringBill(
         name_in="Gas",
         minimum_payment_in=MinorUnit.from_major(10.00),
         account_type_in=AccountType.REOCCURRING,
         initial_pay_date_in=date(2025, 11, 1),
         frequency_type_in=FrequencyType.WEEKLY,
-        payment_method_in=accounts["primary_checking"],
-        round_up=round_up_down,
-    ),
-    "Therapy": RecurringBill(
-        name_in="Therapy",
-        minimum_payment_in=MinorUnit.from_major(30.00),
-        account_type_in=AccountType.REOCCURRING,
-        initial_pay_date_in=date(2025, 11, 8),
-        frequency_type_in=FrequencyType.BI_WEEKLY,
         payment_method_in=accounts["primary_checking"],
         round_up=round_up_down,
     ),
@@ -252,7 +242,7 @@ bills = {
 
 
 today = date(2025, 11, 1)
-end_date = date(2035, 11, 1)
+end_date = date(today.year + 10, today.month, today.day)
 # Walk Through Each day until we reach last day
 while today < end_date:
     if today.day == 1:
@@ -274,12 +264,17 @@ while today < end_date:
 
 downloads_folder = os.path.join(os.path.expanduser("~"), "Downloads")
 output_path = os.path.join(downloads_folder, "Output_Analysis.xlsx")
-workbook = xlsxwriter.Workbook(output_path)
+workbook = Workbook(output_path)
 accounting_format = workbook.add_format({"num_format": 44})
 date_format = workbook.add_format({"num_format": 14})
 for each in accounts:
     worksheet = workbook.add_worksheet(f"{each}_Table")
-    add_table(worksheet_in=worksheet, table_name_in=each, data_in=accounts[each].raw_copy_ledger)
+    add_table(
+        worksheet_in=worksheet,
+        table_name_in=each,
+        header_in=accounts[each].ledger_header,
+        data_in=accounts[each].raw_copy_ledger,
+    )
     add_chart(
         workbook_in=workbook,
         worksheet_in=worksheet,
@@ -290,7 +285,12 @@ for each in accounts:
 
 for each in revolving_credit:
     worksheet = workbook.add_worksheet(f"{each}_Table")
-    add_table(worksheet_in=worksheet, table_name_in=each, data_in=revolving_credit[each].raw_copy_ledger)
+    add_table(
+        worksheet_in=worksheet,
+        table_name_in=each,
+        header_in=revolving_credit[each].ledger_header,
+        data_in=revolving_credit[each].raw_copy_ledger,
+    )
     add_chart(
         workbook_in=workbook,
         worksheet_in=worksheet,
@@ -300,7 +300,12 @@ for each in revolving_credit:
 
 for each in bills:
     worksheet = workbook.add_worksheet(f"{each}_Table")
-    add_table(worksheet_in=worksheet, table_name_in=each, data_in=bills[each].raw_copy_ledger)
+    add_table(
+        worksheet_in=worksheet,
+        table_name_in=each,
+        header_in=bills[each].ledger_header,
+        data_in=bills[each].raw_copy_ledger,
+    )
     if isinstance(bills[each], FinancedBill):
         add_chart(
             workbook_in=workbook,
@@ -310,3 +315,7 @@ for each in bills:
         )
 
 workbook.close()
+
+
+if __name__ == "__main__":
+    pass
