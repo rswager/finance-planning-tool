@@ -10,16 +10,41 @@ This project uses [Pixi](https://pixi.sh) to manage the Python environment and d
 
 ### Prerequisites
 
-Install Pixi by running the following in PowerShell:
+Install Pixi using the method that matches your OS:
+
+**Windows**
 
 ```powershell
+# winget
 winget install prefix-dev.pixi
+
+# Scoop
+scoop install pixi
+
+# Official installer script
+iwr -useb https://pixi.sh/install.ps1 | iex
 ```
 
-Or via the official installer script:
+**macOS**
 
-```powershell
-iwr -useb https://pixi.sh/install.ps1 | iex
+```bash
+# Homebrew
+brew install pixi
+
+# Official installer script
+curl -fsSL https://pixi.sh/install.sh | bash
+```
+
+**Linux**
+
+```bash
+curl -fsSL https://pixi.sh/install.sh | bash
+```
+
+After installing, verify with:
+
+```bash
+pixi --version
 ```
 
 ### Install the environment
@@ -36,7 +61,7 @@ This resolves and installs all dependencies (including dev tools) into an isolat
 
 ## Running the application
 
-`main.py` is the simulation entry point. It walks through every day between a start and end date, processing income deposits, interest accrual, and bill payments for each configured account. When the simulation finishes it writes a multi-sheet Excel workbook to `C:\Users\<username>\Downloads\Output_Analysis.xlsx` — one sheet per account or bill, each with a transaction ledger table and a projected balance line chart.
+`main.py` is the simulation entry point. It walks through every day between a start and end date, processing income deposits, interest accrual, and bill payments for each configured account. When the simulation finishes it writes a multi-sheet Excel workbook to `~/Downloads/Output_Analysis.xlsx` — one sheet per account or bill, each with a transaction ledger table and a projected balance line chart.
 
 ```bash
 pixi run python main.py
@@ -178,7 +203,5 @@ finance-planning-tool/
 ├── .pre-commit-config.yaml  # pre-commit hook definitions
 └── TODO.md                  # known issues and design improvements
 ```
-
-> **Note:** The pixi environment is currently configured for `win-64` only. Running `pixi install` on macOS or Linux will require adding the appropriate platform to `pyproject.toml`.
 
 > **AI assistants:** See `CLAUDE.md` for project conventions and guidelines.
