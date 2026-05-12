@@ -175,3 +175,15 @@ class RevolvingCreditBill:
                 interest_to_date=self._interest.interest_to_date.to_major(),
             )
         )
+
+    def initialize_simulation_date(self, simulation_start_date: date) -> None:
+        """
+        Align the trigger date to the simulation start date before the simulation runs.
+
+        Parameters
+        ----------
+        simulation_start_date : date
+            The date the simulation begins. The trigger date will be advanced or
+            rewound to the first scheduled occurrence on or after this date.
+        """
+        self._trigger_days.bring_trigger_date_to_target_date(simulation_start_date)

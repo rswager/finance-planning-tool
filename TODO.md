@@ -4,7 +4,7 @@
 
 | Priority | Item |
 |---|---|
-| 🔴 High | `TriggerDays` does not advance past initial pay dates — if `initial_pay_date_in` is before the simulation start date, the trigger never fires; `TriggerDays` should fast-forward to the next occurrence on or after the first processed day |
+|---| NO BUGS TO ADDRESS
 
 ## Design
 

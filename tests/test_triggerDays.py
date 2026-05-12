@@ -24,6 +24,21 @@ def weekly_trigger():
     return TriggerDays(FrequencyType.WEEKLY)
 
 
+@pytest.fixture
+def daily_trigger():
+    return TriggerDays(FrequencyType.DAILY)
+
+
+@pytest.fixture
+def yearly_trigger():
+    return TriggerDays(FrequencyType.YEARLY)
+
+
+@pytest.fixture
+def singular_trigger():
+    return TriggerDays(FrequencyType.SINGULAR)
+
+
 # --- Tests ---
 def test_trigger_date_setter(monthly_trigger):
     """Dates <= 28 should be added as-is."""
@@ -90,3 +105,43 @@ def test_date_triggered_returns_false_when_not_found(weekly_trigger):
     assert weekly_trigger.date_triggered(d) is False
     # Nothing new should be added
     assert weekly_trigger.trigger_date is None
+
+
+@pytest.mark.parametrize(
+    "target_date,init_date,final_date,trigger",
+    [
+        # Weekly, already on target
+        (date(2025, 1, 1), date(2025, 1, 1), date(2025, 1, 1), TriggerDays(FrequencyType.WEEKLY)),
+        # Weekly backward overshoot -> correction forward
+        (date(2025, 1, 1), date(2025, 1, 2), date(2025, 1, 2), TriggerDays(FrequencyType.WEEKLY)),
+        # Multiple Weekly forward
+        (date(2025, 1, 1), date(2024, 12, 2), date(2025, 1, 6), TriggerDays(FrequencyType.WEEKLY)),
+        # forward, lands exactly on target
+        (date(2025, 1, 1), date(2024, 12, 25), date(2025, 1, 1), TriggerDays(FrequencyType.WEEKLY)),
+        # backward, lands exactly on target
+        (date(2025, 1, 1), date(2025, 2, 5), date(2025, 1, 1), TriggerDays(FrequencyType.WEEKLY)),
+        # backward overshoot -> correction forward
+        (date(2025, 1, 2), date(2025, 1, 10), date(2025, 1, 3), TriggerDays(FrequencyType.WEEKLY)),
+        # monthly forward, multiple steps
+        (date(2025, 3, 1), date(2025, 1, 15), date(2025, 3, 15), TriggerDays(FrequencyType.MONTHLY)),
+        # monthly backward, overshoot -> correction forward
+        (date(2025, 3, 1), date(2025, 6, 15), date(2025, 3, 15), TriggerDays(FrequencyType.MONTHLY)),
+        # singular: early return, trigger unchanged
+        (date(2025, 2, 1), date(2025, 1, 1), date(2025, 1, 1), TriggerDays(FrequencyType.SINGULAR)),
+    ],
+)
+def test_bring_trigger_date_to_target_date(target_date: date, init_date: date, final_date: date, trigger: TriggerDays):
+    trigger.trigger_date = init_date
+    trigger.bring_trigger_date_to_target_date(target_date)
+    assert trigger.trigger_date == final_date
+
+
+def test_bring_trigger_date_to_target_date_raises_when_trigger_not_set(weekly_trigger: TriggerDays):
+    with pytest.raises(ValueError):
+        weekly_trigger.bring_trigger_date_to_target_date(date(2025, 1, 1))
+
+
+def test_bring_trigger_date_to_target_date_raises_on_invalid_target_type(weekly_trigger: TriggerDays):
+    weekly_trigger.trigger_date = date(2025, 1, 1)
+    with pytest.raises(TypeError):
+        weekly_trigger.bring_trigger_date_to_target_date("2025/1/1")  # type: ignore

@@ -243,6 +243,12 @@ bills = {
 
 today = date(2025, 11, 1)
 end_date = date(today.year + 10, today.month, today.day)
+
+# let's update the initial dates to the simulated date
+for collection in (bills, incomes, revolving_credit):
+    for bill in collection:
+        collection[bill].initialize_simulation_date(today)
+
 # Walk Through Each day until we reach last day
 while today < end_date:
     if today.day == 1:
