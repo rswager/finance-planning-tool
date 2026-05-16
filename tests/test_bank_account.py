@@ -2,8 +2,8 @@ from datetime import date
 
 import pytest
 
-from models.bankAccount import BankAccount
-from models.enumType import AccountType
+from models.bank_account import BankAccount
+from models.enum_type import AccountType
 from models.ledger import BankAccountLedgerRow
 from models.utils import MajorUnit, MinorUnit
 

@@ -1,9 +1,9 @@
 from datetime import date
 from typing import List, Tuple
 
-from models.bankAccount import BankAccount
-from models.enumType import FrequencyType
-from models.triggerDays import TriggerDays
+from models.bank_account import BankAccount
+from models.enum_type import FrequencyType
+from models.trigger_days import TriggerDays
 from models.utils import MinorUnit, round_value
 
 

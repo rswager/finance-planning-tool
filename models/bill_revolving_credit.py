@@ -1,12 +1,12 @@
 from datetime import date
 from typing import Union, cast
 
-from models.accountInformation import AccountInformation
-from models.bankAccount import BankAccount
-from models.enumType import AccountType, FrequencyType
+from models.account_information import AccountInformation
+from models.bank_account import BankAccount
+from models.enum_type import AccountType, FrequencyType
 from models.interest import Interest
 from models.ledger import InterestLedgerRow, Ledger
-from models.triggerDays import TriggerDays
+from models.trigger_days import TriggerDays
 from models.utils import MajorUnit, MinorUnit, round_value
 
 

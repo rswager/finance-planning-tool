@@ -2,9 +2,9 @@ from datetime import date, timedelta
 
 import pytest
 
-from models.bankAccount import BankAccount
-from models.enumType import AccountType, FrequencyType
-from models.revolving_credit_bill import RevolvingCreditBill
+from models.bank_account import BankAccount
+from models.bill_revolving_credit import RevolvingCreditBill
+from models.enum_type import AccountType, FrequencyType
 from models.utils import MajorUnit, MinorUnit
 
 

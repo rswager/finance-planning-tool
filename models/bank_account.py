@@ -1,8 +1,8 @@
 from datetime import date
 from typing import cast
 
-from models.accountInformation import AccountInformation
-from models.enumType import AccountType
+from models.account_information import AccountInformation
+from models.enum_type import AccountType
 from models.ledger import BankAccountLedgerRow, Ledger
 from models.utils import MajorUnit, MinorUnit
 
