@@ -49,8 +49,9 @@ def add_table(
     )
 
 
-def add_chart(workbook_in, worksheet_in, table_name_in, col_in):
+def add_chart(workbook_in: Workbook, worksheet_in: Worksheet, table_name_in: str, col_in: str) -> None:
     chart = workbook_in.add_chart({"type": "line"})
+    assert chart is not None
     chart.add_series(
         {
             "categories": f"{table_name_in}_Table[Date]",

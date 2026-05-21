@@ -1,5 +1,4 @@
 from datetime import date
-from typing import List, Tuple
 
 from models.bank_account import BankAccount
 from models.enum_type import FrequencyType
@@ -18,7 +17,7 @@ class Income:
         name_in: str,
         income_in: MinorUnit,
         initial_pay_date_in: date,
-        account_contributions_in: List[Tuple[BankAccount, float]],
+        account_contributions_in: list[tuple[BankAccount, float]],
         frequency_type_in: FrequencyType,
         round_down: bool = False,
     ) -> None:
@@ -45,10 +44,10 @@ class Income:
         self._income_amount = income_in if not round_down else round_value(income_in, round_up=not round_down)
         self._trigger_days = TriggerDays(frequency_type_in)
         self._trigger_days.trigger_date = initial_pay_date_in
-        self._account_contributions: List[Tuple[BankAccount, float]] = []
+        self._account_contributions: list[tuple[BankAccount, float]] = []
         self.set_account_contribution(account_contributions_in)
 
-    def set_account_contribution(self, contributions: List[Tuple[BankAccount, float]]) -> None:
+    def set_account_contribution(self, contributions: list[tuple[BankAccount, float]]) -> None:
         """
         Set or update the account contributions for this income.
 

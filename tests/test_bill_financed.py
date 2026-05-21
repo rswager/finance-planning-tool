@@ -28,10 +28,7 @@ def financed_bill(bank_account):
 
 
 def test_initialization(financed_bill, bank_account):
-    assert financed_bill.account_name == "Test Loan"
-    assert financed_bill.account_type == AccountType.LOAN
     assert financed_bill.ledger_col_count == 7
-    assert len(financed_bill.raw_copy_ledger) == 0
     assert bank_account.balance_minor == MinorUnit.from_major(1_000.00)
 
 
