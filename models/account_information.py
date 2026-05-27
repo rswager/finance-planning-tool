@@ -1,4 +1,4 @@
-from models.enumType import AccountType
+from models.enum_type import AccountType
 from models.utils import MinorUnit
 
 

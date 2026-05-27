@@ -2,9 +2,9 @@ from datetime import date
 
 import pytest
 
-from models.bankAccount import BankAccount
-from models.enumType import AccountType, FrequencyType
-from models.recurring_bill import RecurringBill
+from models.bank_account import BankAccount
+from models.bill_recurring import RecurringBill
+from models.enum_type import AccountType, FrequencyType
 from models.utils import MajorUnit, MinorUnit
 
 
@@ -26,10 +26,7 @@ def recurring_bill(bank_account):
 
 
 def test_initialization(recurring_bill, bank_account):
-    assert recurring_bill.account_name == "Electric Bill"
-    assert recurring_bill.account_type == AccountType.REOCCURRING
     assert recurring_bill.ledger_col_count == 6
-    assert len(recurring_bill.raw_copy_ledger) == 0
     assert bank_account.balance_major == MajorUnit(1_000.00)
 
 

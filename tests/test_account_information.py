@@ -1,7 +1,7 @@
 import pytest
 
-from models.accountInformation import AccountInformation
-from models.enumType import AccountType
+from models.account_information import AccountInformation
+from models.enum_type import AccountType
 from models.utils import MinorUnit
 
 

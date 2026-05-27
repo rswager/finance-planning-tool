@@ -10,6 +10,4 @@
 
 | Priority | Item |
 |---|---|
-| 🟡 Medium | `FinancedBill` and `RevolvingCreditBill` are ~80% identical — `make_payment`, `apply_daily_interest`, `process_day`, and all display properties are duplicated verbatim; extract a shared base class |
-| 🟢 Low | `round_up_down = False` is a confusing name for a single bool that controls two inverse parameters (`round_up` / `round_down`) |
-| 🟢 Low | `add_chart()` in `main.py` has no type annotations |
+|---| NOTHING TO ADDRESS

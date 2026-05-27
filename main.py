@@ -6,13 +6,13 @@ from xlsxwriter.utility import xl_col_to_name
 from xlsxwriter.workbook import Workbook
 from xlsxwriter.worksheet import Worksheet
 
-from models.bankAccount import BankAccount
-from models.enumType import AccountType, FrequencyType
-from models.financed_bill import FinancedBill
+from models.bank_account import BankAccount
+from models.bill_financed import FinancedBill
+from models.bill_recurring import RecurringBill
+from models.bill_revolving_credit import RevolvingCreditBill
+from models.enum_type import AccountType, FrequencyType
 from models.income import Income
 from models.ledger import StandardLedgerRow
-from models.recurring_bill import RecurringBill
-from models.revolving_credit_bill import RevolvingCreditBill
 from models.utils import MinorUnit
 
 
@@ -49,8 +49,9 @@ def add_table(
     )
 
 
-def add_chart(workbook_in, worksheet_in, table_name_in, col_in):
+def add_chart(workbook_in: Workbook, worksheet_in: Worksheet, table_name_in: str, col_in: str) -> None:
     chart = workbook_in.add_chart({"type": "line"})
+    assert chart is not None
     chart.add_series(
         {
             "categories": f"{table_name_in}_Table[Date]",
@@ -62,7 +63,7 @@ def add_chart(workbook_in, worksheet_in, table_name_in, col_in):
     worksheet_in.insert_chart(f"{col_in}1", chart, {"x_scale": 2.5, "y_scale": 2.5})
 
 
-round_up_down = False
+round_up_expenses_round_down_income = False
 accounts = {
     "primary_checking": BankAccount(
         name_in="Primary Checking",
@@ -87,7 +88,7 @@ revolving_credit = {
         payment_method_in=accounts["primary_checking"],
         apr_rate_in=0.15,
         credit_limit_in=MinorUnit.from_major(30_000.00),
-        round_up=round_up_down,
+        round_up=round_up_expenses_round_down_income,
     )
 }
 
@@ -101,7 +102,7 @@ incomes = {
             (accounts["primary_savings"], 0.1),  # 10% to primary savings
         ],
         frequency_type_in=FrequencyType.BI_WEEKLY,
-        round_down=round_up_down,
+        round_down=round_up_expenses_round_down_income,
     )
 }
 
@@ -115,7 +116,7 @@ bills = {
         minimum_payment_in=MinorUnit.from_major(924.35),
         payment_method_in=accounts["primary_checking"],
         apr_rate_in=0.0725,
-        round_up=round_up_down,
+        round_up=round_up_expenses_round_down_income,
     ),
     "Mortgage_Escrow": RecurringBill(
         name_in="Mortgage_Escrow",
@@ -124,7 +125,7 @@ bills = {
         initial_pay_date_in=date(2025, 11, 1),
         frequency_type_in=FrequencyType.MONTHLY,
         payment_method_in=accounts["primary_checking"],
-        round_up=round_up_down,
+        round_up=round_up_expenses_round_down_income,
     ),
     "Car_Payment_Ford": FinancedBill(
         name_in="Car Payment - Ford",
@@ -135,7 +136,7 @@ bills = {
         minimum_payment_in=MinorUnit.from_major(650.00),
         payment_method_in=accounts["primary_checking"],
         apr_rate_in=0.06,
-        round_up=round_up_down,
+        round_up=round_up_expenses_round_down_income,
     ),
     "Student_Loans": FinancedBill(
         name_in="Student Loans",
@@ -146,7 +147,7 @@ bills = {
         minimum_payment_in=MinorUnit.from_major(461.00),
         payment_method_in=accounts["primary_checking"],
         apr_rate_in=0.03,
-        round_up=round_up_down,
+        round_up=round_up_expenses_round_down_income,
     ),
     "Netflix": RecurringBill(
         name_in="Netflix",
@@ -155,7 +156,7 @@ bills = {
         initial_pay_date_in=date(2025, 11, 9),
         frequency_type_in=FrequencyType.MONTHLY,
         payment_method_in=accounts["primary_checking"],
-        round_up=round_up_down,
+        round_up=round_up_expenses_round_down_income,
     ),
     "Car_Insurance": RecurringBill(
         name_in="Car Insurance",
@@ -164,7 +165,7 @@ bills = {
         initial_pay_date_in=date(2025, 11, 16),
         frequency_type_in=FrequencyType.MONTHLY,
         payment_method_in=accounts["primary_checking"],
-        round_up=round_up_down,
+        round_up=round_up_expenses_round_down_income,
     ),
     "CrunchyRoll": RecurringBill(
         name_in="CrunchyRoll",
@@ -173,7 +174,7 @@ bills = {
         initial_pay_date_in=date(2025, 11, 13),
         frequency_type_in=FrequencyType.MONTHLY,
         payment_method_in=revolving_credit["discover_card"],
-        round_up=round_up_down,
+        round_up=round_up_expenses_round_down_income,
     ),
     "Spotify": RecurringBill(
         name_in="Spotify",
@@ -182,7 +183,7 @@ bills = {
         initial_pay_date_in=date(2025, 11, 13),
         frequency_type_in=FrequencyType.MONTHLY,
         payment_method_in=revolving_credit["discover_card"],
-        round_up=round_up_down,
+        round_up=round_up_expenses_round_down_income,
     ),
     "Internet": RecurringBill(
         name_in="Internet",
@@ -191,7 +192,7 @@ bills = {
         initial_pay_date_in=date(2025, 11, 3),
         frequency_type_in=FrequencyType.MONTHLY,
         payment_method_in=accounts["primary_checking"],
-        round_up=round_up_down,
+        round_up=round_up_expenses_round_down_income,
     ),
     "Utilities": RecurringBill(
         name_in="Utilities",
@@ -200,7 +201,7 @@ bills = {
         initial_pay_date_in=date(2025, 11, 1),
         frequency_type_in=FrequencyType.MONTHLY,
         payment_method_in=accounts["primary_checking"],
-        round_up=round_up_down,
+        round_up=round_up_expenses_round_down_income,
     ),
     "ADT": RecurringBill(
         name_in="ADT",
@@ -209,7 +210,7 @@ bills = {
         initial_pay_date_in=date(2025, 11, 15),
         frequency_type_in=FrequencyType.MONTHLY,
         payment_method_in=accounts["primary_checking"],
-        round_up=round_up_down,
+        round_up=round_up_expenses_round_down_income,
     ),
     "Food": RecurringBill(
         name_in="Food",
@@ -218,7 +219,7 @@ bills = {
         initial_pay_date_in=date(2025, 11, 1),
         frequency_type_in=FrequencyType.WEEKLY,
         payment_method_in=accounts["primary_checking"],
-        round_up=round_up_down,
+        round_up=round_up_expenses_round_down_income,
     ),
     "Gas": RecurringBill(
         name_in="Gas",
@@ -227,7 +228,7 @@ bills = {
         initial_pay_date_in=date(2025, 11, 1),
         frequency_type_in=FrequencyType.WEEKLY,
         payment_method_in=accounts["primary_checking"],
-        round_up=round_up_down,
+        round_up=round_up_expenses_round_down_income,
     ),
     "Cat_Bill": RecurringBill(
         name_in="Cat_Bill",
@@ -236,7 +237,7 @@ bills = {
         initial_pay_date_in=date(2025, 11, 28),
         frequency_type_in=FrequencyType.BI_WEEKLY,
         payment_method_in=accounts["primary_checking"],
-        round_up=round_up_down,
+        round_up=round_up_expenses_round_down_income,
     ),
 }
 

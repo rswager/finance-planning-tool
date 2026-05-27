@@ -57,16 +57,16 @@ class Ledger:
             The number of columns in the ledger.
     """
 
-    def __init__(self, columns: list[str]) -> None:
+    def __init__(self, ledger_row_type: type[StandardLedgerRow]) -> None:
         """
         Initialize a Ledger with column headers.
 
         Parameters
         ----------
-        columns : list[str]
-            A list of column names for the ledger.
+        ledger_row_type : type[StandardLedgerRow]
+                The ledger row class to use for this bill (e.g. RecurringLedgerRow, InterestLedgerRow).
         """
-        self._header: list[str] = columns
+        self._header: list[str] = ledger_row_type.COLUMNS  # type: ignore[attr-defined]
         self._ledger: list[StandardLedgerRow] = []
         self._col_count = len(self._header)
 

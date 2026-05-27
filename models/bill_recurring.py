@@ -1,0 +1,101 @@
+from datetime import date
+from typing import cast
+
+from models.bill_base import BillBase
+from models.enum_type import AccountType, FrequencyType
+from models.ledger import RecurringLedgerRow
+from models.protocols import Chargeable
+from models.utils import MajorUnit, MinorUnit
+
+
+class RecurringBill(BillBase):
+    """
+    Represents a recurring bill with a fixed minimum payment that is applied at
+    a specified frequency to a designated payment method (Chargeable).
+    """
+
+    def __init__(
+        self,
+        name_in: str,
+        minimum_payment_in: MinorUnit,
+        account_type_in: AccountType,
+        initial_pay_date_in: date,
+        frequency_type_in: FrequencyType,
+        payment_method_in: Chargeable,
+        round_up: bool = False,
+    ) -> None:
+        """
+        Initialize a RecurringBill instance.
+
+        Parameters
+        ----------
+            name_in : str
+                The name of the bill.
+            minimum_payment_in : MinorUnit
+                The minimum payment amount per period in minor units (e.g. cents).
+            account_type_in : AccountType
+                Type of account associated with the bill.
+            initial_pay_date_in : date
+                The first date the payment should be applied.
+            frequency_type_in : FrequencyType
+                How often the payment is made (e.g., MONTHLY, BI_WEEKLY).
+            payment_method_in : Chargeable
+                The account or credit bill that receives the payment.
+            round_up : bool, optional
+                If True, rounds the minimum payment up for conservative budgeting.
+        """
+        super().__init__(
+            name_in=name_in,
+            minimum_payment_in=minimum_payment_in,
+            account_type_in=account_type_in,
+            balance_in=MinorUnit(0),
+            initial_pay_date_in=initial_pay_date_in,
+            frequency_type_in=frequency_type_in,
+            payment_method_in=payment_method_in,
+            ledger_row_type=RecurringLedgerRow,
+            round_up=round_up,
+        )
+
+    @property
+    def raw_copy_ledger(self) -> list[RecurringLedgerRow]:
+        """list: A deep copy of the ledger to prevent accidental modification."""
+        return cast(list[RecurringLedgerRow], self._ledger.raw_copy_ledger)  # noqa
+
+    def process_day(self, date_in: date) -> None:
+        """
+        Process a single day, applying a payment if it matches a trigger date.
+
+        Parameters
+        ----------
+            date_in : date
+                The date being processed.
+        """
+        if self._trigger_days.date_triggered(date_in):
+            self.make_payment(date_in=date_in)
+
+    def make_payment(self, date_in: date) -> None:
+        """
+        Apply the minimum payment to the bill and record it in the ledger.
+
+        Parameters
+        ----------
+            date_in : date
+                The date on which the payment is applied.
+        """
+        self._accountInfo.update_balance(credit=self._minimum_payment)
+        self._payment_method.make_a_transaction(
+            date_in=date_in,
+            action=f"{self.account_name}-Payment",
+            credit=MinorUnit(0),
+            debit=self._minimum_payment,
+        )
+        self._ledger.add_entry_to_ledger(
+            RecurringLedgerRow(
+                row_number=self._ledger.row_number,
+                date=date_in,
+                description="Minimum Payment",
+                credit=self._minimum_payment.to_major(),
+                debit=MajorUnit(0),
+                paid_to_date=self._accountInfo.balance.to_major(),
+            )
+        )

@@ -3,8 +3,8 @@ from datetime import date
 import pytest
 from dateutil.relativedelta import relativedelta
 
-from models.enumType import FrequencyType
-from models.triggerDays import TriggerDays
+from models.enum_type import FrequencyType
+from models.trigger_days import TriggerDays
 
 # --- Fixtures ---
 

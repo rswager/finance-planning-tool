@@ -1,9 +1,8 @@
-import typing
 from datetime import date
 
 from dateutil.relativedelta import relativedelta
 
-from models.enumType import FrequencyType
+from models.enum_type import FrequencyType
 
 
 class TriggerDays:
@@ -29,11 +28,11 @@ class TriggerDays:
         frequency_in : FrequencyType
             How often the trigger should occur.
         """
-        self._trigger_date: typing.Optional[date] = None
+        self._trigger_date: date | None = None
         self._frequency: FrequencyType = frequency_in
 
     @property
-    def trigger_date(self) -> typing.Optional[date]:
+    def trigger_date(self) -> date | None:
         """
         date | None: The currently scheduled trigger date.
 
@@ -45,7 +44,7 @@ class TriggerDays:
         return self._trigger_date
 
     @trigger_date.setter
-    def trigger_date(self, date_in: date):
+    def trigger_date(self, date_in: date) -> None:
         """
         Set the next trigger date.
 

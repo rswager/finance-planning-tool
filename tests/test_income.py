@@ -2,8 +2,8 @@ from datetime import date
 
 import pytest
 
-from models.bankAccount import BankAccount
-from models.enumType import AccountType, FrequencyType
+from models.bank_account import BankAccount
+from models.enum_type import AccountType, FrequencyType
 from models.income import Income
 from models.utils import MinorUnit
 

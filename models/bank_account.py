@@ -1,8 +1,8 @@
 from datetime import date
 from typing import cast
 
-from models.accountInformation import AccountInformation
-from models.enumType import AccountType
+from models.account_information import AccountInformation
+from models.enum_type import AccountType
 from models.ledger import BankAccountLedgerRow, Ledger
 from models.utils import MajorUnit, MinorUnit
 
@@ -31,7 +31,7 @@ class BankAccount:
                 The type of account (e.g., SAVINGS, CHECKING, CREDIT).
         """
         self._accountInfo = AccountInformation(name_in, balance_in, account_type_in)
-        self._ledger = Ledger(columns=BankAccountLedgerRow.COLUMNS)
+        self._ledger = Ledger(ledger_row_type=BankAccountLedgerRow)
 
     @property
     def balance_minor(self) -> MinorUnit:
@@ -46,7 +46,7 @@ class BankAccount:
     @property
     def raw_copy_ledger(self) -> list[BankAccountLedgerRow]:
         """list: A deep copy of the ledger, safe to modify without affecting the original."""
-        return cast(list[BankAccountLedgerRow], self._ledger.raw_copy_ledger)
+        return cast(list[BankAccountLedgerRow], self._ledger.raw_copy_ledger)  # noqa
 
     @property
     def ledger_col_count(self) -> int:

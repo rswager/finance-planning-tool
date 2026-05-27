@@ -1,17 +1,15 @@
 from datetime import date
-from typing import Union, cast
+from typing import cast
 
-from models.accountInformation import AccountInformation
-from models.bankAccount import BankAccount
-from models.enumType import AccountType, FrequencyType
+from models.bill_base import BillBase
+from models.enum_type import AccountType, FrequencyType
 from models.interest import Interest
-from models.ledger import InterestLedgerRow, Ledger
-from models.revolving_credit_bill import RevolvingCreditBill
-from models.triggerDays import TriggerDays
-from models.utils import MajorUnit, MinorUnit, round_value
+from models.ledger import InterestLedgerRow
+from models.protocols import Chargeable
+from models.utils import MajorUnit, MinorUnit
 
 
-class FinancedBill:
+class FinancedBill(BillBase):
     """
     Represents a financed bill or loan with interest accrual, minimum payments,
     and an associated ledger to track all transactions and interest applied.
@@ -25,7 +23,7 @@ class FinancedBill:
         initial_pay_date_in: date,
         frequency_type_in: FrequencyType,
         minimum_payment_in: MinorUnit,
-        payment_method_in: Union[RevolvingCreditBill, BankAccount],
+        payment_method_in: Chargeable,
         apr_rate_in: float,
         round_up: bool = False,
     ) -> None:
@@ -46,40 +44,32 @@ class FinancedBill:
                 The frequency with which payments are due (e.g., MONTHLY, BI_WEEKLY).
             minimum_payment_in : MinorUnit
                 The minimum amount to pay each cycle in minor units.
-            payment_method_in : Union[RevolvingCreditBill, BankAccount]
+            payment_method_in : Chargeable
                 The account or credit source used to make payments.
             apr_rate_in : float
                 The annual percentage rate as a fraction (e.g., 0.05 for 5% APR).
             round_up : bool, optional
                 Whether to round up the minimum payment for conservative budgeting.
         """
-        self._interest = Interest(apr_rate_in)
-        self._minimum_payment: MinorUnit = (
-            minimum_payment_in if not round_up else round_value(minimum_payment_in, round_up=round_up)
-        )
-        self._accountInfo = AccountInformation(
+        # This is a debt!
+        balance_in = -balance_in if balance_in > 0 else balance_in
+        super().__init__(
             name_in=name_in,
-            balance_in=-balance_in if balance_in > 0 else balance_in,
+            minimum_payment_in=minimum_payment_in,
             account_type_in=account_type_in,
+            balance_in=balance_in,
+            initial_pay_date_in=initial_pay_date_in,
+            frequency_type_in=frequency_type_in,
+            payment_method_in=payment_method_in,
+            ledger_row_type=InterestLedgerRow,
+            round_up=round_up,
         )
-        self._ledger = Ledger(columns=InterestLedgerRow.COLUMNS)
-        self._trigger_days = TriggerDays(frequency_in=frequency_type_in)
-        self._trigger_days.trigger_date = initial_pay_date_in
-        self._payment_method: Union[RevolvingCreditBill, BankAccount] = payment_method_in
+        self._interest = Interest(apr_rate_in)
 
     @property
     def raw_copy_ledger(self) -> list[InterestLedgerRow]:
         """list: A deep copy of the ledger for safe inspection or external use."""
-        return cast(list[InterestLedgerRow], self._ledger.raw_copy_ledger)
-
-    @property
-    def ledger_col_count(self) -> int:
-        """int: The number of columns defined in the ledger."""
-        return self._ledger.col_count
-
-    @property
-    def ledger_header(self) -> list[str]:
-        return self._ledger.header
+        return cast(list[InterestLedgerRow], self._ledger.raw_copy_ledger)  # noqa
 
     @property
     def loan_balance_minor(self) -> MinorUnit:
@@ -90,16 +80,6 @@ class FinancedBill:
     def loan_balance_major(self) -> MajorUnit:
         """MajorUnit: The current outstanding balance in major units (e.g. dollars)."""
         return self._accountInfo.balance.to_major()
-
-    @property
-    def account_name(self) -> str:
-        """str: The name of this financed bill."""
-        return self._accountInfo.account_name
-
-    @property
-    def account_type(self) -> AccountType:
-        """AccountType: The type of this account (e.g., LOAN, REVOLVING)."""
-        return self._accountInfo.account_type
 
     def make_payment(self, date_in: date) -> None:
         """
@@ -169,15 +149,3 @@ class FinancedBill:
                 interest_to_date=self._interest.interest_to_date.to_major(),
             )
         )
-
-    def initialize_simulation_date(self, simulation_start_date: date) -> None:
-        """
-        Align the trigger date to the simulation start date before the simulation runs.
-
-        Parameters
-        ----------
-        simulation_start_date : date
-            The date the simulation begins. The trigger date will be advanced or
-            rewound to the first scheduled occurrence on or after this date.
-        """
-        self._trigger_days.bring_trigger_date_to_target_date(simulation_start_date)

@@ -9,34 +9,22 @@ from models.utils import MajorUnit
 
 
 @pytest.fixture
-def columns():
-    """Default ledger column headers."""
-    return StandardLedgerRow.COLUMNS
-
-
-@pytest.fixture
-def ledger(columns):
+def ledger():
     """Ledger instance initialized with default columns."""
-    return Ledger(columns)
-
-
-@pytest.fixture
-def empty_ledger():
-    """Ledger with no columns."""
-    return Ledger([])
+    return Ledger(ledger_row_type=StandardLedgerRow)
 
 
 # --- Tests ---
 
 
-def test_ledger_initialization(columns, ledger):
+def test_ledger_initialization(ledger):
     """Ensure ledger initializes with given columns."""
-    assert ledger.header == columns
+    assert ledger.header == StandardLedgerRow.COLUMNS
 
 
-def test_col_count(columns, ledger):
+def test_col_count(ledger):
     """Ensure column count is correct."""
-    assert ledger.col_count == len(columns)
+    assert ledger.col_count == len(StandardLedgerRow.COLUMNS)
 
 
 def test_add_valid_entry(ledger):
@@ -77,24 +65,6 @@ def test_ledger_returns_copy(ledger):
         )
     )
     assert len(ledger.raw_copy_ledger) == 0  # Ledger should remain unchanged
-
-
-def test_empty_columns(empty_ledger):
-    """Empty column list should initialize with empty schema."""
-    assert empty_ledger.raw_copy_ledger == []
-
-
-def test_add_entry_to_empty_columns(empty_ledger):
-    """Cannot add entry when there are no defined columns."""
-    with pytest.raises(ValueError):
-        empty_ledger.add_entry_to_ledger(
-            StandardLedgerRow(
-                row_number=1,
-                date=datetime.date(2025, 11, 8),
-                description="Deposit",
-                credit=MajorUnit(100.00),
-            )
-        )
 
 
 if __name__ == "__main__":
