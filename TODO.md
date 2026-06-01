@@ -9,5 +9,6 @@
 ## Design
 
 | Priority | Item |
-|---|---|
-|---| NOTHING TO ADDRESS
+|----------|---|
+| High     | - Add to_dict and from_dict classmethods for all models
+| High     | - Add method for saving to and reading from a stored file to load and save models in memory between instances
