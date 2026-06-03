@@ -187,13 +187,15 @@ finance-planning-tool/
 ├── models/                  # core domain models (no GUI dependencies)
 │   ├── accountInformation.py
 │   ├── bankAccount.py
+│   ├── bill_base.py
+│   ├── bill_financed.py
+│   ├── bill_recurring.py
+│   ├── bill_revolving_credit.py
 │   ├── enumType.py
-│   ├── financed_bill.py
 │   ├── income.py
 │   ├── interest.py
 │   ├── ledger.py
-│   ├── recurring_bill.py
-│   ├── revolving_credit_bill.py
+│   ├── protocols.py
 │   ├── triggerDays.py
 │   └── utils.py
 ├── tests/                   # pytest unit tests
