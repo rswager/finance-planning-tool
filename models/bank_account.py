@@ -1,5 +1,5 @@
 from datetime import date
-from typing import cast, Self
+from typing import Self, cast
 
 from models.account_information import AccountInformation
 from models.enum_type import AccountType
@@ -34,13 +34,13 @@ class BankAccount:
         self._ledger = Ledger(ledger_row_type=BankAccountLedgerRow)
 
     @classmethod
-    def from_dict(cls,dict_in) -> Self :
+    def from_dict(cls, dict_in) -> Self:
         """Given a dictionary, create a BankAccount object from it."""
         try:
             return cls(
-                name_in = dict_in['name_in'],
-                balance_in = MinorUnit(dict_in['balance_in']),
-                account_type_in = AccountType(dict_in['account_type_in'])
+                name_in=dict_in["name_in"],
+                balance_in=MinorUnit(dict_in["balance_in"]),
+                account_type_in=AccountType(dict_in["account_type_in"]),
             )
         except KeyError as e:
             raise KeyError(f"Missing required field: {e.args[0]}")
@@ -49,8 +49,8 @@ class BankAccount:
         """Return the Dictionary representation of the BankAccount object."""
         return {
             "name_in": self.account_name,
-            "balance_in": self.balance_minor,
-            "account_type_in": self.account_type.value
+            "balance_in": int(self.balance_minor),
+            "account_type_in": self.account_type.value,
         }
 
     @property

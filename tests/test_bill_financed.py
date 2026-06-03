@@ -78,3 +78,40 @@ def test_min_payment_capped(financed_bill, bank_account):
 
     assert financed_bill.loan_balance_minor == 0
     assert bank_account.raw_copy_ledger[-1].debit == 30
+
+
+def test_to_dict(financed_bill, bank_account):
+    d = financed_bill.to_dict()
+    assert set(d.keys()) == {
+        "name_in",
+        "balance_in",
+        "account_type_in",
+        "initial_pay_date_in",
+        "frequency_type_in",
+        "minimum_payment_in",
+        "payment_method_in",
+        "apr_rate_in",
+        "round_up",
+    }
+    assert d["name_in"] == "Test Loan"
+    assert d["balance_in"] == -int(MinorUnit.from_major(500.00))
+    assert d["account_type_in"] == AccountType.LOAN.value
+    assert d["initial_pay_date_in"] == "2025-11-10"
+    assert d["frequency_type_in"] == FrequencyType.WEEKLY.value
+    assert d["minimum_payment_in"] == int(MinorUnit.from_major(50.00))
+    assert d["payment_method_in"] == bank_account.account_name
+    assert d["apr_rate_in"] == 0.05
+    assert d["round_up"] is False
+
+
+def test_from_dict_round_trip(financed_bill, bank_account):
+    registry = {bank_account.account_name: bank_account}
+    reconstructed = FinancedBill.from_dict(financed_bill.to_dict(), registry)
+    assert reconstructed.to_dict() == financed_bill.to_dict()
+
+
+def test_from_dict_missing_key_raises(financed_bill, bank_account):
+    d = financed_bill.to_dict()
+    del d["apr_rate_in"]
+    with pytest.raises(KeyError):
+        FinancedBill.from_dict(d, {bank_account.account_name: bank_account})

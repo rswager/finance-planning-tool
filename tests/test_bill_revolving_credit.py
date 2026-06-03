@@ -57,3 +57,42 @@ def test_multiple_day_processing_until_payment(credit_bill):
     for i in range(10):
         credit_bill.process_day(start + timedelta(days=i))
     assert len(credit_bill.raw_copy_ledger) == 11
+
+
+def test_to_dict(credit_bill, bank_account):
+    d = credit_bill.to_dict()
+    assert set(d.keys()) == {
+        "name_in",
+        "balance_in",
+        "account_type_in",
+        "initial_pay_date_in",
+        "frequency_type_in",
+        "minimum_payment_in",
+        "payment_method_in",
+        "apr_rate_in",
+        "credit_limit_in",
+        "round_up",
+    }
+    assert d["name_in"] == "Visa"
+    assert d["balance_in"] == -int(MinorUnit.from_major(1000.00))
+    assert d["account_type_in"] == AccountType.REVOLVING.value
+    assert d["initial_pay_date_in"] == "2025-01-10"
+    assert d["frequency_type_in"] == FrequencyType.MONTHLY.value
+    assert d["minimum_payment_in"] == int(MinorUnit.from_major(200.00))
+    assert d["payment_method_in"] == bank_account.account_name
+    assert d["apr_rate_in"] == 0.12
+    assert d["credit_limit_in"] == int(MinorUnit.from_major(5000.00))
+    assert d["round_up"] is False
+
+
+def test_from_dict_round_trip(credit_bill, bank_account):
+    registry = {bank_account.account_name: bank_account}
+    reconstructed = RevolvingCreditBill.from_dict(credit_bill.to_dict(), registry)
+    assert reconstructed.to_dict() == credit_bill.to_dict()
+
+
+def test_from_dict_missing_key_raises(credit_bill, bank_account):
+    d = credit_bill.to_dict()
+    del d["credit_limit_in"]
+    with pytest.raises(KeyError):
+        RevolvingCreditBill.from_dict(d, {bank_account.account_name: bank_account})

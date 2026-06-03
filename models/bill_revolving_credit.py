@@ -67,21 +67,26 @@ class RevolvingCreditBill(FinancedBill):
 
     @classmethod
     def from_dict(cls, dict_in, chargeable_registry: dict[str, Chargeable]) -> Self:
-        """Given a dictionary, create a FinancedBill object from it."""
+        """Given a dictionary, create a RevolvingCreditBill object from it.
+
+        Note: chargeable_registry should only contain BankAccount entries.
+        RevolvingCreditBill.__init__ enforces this — passing any other Chargeable
+        will raise a type error at construction.
+        """
         try:
             return cls(
                 name_in=dict_in["name_in"],
                 balance_in=MinorUnit(dict_in["balance_in"]),
-                minimum_payment_in=MinorUnit(dict_in["minimum_payment_in"]),
                 account_type_in=AccountType(dict_in["account_type_in"]),
                 initial_pay_date_in=date.fromisoformat(dict_in["initial_pay_date_in"]),
-                frequency_type_in=dict_in["frequency_type_in"],
+                frequency_type_in=FrequencyType(dict_in["frequency_type_in"]),
+                minimum_payment_in=MinorUnit(dict_in["minimum_payment_in"]),
                 payment_method_in=chargeable_registry[
                     dict_in["payment_method_in"]
                 ],  # pass key return object need to account for NONE/Invalid?
-                round_up=dict_in["round_up"],
                 apr_rate_in=dict_in["apr_rate_in"],
-                credit_limit_in=MinorUnit(dict_in["credit_limit"]),
+                credit_limit_in=MinorUnit(dict_in["credit_limit_in"]),
+                round_up=dict_in["round_up"],
             )
         except KeyError as e:
             raise KeyError(f"Missing required field: {e.args[0]}")
@@ -90,15 +95,15 @@ class RevolvingCreditBill(FinancedBill):
         """Return the Dictionary representation of the FinancedBill object."""
         return {
             "name_in": self.account_name,
-            "balance_in": self._accountInfo._initial_balance,
-            "minimum_payment_in": self._minimum_payment,
+            "balance_in": int(self._accountInfo._initial_balance),
             "account_type_in": self.account_type.value,
             "initial_pay_date_in": self._initial_pay_date.isoformat(),
             "frequency_type_in": self._trigger_days._frequency.value,
+            "minimum_payment_in": int(self._minimum_payment),
             "payment_method_in": self._payment_method.account_name,  # ty: ignore[unresolved-attribute]
+            "apr_rate_in": self._interest._apr_rate,
+            "credit_limit_in": int(self._credit_limit),
             "round_up": self._round_up,
-            "apr_rate": self._interest._apr_rate,
-            "credit_limit": self._credit_limit,
         }
 
     @property

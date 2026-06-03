@@ -73,15 +73,15 @@ class FinancedBill(BillBase):
             return cls(
                 name_in=dict_in["name_in"],
                 balance_in=MinorUnit(dict_in["balance_in"]),
-                minimum_payment_in=MinorUnit(dict_in["minimum_payment_in"]),
                 account_type_in=AccountType(dict_in["account_type_in"]),
                 initial_pay_date_in=date.fromisoformat(dict_in["initial_pay_date_in"]),
-                frequency_type_in=dict_in["frequency_type_in"],
+                frequency_type_in=FrequencyType(dict_in["frequency_type_in"]),
+                minimum_payment_in=MinorUnit(dict_in["minimum_payment_in"]),
                 payment_method_in=chargeable_registry[
                     dict_in["payment_method_in"]
                 ],  # pass key return object need to account for NONE/Invalid?
+                apr_rate_in=dict_in["apr_rate_in"],
                 round_up=dict_in["round_up"],
-                apr_rate_in=dict_in["apr_rate"],
             )
         except KeyError as e:
             raise KeyError(f"Missing required field: {e.args[0]}")
@@ -90,14 +90,14 @@ class FinancedBill(BillBase):
         """Return the Dictionary representation of the FinancedBill object."""
         return {
             "name_in": self.account_name,
-            "balance_in": self._accountInfo._initial_balance,
-            "minimum_payment_in": self._minimum_payment,
+            "balance_in": int(self._accountInfo._initial_balance),
             "account_type_in": self.account_type.value,
             "initial_pay_date_in": self._initial_pay_date.isoformat(),
             "frequency_type_in": self._trigger_days._frequency.value,
-            "payment_method_in": self._payment_method._accountInfo.name,  # ty: ignore[unresolved-attribute]
+            "minimum_payment_in": int(self._minimum_payment),
+            "payment_method_in": self._payment_method.account_name,  # ty: ignore[unresolved-attribute]
+            "apr_rate_in": self._interest._apr_rate,
             "round_up": self._round_up,
-            "apr_rate": self._interest._apr_rate,
         }
 
     @property
