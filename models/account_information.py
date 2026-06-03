@@ -43,7 +43,7 @@ class AccountInformation:
             return self._balance < 0
         return False
 
-    def update_balance(self, credit: MinorUnit = MinorUnit(0), debit: MinorUnit = MinorUnit(0)) -> None:
+    def update_balance(self, credit: MinorUnit = MinorUnit(0), debit: MinorUnit = MinorUnit(0)) -> None:  # noqa: B008
         """
         Apply a credit or debit to the account balance.
 

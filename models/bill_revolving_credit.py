@@ -89,7 +89,7 @@ class RevolvingCreditBill(FinancedBill):
                 round_up=dict_in["round_up"],
             )
         except KeyError as e:
-            raise KeyError(f"Missing required field: {e.args[0]}")
+            raise KeyError(f"Missing required field: {e.args[0]}") from e
 
     def to_dict(self) -> dict:
         """Return the Dictionary representation of the FinancedBill object."""

@@ -43,7 +43,7 @@ class BankAccount:
                 account_type_in=AccountType(dict_in["account_type_in"]),
             )
         except KeyError as e:
-            raise KeyError(f"Missing required field: {e.args[0]}")
+            raise KeyError(f"Missing required field: {e.args[0]}") from e
 
     def to_dict(self) -> dict:
         """Return the Dictionary representation of the BankAccount object."""
