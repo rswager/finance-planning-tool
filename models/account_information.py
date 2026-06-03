@@ -25,6 +25,7 @@ class AccountInformation:
                 The type of account (checking, savings, investment, etc.).
         """
         self._balance: MinorUnit = balance_in
+        self._initial_balance: MinorUnit = balance_in
         self._account_name: str = name_in
         self._account_type: AccountType = account_type_in
 

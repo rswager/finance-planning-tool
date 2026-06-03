@@ -51,42 +51,46 @@ class BillBase:
         self._minimum_payment = (
             minimum_payment_in if not round_up else round_value(minimum_payment_in, round_up=round_up)
         )
+        self._round_up = round_up
         self._trigger_days = TriggerDays(frequency_in=frequency_type_in)
         self._trigger_days.trigger_date = initial_pay_date_in
+        self._initial_pay_date = initial_pay_date_in
         self._payment_method: Chargeable = payment_method_in
 
     @classmethod
-    def from_dict(cls, dict_in,chargeable_registry: dict[str, Chargeable]) -> Self:
+    def from_dict(cls, dict_in, chargeable_registry: dict[str, Chargeable]) -> Self:
         """Given a dictionary, create a BillBase object from it."""
         try:
             return cls(
-                name_in=dict_in['name_in'],
-                balance_in=MinorUnit(dict_in['balance_in']),
-                minimum_payment_in=MinorUnit(dict_in['minimum_payment_in']),
-                account_type_in=AccountType(dict_in['account_type_in']),
-                initial_pay_date_in=date.fromisoformat(dict_in['initial_pay_date_in']), # Do we need to cast this to Date()?
-                frequency_type_in=dict_in['frequency_type_in'],
-                payment_method_in=chargeable_registry[dict_in['payment_method_in']] , # pass key return object need to account for NONE/Invalid?
-                ledger_row_type=dict_in['ledger_row_type'],
-                round_up=dict_in['round_up'],
+                name_in=dict_in["name_in"],
+                balance_in=MinorUnit(dict_in["balance_in"]),
+                minimum_payment_in=MinorUnit(dict_in["minimum_payment_in"]),
+                account_type_in=AccountType(dict_in["account_type_in"]),
+                initial_pay_date_in=date.fromisoformat(
+                    dict_in["initial_pay_date_in"]
+                ),  # Do we need to cast this to Date()?
+                frequency_type_in=dict_in["frequency_type_in"],
+                payment_method_in=chargeable_registry[
+                    dict_in["payment_method_in"]
+                ],  # pass key return object need to account for NONE/Invalid?
+                ledger_row_type=dict_in["ledger_row_type"],
+                round_up=dict_in["round_up"],
             )
         except KeyError as e:
             raise KeyError(f"Missing required field: {e.args[0]}")
-
 
     def to_dict(self) -> dict:
         """Return the Dictionary representation of the BillBase object."""
         return {
             "name_in": self.account_name,
-            "balance_in": self.balance_minor,
+            "balance_in": self._accountInfo._initial_balance,  # already in Minor Units
             "minimum_payment_in": self._minimum_payment,
             "account_type_in": self.account_type.value,
-            "initial_pay_date_in": self._trigger_dates.trigger_date.isoformat(), # I think we can just use this? Otherwise we will need to make a new cls variable
-            "frequency_type_in": self._trigger_dates.frequency_type_in.value,
-            "payment_method_in": self.payment_method.account_name, # We save the account name and load by the key via the chargeable_registry
-            "ledger_row_type": None, # We don't currenlty have access to this. May need to add it to the class method of Ledger
-            "round_up": None # We don't store this, most likely will need to do that
-
+            "initial_pay_date_in": self._initial_pay_date.isoformat(),
+            "frequency_type_in": self._trigger_days._frequency.value,
+            "payment_method_in": self._payment_method._accountInfo.name,  # ty: ignore[unresolved-attribute]
+            "ledger_row_type": self._ledger._ledger_row_type,
+            "round_up": self._round_up,
         }
 
     @property

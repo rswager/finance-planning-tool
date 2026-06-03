@@ -66,6 +66,7 @@ class Ledger:
         ledger_row_type : type[StandardLedgerRow]
                 The ledger row class to use for this bill (e.g. RecurringLedgerRow, InterestLedgerRow).
         """
+        self._ledger_row_type = ledger_row_type
         self._header: list[str] = ledger_row_type.COLUMNS  # type: ignore[attr-defined]
         self._ledger: list[StandardLedgerRow] = []
         self._col_count = len(self._header)

@@ -56,6 +56,11 @@ class RecurringBill(BillBase):
             round_up=round_up,
         )
 
+    #
+    #   For the to_dict and from_dict we may be able to just use the one for bill base?
+    #
+    #
+
     @property
     def raw_copy_ledger(self) -> list[RecurringLedgerRow]:
         """list: A deep copy of the ledger to prevent accidental modification."""
