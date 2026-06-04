@@ -30,10 +30,17 @@ Add `to_dict` and `from_dict` class methods to each model. Order matters — obj
 | Medium   | `bill_*` — `payment_method_in` uses `# ty: ignore[unresolved-attribute]` because `account_name` is not on `Chargeable`; fix by adding `account_name` to the protocol              |
 | Medium   | `RevolvingCreditBill` — `payment_method_in` should only accept `BankAccount` but kept as `Chargeable` for LSP compliance; investigate `cast()` or protocol narrowing approach      |
 | Medium   | Consider reorganizing `models/` into subfolders (e.g. `accounts/`, `bills/`) — directory is growing and grouping would improve navigation                                          |
+| Medium   | `FakeBankAccount` — placeholder class used during two-pass deserialization; `__init__` and `__repr__` work normally, all other methods raise `NotImplementedError`                 |
+| Medium   | `BillBase.update_payment_method` — new method to relink `payment_method` to the real account during pass 2 of deserialization                                                      |
 
-**Registry pattern:** `from_dict` methods accept a `registry: dict[str, Chargeable]`. The caller builds this dict in order before calling `from_dict`. Circular `Chargeable` references (A's payment method is B, B's is A) are unsupported by design.
+**Registry pattern:** `from_dict` methods accept a `registry: dict[str, Chargeable]`. The caller builds this dict and passes it in; `from_dict` looks up references by name. Circular `Chargeable` references (A's payment method is B, B's is A) are unsupported by design.
 
-**Deserialization order:** `BankAccounts → RevolvingCreditBills → Income → Bills (RecurringBill, FinancedBill)`
+**Two-pass deserialization:** Rather than enforcing strict load order, the top-level loader uses two passes:
+
+- **Pass 1 (Build):** Deserialize all objects. When a `payment_method` reference cannot yet be resolved, assign `FakeBankAccount` as a placeholder and record `(bill, account_name)` for later linking. Add every completed object to the registry as it's built.
+- **Pass 2 (Link):** For each recorded `(bill, account_name)` pair, look up the real account in the now-complete registry and call `bill.update_payment_method(real_account)`. Any unresolved name at this point is a data error and should raise.
+
+This removes the strict ordering requirement from the loader while keeping `NotImplementedError` as a loud guard against accidentally using an unlinked placeholder.
 
 ### File Save / Load
 
