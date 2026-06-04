@@ -1,8 +1,9 @@
 import dataclasses
+from collections.abc import Iterator
 from copy import deepcopy
 from dataclasses import astuple, dataclass
 from datetime import date
-from typing import Any, ClassVar, Iterator
+from typing import Any, ClassVar
 
 from models.utils import MajorUnit
 
