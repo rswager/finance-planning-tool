@@ -1,4 +1,5 @@
 from datetime import date
+from typing import Self
 
 from models.bank_account import BankAccount
 from models.enum_type import FrequencyType
@@ -42,10 +43,44 @@ class Income:
         """
         self._income_name = name_in
         self._income_amount = income_in if not round_down else round_value(income_in, round_up=not round_down)
+        self._round_down = round_down
         self._trigger_days = TriggerDays(frequency_type_in)
         self._trigger_days.trigger_date = initial_pay_date_in
+        self._initial_pay_date = initial_pay_date_in
         self._account_contributions: list[tuple[BankAccount, float]] = []
         self.set_account_contribution(account_contributions_in)
+
+    @classmethod
+    def from_dict(cls, dict_in, chargeable_registry: dict[str, BankAccount]) -> Self:
+        """Given a dictionary, create a Income object from it."""
+        try:
+            return cls(
+                name_in=dict_in["name_in"],
+                income_in=MinorUnit(dict_in["income_in"]),
+                initial_pay_date_in=date.fromisoformat(dict_in["initial_pay_date_in"]),
+                account_contributions_in=[
+                    (chargeable_registry[account["account_name"]], account["contribution"])
+                    for account in dict_in["account_contributions_in"]
+                ],
+                frequency_type_in=FrequencyType(dict_in["frequency_type_in"]),
+                round_down=dict_in["round_down_in"],
+            )
+        except KeyError as e:
+            raise KeyError(f"Missing required field: {e.args[0]}") from e
+
+    def to_dict(self) -> dict:
+        """Return the Dictionary representation of the Income object."""
+        return {
+            "name_in": self._income_name,
+            "income_in": int(self._income_amount),
+            "initial_pay_date_in": self._initial_pay_date.isoformat(),
+            "account_contributions_in": [
+                {"account_name": account.account_name, "contribution": contribution}
+                for account, contribution in self._account_contributions
+            ],
+            "frequency_type_in": self._trigger_days._frequency.value,
+            "round_down_in": self._round_down,
+        }
 
     def set_account_contribution(self, contributions: list[tuple[BankAccount, float]]) -> None:
         """
