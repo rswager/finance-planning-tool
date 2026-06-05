@@ -26,21 +26,20 @@ Add `to_dict` and `from_dict` class methods to each model. Order matters — obj
 | Done     | `FinancedBill` — extends `BillBase`; adds `apr_rate`                                                                                                                               |
 | Done     | `RevolvingCreditBill` — extends `FinancedBill`; adds `credit_limit`                                                                                                                |
 | Done     | `bill_*` — tests added for to_dict, from_dict round-trip, and missing-key errors                                                                                                   |
-| High     | `Income` — `account_contributions` is `list[tuple[BankAccount, float]]`; serialize as `[{account_name, contribution}]`; `from_dict` needs a registry to resolve account references |
+| In Progress | `Income` — `to_dict` / `from_dict` implemented; pass 1 creates with empty `account_contributions`; pass 2 calls `set_account_contribution` with resolved accounts             |
+| High     | `BillBase` — make `payment_method_in` optional (default `None`); add `payment_method` property that raises clearly if accessed before linking; add `update_payment_method(account: Chargeable)` method for pass 2 |
 | Medium   | `bill_*` — `payment_method_in` uses `# ty: ignore[unresolved-attribute]` because `account_name` is not on `Chargeable`; fix by adding `account_name` to the protocol              |
 | Medium   | `RevolvingCreditBill` — `payment_method_in` should only accept `BankAccount` but kept as `Chargeable` for LSP compliance; investigate `cast()` or protocol narrowing approach      |
 | Medium   | Consider reorganizing `models/` into subfolders (e.g. `accounts/`, `bills/`) — directory is growing and grouping would improve navigation                                          |
-| Medium   | `FakeBankAccount` — placeholder class used during two-pass deserialization; `__init__` and `__repr__` work normally, all other methods raise `NotImplementedError`                 |
-| Medium   | `BillBase.update_payment_method` — new method to relink `payment_method` to the real account during pass 2 of deserialization                                                      |
 
 **Registry pattern:** `from_dict` methods accept a `registry: dict[str, Chargeable]`. The caller builds this dict and passes it in; `from_dict` looks up references by name. Circular `Chargeable` references (A's payment method is B, B's is A) are unsupported by design.
 
 **Two-pass deserialization:** Rather than enforcing strict load order, the top-level loader uses two passes:
 
-- **Pass 1 (Build):** Deserialize all objects. When a `payment_method` reference cannot yet be resolved, assign `FakeBankAccount` as a placeholder and record `(bill, account_name)` for later linking. Add every completed object to the registry as it's built.
-- **Pass 2 (Link):** For each recorded `(bill, account_name)` pair, look up the real account in the now-complete registry and call `bill.update_payment_method(real_account)`. Any unresolved name at this point is a data error and should raise.
+- **Pass 1 (Build):** Deserialize all objects. Bills are created with `payment_method=None`; Income is created with empty `account_contributions`. Record `(bill, account_name)` and `(income, [account_names])` pairs for later linking. Add every completed object to the registry as it's built.
+- **Pass 2 (Link):** For each recorded bill pair, look up the real account in the now-complete registry and call `bill.update_payment_method(real_account)`. For each Income, call `set_account_contribution` with resolved accounts. Any unresolved name at this point is a data error and should raise.
 
-This removes the strict ordering requirement from the loader while keeping `NotImplementedError` as a loud guard against accidentally using an unlinked placeholder.
+The `payment_method` property raises a clear `RuntimeError` if accessed before `update_payment_method` is called, providing a loud guard without a placeholder class.
 
 ### File Save / Load
 

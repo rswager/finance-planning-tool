@@ -116,6 +116,8 @@ Configuration lives under `[tool.ruff]` in `pyproject.toml`.
 [pytest](https://docs.pytest.org) is the test framework used for all unit tests. Tests live in the `tests/` directory.
 
 - `pixi run test` — runs the full test suite
+- `pixi run pytest tests/test_income.py` — runs a single test file
+- `pixi run pytest tests/test_income.py::test_to_dict` — runs a single test function
 
 ### pre-commit
 
