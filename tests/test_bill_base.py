@@ -15,6 +15,11 @@ def bank_account():
 
 
 @pytest.fixture
+def saving_account():
+    return BankAccount("Saving", MinorUnit.from_major(1_000.00), AccountType.SAVINGS)
+
+
+@pytest.fixture
 def bill(bank_account):
     return BillBase(
         name_in="Test Bill",
@@ -48,6 +53,16 @@ def test_ledger_header(bill):
     assert bill.ledger_header == StandardLedgerRow.COLUMNS
 
 
+def test_payment_method_valid(bill):
+    assert bill.payment_method == bill._payment_method
+
+
+def test_payment_method_invalid(bill):
+    bill._payment_method = None
+    with pytest.raises(ValueError):
+        _ = bill.payment_method
+
+
 def test_initialize_simulation_date(bank_account):
     bill = BillBase(
         name_in="Test Bill",
@@ -71,3 +86,15 @@ def test_to_dict_raises_not_implemented(bill):
 def test_from_dict_raises_not_implemented():
     with pytest.raises(NotImplementedError):
         BillBase.from_dict({}, {})
+
+
+def test_update_payment_method(bill, bank_account, saving_account):
+    assert bill.payment_method == bank_account
+    bill.update_payment_method(saving_account)
+    assert bill.payment_method == saving_account
+
+
+def test_update_payment_method_null(bill, bank_account):
+    bill.update_payment_method(None)
+    # Cannot call property without ValueError
+    bill._payment_method = None

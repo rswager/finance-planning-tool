@@ -23,7 +23,7 @@ class FinancedBill(BillBase):
         initial_pay_date_in: date,
         frequency_type_in: FrequencyType,
         minimum_payment_in: MinorUnit,
-        payment_method_in: Chargeable,
+        payment_method_in: Chargeable | None,
         apr_rate_in: float,
         round_up: bool = False,
     ) -> None:
@@ -44,7 +44,7 @@ class FinancedBill(BillBase):
                 The frequency with which payments are due (e.g., MONTHLY, BI_WEEKLY).
             minimum_payment_in : MinorUnit
                 The minimum amount to pay each cycle in minor units.
-            payment_method_in : Chargeable
+            payment_method_in : Chargeable | None
                 The account or credit source used to make payments.
             apr_rate_in : float
                 The annual percentage rate as a fraction (e.g., 0.05 for 5% APR).
@@ -95,7 +95,7 @@ class FinancedBill(BillBase):
             "initial_pay_date_in": self._initial_pay_date.isoformat(),
             "frequency_type_in": self._trigger_days._frequency.value,
             "minimum_payment_in": int(self._minimum_payment),
-            "payment_method_in": self._payment_method.account_name,  # ty: ignore[unresolved-attribute]
+            "payment_method_in": self.payment_method.account_name,  # ty: ignore[unresolved-attribute]
             "apr_rate_in": self._interest._apr_rate,
             "round_up": self._round_up,
         }
@@ -128,7 +128,8 @@ class FinancedBill(BillBase):
                 min_payment = abs(self._accountInfo.balance)
 
             self.make_a_transaction(date_in=date_in, action="Minimum Payment", credit=min_payment, debit=MinorUnit(0))
-            self._payment_method.make_a_transaction(
+            assert self.payment_method is not None  # Temporarily adding this (our property should have fixed this)
+            self.payment_method.make_a_transaction(
                 date_in=date_in,
                 action=f"{self.account_name}-Payment",
                 credit=MinorUnit(0),

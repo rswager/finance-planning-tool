@@ -21,7 +21,7 @@ class RevolvingCreditBill(FinancedBill):
         initial_pay_date_in: date,
         frequency_type_in: FrequencyType,
         minimum_payment_in: MinorUnit,
-        payment_method_in: Chargeable,
+        payment_method_in: Chargeable | None,
         apr_rate_in: float,
         credit_limit_in: MinorUnit,
         round_up: bool = False,
@@ -43,7 +43,7 @@ class RevolvingCreditBill(FinancedBill):
             Payment frequency (e.g., MONTHLY, BI_WEEKLY).
         minimum_payment_in : MinorUnit
             The required minimum payment per period in minor units.
-        payment_method_in : Chargeable
+        payment_method_in : Chargeable | None
             The account used to make the payment.
         apr_rate_in : float
             The annual percentage rate as a decimal (e.g., 0.05 for 5% APR).
@@ -100,7 +100,7 @@ class RevolvingCreditBill(FinancedBill):
             "initial_pay_date_in": self._initial_pay_date.isoformat(),
             "frequency_type_in": self._trigger_days._frequency.value,
             "minimum_payment_in": int(self._minimum_payment),
-            "payment_method_in": self._payment_method.account_name,  # ty: ignore[unresolved-attribute]
+            "payment_method_in": self.payment_method.account_name,  # ty: ignore[unresolved-attribute]
             "apr_rate_in": self._interest._apr_rate,
             "credit_limit_in": int(self._credit_limit),
             "round_up": self._round_up,

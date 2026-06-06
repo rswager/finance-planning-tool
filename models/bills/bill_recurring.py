@@ -21,7 +21,7 @@ class RecurringBill(BillBase):
         account_type_in: AccountType,
         initial_pay_date_in: date,
         frequency_type_in: FrequencyType,
-        payment_method_in: Chargeable,
+        payment_method_in: Chargeable | None,
         round_up: bool = False,
     ) -> None:
         """
@@ -39,7 +39,7 @@ class RecurringBill(BillBase):
                 The first date the payment should be applied.
             frequency_type_in : FrequencyType
                 How often the payment is made (e.g., MONTHLY, BI_WEEKLY).
-            payment_method_in : Chargeable
+            payment_method_in : Chargeable | None
                 The account or credit bill that receives the payment.
             round_up : bool, optional
                 If True, rounds the minimum payment up for conservative budgeting.
@@ -80,7 +80,7 @@ class RecurringBill(BillBase):
             "account_type_in": self.account_type.value,
             "initial_pay_date_in": self._initial_pay_date.isoformat(),
             "frequency_type_in": self._trigger_days._frequency.value,
-            "payment_method_in": self._payment_method.account_name,  # ty: ignore[unresolved-attribute]
+            "payment_method_in": self.payment_method.account_name,  # ty: ignore[unresolved-attribute]
             "round_up": self._round_up,
         }
 
@@ -111,7 +111,8 @@ class RecurringBill(BillBase):
                 The date on which the payment is applied.
         """
         self._accountInfo.update_balance(credit=self._minimum_payment)
-        self._payment_method.make_a_transaction(
+        assert self.payment_method is not None  # Temporarily adding this (our property should have fixed this)
+        self.payment_method.make_a_transaction(
             date_in=date_in,
             action=f"{self.account_name}-Payment",
             credit=MinorUnit(0),
