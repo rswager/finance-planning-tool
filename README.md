@@ -187,19 +187,23 @@ Examples:
 ```
 finance-planning-tool/
 ├── models/                  # core domain models (no GUI dependencies)
-│   ├── accountInformation.py
-│   ├── bankAccount.py
-│   ├── bill_base.py
-│   ├── bill_financed.py
-│   ├── bill_recurring.py
-│   ├── bill_revolving_credit.py
-│   ├── enumType.py
-│   ├── income.py
-│   ├── interest.py
-│   ├── ledger.py
-│   ├── protocols.py
-│   ├── triggerDays.py
-│   └── utils.py
+│   ├── accounts/            # bank accounts and account information
+│   │   ├── account_information.py
+│   │   └── bank_account.py
+│   ├── bills/               # bill types (recurring, financed, revolving credit)
+│   │   ├── bill_base.py
+│   │   ├── bill_financed.py
+│   │   ├── bill_recurring.py
+│   │   └── bill_revolving_credit.py
+│   ├── core/                # shared infrastructure (enums, utils, ledger, protocols)
+│   │   ├── enum_type.py
+│   │   ├── interest.py
+│   │   ├── ledger.py
+│   │   ├── protocols.py
+│   │   ├── trigger_days.py
+│   │   └── utils.py
+│   └── income/              # income sources
+│       └── income.py
 ├── tests/                   # pytest unit tests
 ├── main.py                  # simulation entry point (outputs Excel workbook)
 ├── pyproject.toml           # project metadata, dependencies, tool config
