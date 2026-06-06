@@ -1,8 +1,13 @@
+from abc import ABC, abstractmethod
 from datetime import date
-from typing import Protocol
 
 from models.core.utils import MinorUnit
 
 
-class Chargeable(Protocol):
+class Chargeable(ABC):
+    @abstractmethod
     def make_a_transaction(self, date_in: date, action: str, credit: MinorUnit, debit: MinorUnit) -> None: ...
+
+    @property
+    @abstractmethod
+    def account_name(self) -> str: ...
