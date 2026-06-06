@@ -93,7 +93,7 @@ class BillBase:
         return self._ledger.header
 
     @property
-    def payment_method(self) -> Chargeable | None:
+    def payment_method(self) -> Chargeable:
         if self._payment_method is None:
             raise ValueError("Payment method not set.")
         return self._payment_method
@@ -110,6 +110,6 @@ class BillBase:
         """
         self._trigger_days.bring_trigger_date_to_target_date(simulation_start_date)
 
-    def update_payment_method(self, payment_method_in: Chargeable | None) -> None:
+    def update_payment_method(self, payment_method_in: Chargeable) -> None:
         """Update the payment method of the bill."""
         self._payment_method = payment_method_in

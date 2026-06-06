@@ -111,7 +111,6 @@ class RecurringBill(BillBase):
                 The date on which the payment is applied.
         """
         self._accountInfo.update_balance(credit=self._minimum_payment)
-        assert self.payment_method is not None  # Temporarily adding this (our property should have fixed this)
         self.payment_method.make_a_transaction(
             date_in=date_in,
             action=f"{self.account_name}-Payment",

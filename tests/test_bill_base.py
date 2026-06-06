@@ -92,9 +92,3 @@ def test_update_payment_method(bill, bank_account, saving_account):
     assert bill.payment_method == bank_account
     bill.update_payment_method(saving_account)
     assert bill.payment_method == saving_account
-
-
-def test_update_payment_method_null(bill, bank_account):
-    bill.update_payment_method(None)
-    # Cannot call property without ValueError
-    bill._payment_method = None

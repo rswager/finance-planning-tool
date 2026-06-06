@@ -128,7 +128,6 @@ class FinancedBill(BillBase):
                 min_payment = abs(self._accountInfo.balance)
 
             self.make_a_transaction(date_in=date_in, action="Minimum Payment", credit=min_payment, debit=MinorUnit(0))
-            assert self.payment_method is not None  # Temporarily adding this (our property should have fixed this)
             self.payment_method.make_a_transaction(
                 date_in=date_in,
                 action=f"{self.account_name}-Payment",
