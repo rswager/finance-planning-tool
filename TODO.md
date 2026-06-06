@@ -26,11 +26,11 @@ Add `to_dict` and `from_dict` class methods to each model. Order matters — obj
 | Done     | `FinancedBill` — extends `BillBase`; adds `apr_rate`                                                                                                                               |
 | Done     | `RevolvingCreditBill` — extends `FinancedBill`; adds `credit_limit`                                                                                                                |
 | Done     | `bill_*` — tests added for to_dict, from_dict round-trip, and missing-key errors                                                                                                   |
-| In Progress | `Income` — `to_dict` / `from_dict` implemented; pass 1 creates with empty `account_contributions`; pass 2 calls `set_account_contribution` with resolved accounts             |
+| Done     | `Income` — `to_dict` / `from_dict` implemented; pass 1 creates with empty `account_contributions`; pass 2 calls `set_account_contribution` with resolved accounts                |
 | High     | `BillBase` — make `payment_method_in` optional (default `None`); add `payment_method` property that raises clearly if accessed before linking; add `update_payment_method(account: Chargeable)` method for pass 2 |
 | Medium   | `bill_*` — `payment_method_in` uses `# ty: ignore[unresolved-attribute]` because `account_name` is not on `Chargeable`; fix by adding `account_name` to the protocol              |
 | Medium   | `RevolvingCreditBill` — `payment_method_in` should only accept `BankAccount` but kept as `Chargeable` for LSP compliance; investigate `cast()` or protocol narrowing approach      |
-| Medium   | Consider reorganizing `models/` into subfolders (e.g. `accounts/`, `bills/`) — directory is growing and grouping would improve navigation                                          |
+| Done     | Consider reorganizing `models/` into subfolders (e.g. `accounts/`, `bills/`) — directory is growing and grouping would improve navigation                                          |
 
 **Registry pattern:** `from_dict` methods accept a `registry: dict[str, Chargeable]`. The caller builds this dict and passes it in; `from_dict` looks up references by name. Circular `Chargeable` references (A's payment method is B, B's is A) are unsupported by design.
 
