@@ -18,7 +18,7 @@ class BillBase:
         account_type_in: AccountType,
         initial_pay_date_in: date,
         frequency_type_in: FrequencyType,
-        payment_method_in: Chargeable,
+        payment_method_in: Chargeable | None,
         ledger_row_type: type[StandardLedgerRow],
         round_up: bool = False,
     ) -> None:
@@ -39,7 +39,7 @@ class BillBase:
                 The first date the payment should be applied.
             frequency_type_in : FrequencyType
                 How often the payment is made (e.g., MONTHLY, BI_WEEKLY).
-            payment_method_in : Chargeable
+            payment_method_in : Chargeable | None
                 The account or credit bill that receives the payment.
             ledger_row_type : type[StandardLedgerRow]
                 The ledger row class to use for this bill (e.g. RecurringLedgerRow, InterestLedgerRow).
@@ -55,7 +55,7 @@ class BillBase:
         self._trigger_days = TriggerDays(frequency_in=frequency_type_in)
         self._trigger_days.trigger_date = initial_pay_date_in
         self._initial_pay_date = initial_pay_date_in
-        self._payment_method: Chargeable = payment_method_in
+        self._payment_method: Chargeable | None = payment_method_in
 
     @classmethod
     def from_dict(cls, dict_in, chargeable_registry: dict[str, Chargeable]) -> Self:
@@ -92,6 +92,12 @@ class BillBase:
     def ledger_header(self) -> list[str]:
         return self._ledger.header
 
+    @property
+    def payment_method(self) -> Chargeable:
+        if self._payment_method is None:
+            raise ValueError("Payment method not set.")
+        return self._payment_method
+
     def initialize_simulation_date(self, simulation_start_date: date) -> None:
         """
         Align the trigger date to the simulation start date before the simulation runs.
@@ -103,3 +109,7 @@ class BillBase:
             rewound to the first scheduled occurrence on or after this date.
         """
         self._trigger_days.bring_trigger_date_to_target_date(simulation_start_date)
+
+    def update_payment_method(self, payment_method_in: Chargeable) -> None:
+        """Update the payment method of the bill."""
+        self._payment_method = payment_method_in
