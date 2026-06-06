@@ -1,12 +1,12 @@
 from datetime import date
 from typing import Self, cast
 
-from models.bill_base import BillBase
-from models.enum_type import AccountType, FrequencyType
-from models.interest import Interest
-from models.ledger import InterestLedgerRow
-from models.protocols import Chargeable
-from models.utils import MajorUnit, MinorUnit
+from models.bills.bill_base import BillBase
+from models.core.enum_type import AccountType, FrequencyType
+from models.core.interest import Interest
+from models.core.ledger import InterestLedgerRow
+from models.core.protocols import Chargeable
+from models.core.utils import MajorUnit, MinorUnit
 
 
 class FinancedBill(BillBase):

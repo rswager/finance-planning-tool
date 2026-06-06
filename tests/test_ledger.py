@@ -2,8 +2,8 @@ import datetime
 
 import pytest
 
-from models.ledger import BankAccountLedgerRow, Ledger, StandardLedgerRow
-from models.utils import MajorUnit
+from models.core.ledger import BankAccountLedgerRow, Ledger, StandardLedgerRow
+from models.core.utils import MajorUnit
 
 # --- Fixtures ---
 

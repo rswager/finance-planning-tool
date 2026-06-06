@@ -2,7 +2,7 @@ from calendar import isleap
 from datetime import date
 from math import ceil
 
-from models.utils import MinorUnit
+from models.core.utils import MinorUnit
 
 DAYS_IN_NON_LEAP_YEAR = 365
 DAYS_IN_LEAP_YEAR = 366

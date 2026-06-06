@@ -5,7 +5,7 @@ from dataclasses import astuple, dataclass
 from datetime import date
 from typing import Any, ClassVar
 
-from models.utils import MajorUnit
+from models.core.utils import MajorUnit
 
 
 @dataclass(frozen=True)

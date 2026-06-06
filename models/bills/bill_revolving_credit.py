@@ -1,10 +1,10 @@
 from datetime import date
 from typing import Self
 
-from models.bill_financed import FinancedBill
-from models.enum_type import AccountType, FrequencyType
-from models.protocols import Chargeable
-from models.utils import MinorUnit
+from models.bills.bill_financed import FinancedBill
+from models.core.enum_type import AccountType, FrequencyType
+from models.core.protocols import Chargeable
+from models.core.utils import MinorUnit
 
 
 class RevolvingCreditBill(FinancedBill):

@@ -1,12 +1,12 @@
 from datetime import date
 from typing import Self
 
-from models.account_information import AccountInformation
-from models.enum_type import AccountType, FrequencyType
-from models.ledger import Ledger, StandardLedgerRow
-from models.protocols import Chargeable
-from models.trigger_days import TriggerDays
-from models.utils import MinorUnit, round_value
+from models.accounts.account_information import AccountInformation
+from models.core.enum_type import AccountType, FrequencyType
+from models.core.ledger import Ledger, StandardLedgerRow
+from models.core.protocols import Chargeable
+from models.core.trigger_days import TriggerDays
+from models.core.utils import MinorUnit, round_value
 
 
 class BillBase:

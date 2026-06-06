@@ -1,10 +1,10 @@
 from datetime import date
 from typing import Self
 
-from models.bank_account import BankAccount
-from models.enum_type import FrequencyType
-from models.trigger_days import TriggerDays
-from models.utils import MinorUnit, round_value
+from models.accounts.bank_account import BankAccount
+from models.core.enum_type import FrequencyType
+from models.core.trigger_days import TriggerDays
+from models.core.utils import MinorUnit, round_value
 
 
 class Income:

@@ -1,10 +1,10 @@
 from datetime import date
 from typing import Self, cast
 
-from models.account_information import AccountInformation
-from models.enum_type import AccountType
-from models.ledger import BankAccountLedgerRow, Ledger
-from models.utils import MajorUnit, MinorUnit
+from models.accounts.account_information import AccountInformation
+from models.core.enum_type import AccountType
+from models.core.ledger import BankAccountLedgerRow, Ledger
+from models.core.utils import MajorUnit, MinorUnit
 
 
 class BankAccount:

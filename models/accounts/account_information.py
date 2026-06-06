@@ -1,5 +1,5 @@
-from models.enum_type import AccountType
-from models.utils import MinorUnit
+from models.core.enum_type import AccountType
+from models.core.utils import MinorUnit
 
 
 class AccountInformation:

@@ -3,8 +3,8 @@ from math import ceil
 
 import pytest
 
-from models.interest import Interest
-from models.utils import MinorUnit
+from models.core.interest import Interest
+from models.core.utils import MinorUnit
 
 
 @pytest.fixture

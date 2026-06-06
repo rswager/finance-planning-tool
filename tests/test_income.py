@@ -2,10 +2,10 @@ from datetime import date
 
 import pytest
 
-from models.bank_account import BankAccount
-from models.enum_type import AccountType, FrequencyType
-from models.income import Income
-from models.utils import MinorUnit
+from models.accounts.bank_account import BankAccount
+from models.core.enum_type import AccountType, FrequencyType
+from models.core.utils import MinorUnit
+from models.income.income import Income
 
 
 @pytest.fixture

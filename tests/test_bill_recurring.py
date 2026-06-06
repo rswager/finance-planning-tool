@@ -2,10 +2,10 @@ from datetime import date
 
 import pytest
 
-from models.bank_account import BankAccount
-from models.bill_recurring import RecurringBill
-from models.enum_type import AccountType, FrequencyType
-from models.utils import MajorUnit, MinorUnit
+from models.accounts.bank_account import BankAccount
+from models.bills.bill_recurring import RecurringBill
+from models.core.enum_type import AccountType, FrequencyType
+from models.core.utils import MajorUnit, MinorUnit
 
 
 @pytest.fixture

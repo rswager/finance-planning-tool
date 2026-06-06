@@ -1,7 +1,7 @@
 from datetime import date
 from typing import Protocol
 
-from models.utils import MinorUnit
+from models.core.utils import MinorUnit
 
 
 class Chargeable(Protocol):

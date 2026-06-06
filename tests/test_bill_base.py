@@ -2,11 +2,11 @@ from datetime import date
 
 import pytest
 
-from models.bank_account import BankAccount
-from models.bill_base import BillBase
-from models.enum_type import AccountType, FrequencyType
-from models.ledger import StandardLedgerRow
-from models.utils import MinorUnit
+from models.accounts.bank_account import BankAccount
+from models.bills.bill_base import BillBase
+from models.core.enum_type import AccountType, FrequencyType
+from models.core.ledger import StandardLedgerRow
+from models.core.utils import MinorUnit
 
 
 @pytest.fixture

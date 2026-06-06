@@ -2,10 +2,10 @@ from datetime import date
 
 import pytest
 
-from models.bank_account import BankAccount
-from models.enum_type import AccountType
-from models.ledger import BankAccountLedgerRow
-from models.utils import MajorUnit, MinorUnit
+from models.accounts.bank_account import BankAccount
+from models.core.enum_type import AccountType
+from models.core.ledger import BankAccountLedgerRow
+from models.core.utils import MajorUnit, MinorUnit
 
 
 @pytest.fixture
