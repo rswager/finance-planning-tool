@@ -2,10 +2,10 @@ from datetime import date
 from typing import Self, cast
 
 from models.bills.bill_base import BillBase
+from models.core.chargeable import Chargeable
 from models.core.enum_type import AccountType, FrequencyType
 from models.core.interest import Interest
 from models.core.ledger import InterestLedgerRow
-from models.core.protocols import Chargeable
 from models.core.utils import MajorUnit, MinorUnit
 
 
@@ -77,9 +77,7 @@ class FinancedBill(BillBase):
                 initial_pay_date_in=date.fromisoformat(dict_in["initial_pay_date_in"]),
                 frequency_type_in=FrequencyType(dict_in["frequency_type_in"]),
                 minimum_payment_in=MinorUnit(dict_in["minimum_payment_in"]),
-                payment_method_in=chargeable_registry[
-                    dict_in["payment_method_in"]
-                ],  # pass key return object need to account for NONE/Invalid?
+                payment_method_in=chargeable_registry[dict_in["payment_method_in"]],
                 apr_rate_in=dict_in["apr_rate_in"],
                 round_up=dict_in["round_up"],
             )
@@ -95,7 +93,7 @@ class FinancedBill(BillBase):
             "initial_pay_date_in": self._initial_pay_date.isoformat(),
             "frequency_type_in": self._trigger_days._frequency.value,
             "minimum_payment_in": int(self._minimum_payment),
-            "payment_method_in": self.payment_method.account_name,  # ty: ignore[unresolved-attribute]
+            "payment_method_in": self.payment_method.account_name,
             "apr_rate_in": self._interest._apr_rate,
             "round_up": self._round_up,
         }

@@ -2,9 +2,9 @@ from datetime import date
 from typing import Self, cast
 
 from models.bills.bill_base import BillBase
+from models.core.chargeable import Chargeable
 from models.core.enum_type import AccountType, FrequencyType
 from models.core.ledger import RecurringLedgerRow
-from models.core.protocols import Chargeable
 from models.core.utils import MajorUnit, MinorUnit
 
 
@@ -80,7 +80,7 @@ class RecurringBill(BillBase):
             "account_type_in": self.account_type.value,
             "initial_pay_date_in": self._initial_pay_date.isoformat(),
             "frequency_type_in": self._trigger_days._frequency.value,
-            "payment_method_in": self.payment_method.account_name,  # ty: ignore[unresolved-attribute]
+            "payment_method_in": self.payment_method.account_name,
             "round_up": self._round_up,
         }
 

@@ -2,12 +2,13 @@ from datetime import date
 from typing import Self, cast
 
 from models.accounts.account_information import AccountInformation
+from models.core.chargeable import Chargeable
 from models.core.enum_type import AccountType
 from models.core.ledger import BankAccountLedgerRow, Ledger
 from models.core.utils import MajorUnit, MinorUnit
 
 
-class BankAccount:
+class BankAccount(Chargeable):
     """
     Represents a financial account with a running ledger of all transactions.
 
