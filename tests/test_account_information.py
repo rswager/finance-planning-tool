@@ -1,8 +1,8 @@
 import pytest
 
-from models.account_information import AccountInformation
-from models.enum_type import AccountType
-from models.utils import MinorUnit
+from models.accounts.account_information import AccountInformation
+from models.core.enum_type import AccountType
+from models.core.utils import MinorUnit
 
 
 @pytest.fixture

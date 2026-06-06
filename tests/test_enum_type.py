@@ -1,4 +1,4 @@
-from models.enum_type import AccountType, FrequencyType
+from models.core.enum_type import AccountType, FrequencyType
 
 # ----------------------------
 # FrequencyType Tests

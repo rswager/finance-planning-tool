@@ -1,6 +1,6 @@
 import pytest
 
-from models.utils import CurrencyType, MinorUnit, _calculate_rounded_value, round_value
+from models.core.utils import CurrencyType, MinorUnit, _calculate_rounded_value, round_value
 
 
 @pytest.mark.parametrize(

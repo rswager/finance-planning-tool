@@ -1,10 +1,10 @@
 from datetime import date
-from typing import cast
+from typing import Self, cast
 
-from models.account_information import AccountInformation
-from models.enum_type import AccountType
-from models.ledger import BankAccountLedgerRow, Ledger
-from models.utils import MajorUnit, MinorUnit
+from models.accounts.account_information import AccountInformation
+from models.core.enum_type import AccountType
+from models.core.ledger import BankAccountLedgerRow, Ledger
+from models.core.utils import MajorUnit, MinorUnit
 
 
 class BankAccount:
@@ -32,6 +32,26 @@ class BankAccount:
         """
         self._accountInfo = AccountInformation(name_in, balance_in, account_type_in)
         self._ledger = Ledger(ledger_row_type=BankAccountLedgerRow)
+
+    @classmethod
+    def from_dict(cls, dict_in) -> Self:
+        """Given a dictionary, create a BankAccount object from it."""
+        try:
+            return cls(
+                name_in=dict_in["name_in"],
+                balance_in=MinorUnit(dict_in["balance_in"]),
+                account_type_in=AccountType(dict_in["account_type_in"]),
+            )
+        except KeyError as e:
+            raise KeyError(f"Missing required field: {e.args[0]}") from e
+
+    def to_dict(self) -> dict:
+        """Return the Dictionary representation of the BankAccount object."""
+        return {
+            "name_in": self.account_name,
+            "balance_in": int(self.balance_minor),
+            "account_type_in": self.account_type.value,
+        }
 
     @property
     def balance_minor(self) -> MinorUnit:

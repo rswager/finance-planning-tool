@@ -2,10 +2,10 @@ from datetime import date
 
 import pytest
 
-from models.bank_account import BankAccount
-from models.enum_type import AccountType, FrequencyType
-from models.income import Income
-from models.utils import MinorUnit
+from models.accounts.bank_account import BankAccount
+from models.core.enum_type import AccountType, FrequencyType
+from models.core.utils import MinorUnit
+from models.income.income import Income
 
 
 @pytest.fixture
@@ -101,3 +101,39 @@ def test_process_day_triggers_deposit(income, bank_accounts):
     assert len(acc2.raw_copy_ledger) == 1
     assert acc1.raw_copy_ledger[-1].credit == 1_000 * 0.6
     assert acc2.raw_copy_ledger[-1].credit == 1_000 * 0.4
+
+
+def test_to_dict(income, bank_accounts):
+    acc1, acc2 = bank_accounts
+    d = income.to_dict()
+    assert set(d.keys()) == {
+        "name_in",
+        "income_in",
+        "initial_pay_date_in",
+        "account_contributions_in",
+        "frequency_type_in",
+        "round_down_in",
+    }
+    assert d["name_in"] == "Salary"
+    assert d["income_in"] == int(MinorUnit.from_major(1_000.00))
+    assert d["initial_pay_date_in"] == date(2025, 11, 8).isoformat()
+    assert d["account_contributions_in"] == [
+        {"account_name": acc1.account_name, "contribution": 0.6},
+        {"account_name": acc2.account_name, "contribution": 0.4},
+    ]
+    assert d["frequency_type_in"] == FrequencyType.WEEKLY.value
+    assert d["round_down_in"] is False
+
+
+def test_from_dict_round_trip(income, bank_accounts):
+    registry = {bank_account.account_name: bank_account for bank_account in bank_accounts}
+    reconstructed = Income.from_dict(income.to_dict(), registry)
+    assert reconstructed.to_dict() == income.to_dict()
+
+
+def test_from_dict_missing_key_raises(income, bank_accounts):
+    d = income.to_dict()
+    registry = {bank_account.account_name: bank_account for bank_account in bank_accounts}
+    del d["round_down_in"]
+    with pytest.raises(KeyError):
+        Income.from_dict(d, registry)

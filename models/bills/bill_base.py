@@ -1,11 +1,12 @@
 from datetime import date
+from typing import Self
 
-from models.account_information import AccountInformation
-from models.enum_type import AccountType, FrequencyType
-from models.ledger import Ledger, StandardLedgerRow
-from models.protocols import Chargeable
-from models.trigger_days import TriggerDays
-from models.utils import MinorUnit, round_value
+from models.accounts.account_information import AccountInformation
+from models.core.enum_type import AccountType, FrequencyType
+from models.core.ledger import Ledger, StandardLedgerRow
+from models.core.protocols import Chargeable
+from models.core.trigger_days import TriggerDays
+from models.core.utils import MinorUnit, round_value
 
 
 class BillBase:
@@ -50,9 +51,22 @@ class BillBase:
         self._minimum_payment = (
             minimum_payment_in if not round_up else round_value(minimum_payment_in, round_up=round_up)
         )
+        self._round_up = round_up
         self._trigger_days = TriggerDays(frequency_in=frequency_type_in)
         self._trigger_days.trigger_date = initial_pay_date_in
+        self._initial_pay_date = initial_pay_date_in
         self._payment_method: Chargeable = payment_method_in
+
+    @classmethod
+    def from_dict(cls, dict_in, chargeable_registry: dict[str, Chargeable]) -> Self:
+        raise NotImplementedError(
+            "Use a concrete subclass's from_dict instead. (RecurringBill, FinancedBill, RevolvingCreditBill)"
+        )
+
+    def to_dict(self) -> dict:
+        raise NotImplementedError(
+            "Use a concrete subclass's to_dict instead. (RecurringBill, FinancedBill, RevolvingCreditBill)"
+        )
 
     @property
     def account_name(self) -> str:

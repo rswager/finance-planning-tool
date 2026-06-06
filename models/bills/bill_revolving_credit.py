@@ -1,9 +1,10 @@
 from datetime import date
+from typing import Self
 
-from models.bill_financed import FinancedBill
-from models.enum_type import AccountType, FrequencyType
-from models.protocols import Chargeable
-from models.utils import MinorUnit
+from models.bills.bill_financed import FinancedBill
+from models.core.enum_type import AccountType, FrequencyType
+from models.core.protocols import Chargeable
+from models.core.utils import MinorUnit
 
 
 class RevolvingCreditBill(FinancedBill):
@@ -63,6 +64,47 @@ class RevolvingCreditBill(FinancedBill):
             round_up=round_up,
         )
         self._credit_limit = credit_limit_in
+
+    @classmethod
+    def from_dict(cls, dict_in, chargeable_registry: dict[str, Chargeable]) -> Self:
+        """Given a dictionary, create a RevolvingCreditBill object from it.
+
+        Note: chargeable_registry should only contain BankAccount entries.
+        RevolvingCreditBill.__init__ enforces this — passing any other Chargeable
+        will raise a type error at construction.
+        """
+        try:
+            return cls(
+                name_in=dict_in["name_in"],
+                balance_in=MinorUnit(dict_in["balance_in"]),
+                account_type_in=AccountType(dict_in["account_type_in"]),
+                initial_pay_date_in=date.fromisoformat(dict_in["initial_pay_date_in"]),
+                frequency_type_in=FrequencyType(dict_in["frequency_type_in"]),
+                minimum_payment_in=MinorUnit(dict_in["minimum_payment_in"]),
+                payment_method_in=chargeable_registry[
+                    dict_in["payment_method_in"]
+                ],  # pass key return object need to account for NONE/Invalid?
+                apr_rate_in=dict_in["apr_rate_in"],
+                credit_limit_in=MinorUnit(dict_in["credit_limit_in"]),
+                round_up=dict_in["round_up"],
+            )
+        except KeyError as e:
+            raise KeyError(f"Missing required field: {e.args[0]}") from e
+
+    def to_dict(self) -> dict:
+        """Return the Dictionary representation of the FinancedBill object."""
+        return {
+            "name_in": self.account_name,
+            "balance_in": int(self._accountInfo._initial_balance),
+            "account_type_in": self.account_type.value,
+            "initial_pay_date_in": self._initial_pay_date.isoformat(),
+            "frequency_type_in": self._trigger_days._frequency.value,
+            "minimum_payment_in": int(self._minimum_payment),
+            "payment_method_in": self._payment_method.account_name,  # ty: ignore[unresolved-attribute]
+            "apr_rate_in": self._interest._apr_rate,
+            "credit_limit_in": int(self._credit_limit),
+            "round_up": self._round_up,
+        }
 
     @property
     def exceeded_credit_limit(self) -> bool:

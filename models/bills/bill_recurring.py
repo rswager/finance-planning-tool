@@ -1,11 +1,11 @@
 from datetime import date
-from typing import cast
+from typing import Self, cast
 
-from models.bill_base import BillBase
-from models.enum_type import AccountType, FrequencyType
-from models.ledger import RecurringLedgerRow
-from models.protocols import Chargeable
-from models.utils import MajorUnit, MinorUnit
+from models.bills.bill_base import BillBase
+from models.core.enum_type import AccountType, FrequencyType
+from models.core.ledger import RecurringLedgerRow
+from models.core.protocols import Chargeable
+from models.core.utils import MajorUnit, MinorUnit
 
 
 class RecurringBill(BillBase):
@@ -55,6 +55,34 @@ class RecurringBill(BillBase):
             ledger_row_type=RecurringLedgerRow,
             round_up=round_up,
         )
+
+    @classmethod
+    def from_dict(cls, dict_in, chargeable_registry: dict[str, Chargeable]) -> Self:
+        """Given a dictionary, create a RecurringBill object from it."""
+        try:
+            return cls(
+                name_in=dict_in["name_in"],
+                minimum_payment_in=MinorUnit(dict_in["minimum_payment_in"]),
+                account_type_in=AccountType(dict_in["account_type_in"]),
+                initial_pay_date_in=date.fromisoformat(dict_in["initial_pay_date_in"]),
+                frequency_type_in=FrequencyType(dict_in["frequency_type_in"]),
+                payment_method_in=chargeable_registry[dict_in["payment_method_in"]],
+                round_up=dict_in["round_up"],
+            )
+        except KeyError as e:
+            raise KeyError(f"Missing required field: {e.args[0]}") from e
+
+    def to_dict(self) -> dict:
+        """Return the Dictionary representation of the RecurringBill object."""
+        return {
+            "name_in": self.account_name,
+            "minimum_payment_in": int(self._minimum_payment),
+            "account_type_in": self.account_type.value,
+            "initial_pay_date_in": self._initial_pay_date.isoformat(),
+            "frequency_type_in": self._trigger_days._frequency.value,
+            "payment_method_in": self._payment_method.account_name,  # ty: ignore[unresolved-attribute]
+            "round_up": self._round_up,
+        }
 
     @property
     def raw_copy_ledger(self) -> list[RecurringLedgerRow]:

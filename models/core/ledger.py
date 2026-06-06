@@ -1,10 +1,11 @@
 import dataclasses
+from collections.abc import Iterator
 from copy import deepcopy
 from dataclasses import astuple, dataclass
 from datetime import date
-from typing import Any, ClassVar, Iterator
+from typing import Any, ClassVar
 
-from models.utils import MajorUnit
+from models.core.utils import MajorUnit
 
 
 @dataclass(frozen=True)
@@ -66,6 +67,7 @@ class Ledger:
         ledger_row_type : type[StandardLedgerRow]
                 The ledger row class to use for this bill (e.g. RecurringLedgerRow, InterestLedgerRow).
         """
+        self._ledger_row_type = ledger_row_type
         self._header: list[str] = ledger_row_type.COLUMNS  # type: ignore[attr-defined]
         self._ledger: list[StandardLedgerRow] = []
         self._col_count = len(self._header)

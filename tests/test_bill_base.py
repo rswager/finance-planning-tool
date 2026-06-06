@@ -2,11 +2,11 @@ from datetime import date
 
 import pytest
 
-from models.bank_account import BankAccount
-from models.bill_base import BillBase
-from models.enum_type import AccountType, FrequencyType
-from models.ledger import StandardLedgerRow
-from models.utils import MinorUnit
+from models.accounts.bank_account import BankAccount
+from models.bills.bill_base import BillBase
+from models.core.enum_type import AccountType, FrequencyType
+from models.core.ledger import StandardLedgerRow
+from models.core.utils import MinorUnit
 
 
 @pytest.fixture
@@ -61,3 +61,13 @@ def test_initialize_simulation_date(bank_account):
     )
     bill.initialize_simulation_date(date(2025, 12, 1))
     assert not bill._trigger_days.date_triggered(date(2025, 11, 10))
+
+
+def test_to_dict_raises_not_implemented(bill):
+    with pytest.raises(NotImplementedError):
+        bill.to_dict()
+
+
+def test_from_dict_raises_not_implemented():
+    with pytest.raises(NotImplementedError):
+        BillBase.from_dict({}, {})

@@ -116,6 +116,8 @@ Configuration lives under `[tool.ruff]` in `pyproject.toml`.
 [pytest](https://docs.pytest.org) is the test framework used for all unit tests. Tests live in the `tests/` directory.
 
 - `pixi run test` — runs the full test suite
+- `pixi run pytest tests/test_income.py` — runs a single test file
+- `pixi run pytest tests/test_income.py::test_to_dict` — runs a single test function
 
 ### pre-commit
 
@@ -187,13 +189,15 @@ finance-planning-tool/
 ├── models/                  # core domain models (no GUI dependencies)
 │   ├── accountInformation.py
 │   ├── bankAccount.py
+│   ├── bill_base.py
+│   ├── bill_financed.py
+│   ├── bill_recurring.py
+│   ├── bill_revolving_credit.py
 │   ├── enumType.py
-│   ├── financed_bill.py
 │   ├── income.py
 │   ├── interest.py
 │   ├── ledger.py
-│   ├── recurring_bill.py
-│   ├── revolving_credit_bill.py
+│   ├── protocols.py
 │   ├── triggerDays.py
 │   └── utils.py
 ├── tests/                   # pytest unit tests

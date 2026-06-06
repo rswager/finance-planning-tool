@@ -2,10 +2,10 @@ from datetime import date
 
 import pytest
 
-from models.bank_account import BankAccount
-from models.bill_recurring import RecurringBill
-from models.enum_type import AccountType, FrequencyType
-from models.utils import MajorUnit, MinorUnit
+from models.accounts.bank_account import BankAccount
+from models.bills.bill_recurring import RecurringBill
+from models.core.enum_type import AccountType, FrequencyType
+from models.core.utils import MajorUnit, MinorUnit
 
 
 @pytest.fixture
@@ -57,3 +57,36 @@ def test_process_day_trigger(recurring_bill, bank_account):
     assert len(recurring_bill.raw_copy_ledger) == 1
     assert recurring_bill.raw_copy_ledger[-1].description == "Minimum Payment"
     assert bank_account.raw_copy_ledger[-1].debit == recurring_bill._minimum_payment.to_major()
+
+
+def test_to_dict(recurring_bill, bank_account):
+    d = recurring_bill.to_dict()
+    assert set(d.keys()) == {
+        "name_in",
+        "minimum_payment_in",
+        "account_type_in",
+        "initial_pay_date_in",
+        "frequency_type_in",
+        "payment_method_in",
+        "round_up",
+    }
+    assert d["name_in"] == "Electric Bill"
+    assert d["minimum_payment_in"] == int(MinorUnit.from_major(100.00))
+    assert d["account_type_in"] == AccountType.REOCCURRING.value
+    assert d["initial_pay_date_in"] == "2025-11-10"
+    assert d["frequency_type_in"] == FrequencyType.WEEKLY.value
+    assert d["payment_method_in"] == bank_account.account_name
+    assert d["round_up"] is False
+
+
+def test_from_dict_round_trip(recurring_bill, bank_account):
+    registry = {bank_account.account_name: bank_account}
+    reconstructed = RecurringBill.from_dict(recurring_bill.to_dict(), registry)
+    assert reconstructed.to_dict() == recurring_bill.to_dict()
+
+
+def test_from_dict_missing_key_raises(recurring_bill, bank_account):
+    d = recurring_bill.to_dict()
+    del d["minimum_payment_in"]
+    with pytest.raises(KeyError):
+        RecurringBill.from_dict(d, {bank_account.account_name: bank_account})

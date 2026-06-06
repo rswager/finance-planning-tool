@@ -6,14 +6,14 @@ from xlsxwriter.utility import xl_col_to_name
 from xlsxwriter.workbook import Workbook
 from xlsxwriter.worksheet import Worksheet
 
-from models.bank_account import BankAccount
-from models.bill_financed import FinancedBill
-from models.bill_recurring import RecurringBill
-from models.bill_revolving_credit import RevolvingCreditBill
-from models.enum_type import AccountType, FrequencyType
-from models.income import Income
-from models.ledger import StandardLedgerRow
-from models.utils import MinorUnit
+from models.accounts.bank_account import BankAccount
+from models.bills.bill_financed import FinancedBill
+from models.bills.bill_recurring import RecurringBill
+from models.bills.bill_revolving_credit import RevolvingCreditBill
+from models.core.enum_type import AccountType, FrequencyType
+from models.core.ledger import StandardLedgerRow
+from models.core.utils import MinorUnit
+from models.income.income import Income
 
 
 def add_table(
@@ -24,7 +24,7 @@ def add_table(
         return
     header = []
     for index, column_data in enumerate(data[0]):
-        if isinstance(column_data, (float, int)) and index != 0:
+        if isinstance(column_data, float | int) and index != 0:
             column_def = {"header": header_in[index], "format": accounting_format}
         elif isinstance(column_data, date):
             column_def = {"header": header_in[index], "format": date_format}

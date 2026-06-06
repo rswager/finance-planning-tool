@@ -1,5 +1,5 @@
-from models.enum_type import AccountType
-from models.utils import MinorUnit
+from models.core.enum_type import AccountType
+from models.core.utils import MinorUnit
 
 
 class AccountInformation:
@@ -25,6 +25,7 @@ class AccountInformation:
                 The type of account (checking, savings, investment, etc.).
         """
         self._balance: MinorUnit = balance_in
+        self._initial_balance: MinorUnit = balance_in
         self._account_name: str = name_in
         self._account_type: AccountType = account_type_in
 
@@ -42,7 +43,7 @@ class AccountInformation:
             return self._balance < 0
         return False
 
-    def update_balance(self, credit: MinorUnit = MinorUnit(0), debit: MinorUnit = MinorUnit(0)) -> None:
+    def update_balance(self, credit: MinorUnit = MinorUnit(0), debit: MinorUnit = MinorUnit(0)) -> None:  # noqa: B008
         """
         Apply a credit or debit to the account balance.
 
