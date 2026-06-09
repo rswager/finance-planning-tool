@@ -14,7 +14,7 @@ class RecurringBill(BillBase):
     a specified frequency to a designated payment method (Chargeable).
     """
 
-    TYPE_KEY = "bank_recurring"
+    TYPE_KEY = "bill_recurring"
 
     def __init__(
         self,

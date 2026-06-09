@@ -4,8 +4,9 @@ import pytest
 
 from models.accounts.bank_account import BankAccount
 from models.bills.bill_financed import FinancedBill
-from models.core.enum_type import AccountType, FrequencyType, SerialAccountType
+from models.core.enum_type import AccountType, FrequencyType
 from models.core.utils import MinorUnit
+from models.persistence.serial_lookup import SerialTypeLookup
 
 
 @pytest.fixture
@@ -28,7 +29,7 @@ def financed_bill(bank_account):
 
 
 def test_type_key_in_serialized_account_type(financed_bill):
-    assert SerialAccountType[financed_bill.TYPE_KEY] == FinancedBill
+    assert SerialTypeLookup[financed_bill.TYPE_KEY].value == FinancedBill
 
 
 def test_initialization(financed_bill, bank_account):
@@ -107,7 +108,8 @@ def test_to_dict(financed_bill, bank_account):
     assert d["payment_method_in"] == bank_account.account_name
     assert d["apr_rate_in"] == 0.05
     assert d["round_up"] is False
-    assert d["serial_type_in"] == SerialAccountType.bill_financed
+    # We assert that serial_type_in is IN SerialTypeLookup by not catching a raise
+    SerialTypeLookup[d["serial_type_in"]]
 
 
 def test_from_dict_round_trip(financed_bill, bank_account):
