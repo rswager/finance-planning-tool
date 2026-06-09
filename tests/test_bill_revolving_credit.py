@@ -4,7 +4,7 @@ import pytest
 
 from models.accounts.bank_account import BankAccount
 from models.bills.bill_revolving_credit import RevolvingCreditBill
-from models.core.enum_type import AccountType, FrequencyType
+from models.core.enum_type import AccountType, FrequencyType, SerialAccountType
 from models.core.utils import MajorUnit, MinorUnit
 
 
@@ -26,6 +26,10 @@ def credit_bill(bank_account):
         apr_rate_in=0.12,
         credit_limit_in=MinorUnit.from_major(5000.00),
     )
+
+
+def test_type_key_in_serialized_account_type(credit_bill):
+    assert SerialAccountType[credit_bill.TYPE_KEY] == RevolvingCreditBill
 
 
 def test_initialization(credit_bill):
@@ -72,6 +76,7 @@ def test_to_dict(credit_bill, bank_account):
         "apr_rate_in",
         "credit_limit_in",
         "round_up",
+        "serial_type_in",
     }
     assert d["name_in"] == "Visa"
     assert d["balance_in"] == -int(MinorUnit.from_major(1000.00))
@@ -83,6 +88,7 @@ def test_to_dict(credit_bill, bank_account):
     assert d["apr_rate_in"] == 0.12
     assert d["credit_limit_in"] == int(MinorUnit.from_major(5000.00))
     assert d["round_up"] is False
+    assert d["serial_type_in"] == SerialAccountType.bill_revolving_credit
 
 
 def test_from_dict_round_trip(credit_bill, bank_account):

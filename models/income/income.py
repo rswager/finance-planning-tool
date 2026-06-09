@@ -13,6 +13,8 @@ class Income:
     according to specified contribution percentages and payment frequency.
     """
 
+    TYPE_KEY = "income"
+
     def __init__(
         self,
         name_in: str,
@@ -80,6 +82,7 @@ class Income:
             ],
             "frequency_type_in": self._trigger_days._frequency.value,
             "round_down_in": self._round_down,
+            "serial_type_in": self.TYPE_KEY,
         }
 
     def set_account_contribution(self, contributions: list[tuple[BankAccount, float]]) -> None:

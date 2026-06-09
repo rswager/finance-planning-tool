@@ -13,6 +13,8 @@ class RevolvingCreditBill(FinancedBill, Chargeable):
     and requires minimum payments at specified intervals. Payments are applied to a linked chargeable account.
     """
 
+    TYPE_KEY = "bank_revolving_credit"
+
     def __init__(
         self,
         name_in: str,
@@ -102,6 +104,7 @@ class RevolvingCreditBill(FinancedBill, Chargeable):
             "apr_rate_in": self._interest._apr_rate,
             "credit_limit_in": int(self._credit_limit),
             "round_up": self._round_up,
+            "serial_type_in": self.TYPE_KEY,
         }
 
     @property

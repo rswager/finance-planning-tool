@@ -36,14 +36,14 @@ The `payment_method` property raises a clear `RuntimeError` if accessed before `
 
 A top-level persistence module (separate from the models) owns load/save orchestration.
 
-| Priority | Item |
-|----------|------|
-| High | Add `TYPE_KEY` class-level constant to each serializable class (accounts, bills, etc.) |
-| High | Update `to_dict()` on each serializable class to include `"type": self.TYPE_KEY` |
-| High | Create dispatch table in the persistence layer mapping `TYPE_KEY` strings to classes |
-| High | Build JSON writer — groups objects by Chargeable / non-Chargeable, calls `to_dict()`, writes to file |
-| High | Build JSON reader — reads file, two-phase reconstruction using dispatch table |
-| High | Write a test verifying every serializable class's `TYPE_KEY` is present in the dispatch table |
-| High | Use `pathlib.Path` for all file paths in the persistence layer to ensure OS-agnostic behavior |
+| Priority    | Item                                                                                                                                                                  |
+|-------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Done        | Add `TYPE_KEY` class-level constant to each serializable class (accounts, bills, etc.)                                                                                |
+| Done        | Update `to_dict()` on each serializable class to include `"type": self.TYPE_KEY`                                                                                      |
+| High        | Create dispatch table in the persistence layer mapping `TYPE_KEY` strings to classes                                                                                  |
+| High        | Build JSON writer — groups objects by Chargeable / non-Chargeable, calls `to_dict()`, writes to file                                                                  |
+| High        | Build JSON reader — reads file, two-phase reconstruction using dispatch table                                                                                         |
+| In Progress | Write a test verifying every serializable class's `TYPE_KEY` is present in the dispatch table<br/>need to resolve circular referencing, and the comparison to string? |
+| High        | Use `pathlib.Path` for all file paths in the persistence layer to ensure OS-agnostic behavior                                                                         |
 
 **TYPE_KEY / dispatch table:** Each serializable class defines a stable `TYPE_KEY = "some_string"` constant. `to_dict()` emits this as `"type"`. The persistence layer holds a dispatch table `{TYPE_KEY: Class}` — the only place that imports model classes, avoiding circular imports. A class rename does not silently break saved files because `TYPE_KEY` is an explicit constant, not derived from the class name.

@@ -3,7 +3,7 @@ from datetime import date
 import pytest
 
 from models.accounts.bank_account import BankAccount
-from models.core.enum_type import AccountType, FrequencyType
+from models.core.enum_type import AccountType, FrequencyType, SerialAccountType
 from models.core.utils import MinorUnit
 from models.income.income import Income
 
@@ -27,6 +27,10 @@ def income(bank_accounts):
         account_contributions_in=[(acc1, 0.6), (acc2, 0.4)],
         frequency_type_in=FrequencyType.WEEKLY,
     )
+
+
+def test_type_key_in_serialized_account_type(income):
+    assert SerialAccountType[income.TYPE_KEY] == Income
 
 
 def test_initialization(income, bank_accounts):
@@ -113,6 +117,7 @@ def test_to_dict(income, bank_accounts):
         "account_contributions_in",
         "frequency_type_in",
         "round_down_in",
+        "serial_type_in",
     }
     assert d["name_in"] == "Salary"
     assert d["income_in"] == int(MinorUnit.from_major(1_000.00))
@@ -123,6 +128,7 @@ def test_to_dict(income, bank_accounts):
     ]
     assert d["frequency_type_in"] == FrequencyType.WEEKLY.value
     assert d["round_down_in"] is False
+    assert d["serial_type_in"] == SerialAccountType.bank_account
 
 
 def test_from_dict_round_trip(income, bank_accounts):

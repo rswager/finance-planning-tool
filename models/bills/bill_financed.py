@@ -15,6 +15,8 @@ class FinancedBill(BillBase):
     and an associated ledger to track all transactions and interest applied.
     """
 
+    TYPE_KEY = "bill_financed"
+
     def __init__(
         self,
         name_in: str,
@@ -96,6 +98,7 @@ class FinancedBill(BillBase):
             "payment_method_in": self.payment_method.account_name,
             "apr_rate_in": self._interest._apr_rate,
             "round_up": self._round_up,
+            "serial_type_in": self.TYPE_KEY,
         }
 
     @property

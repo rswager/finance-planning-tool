@@ -3,7 +3,7 @@ from datetime import date
 import pytest
 
 from models.accounts.bank_account import BankAccount
-from models.core.enum_type import AccountType
+from models.core.enum_type import AccountType, SerialAccountType
 from models.core.ledger import BankAccountLedgerRow
 from models.core.utils import MajorUnit, MinorUnit
 
@@ -11,6 +11,10 @@ from models.core.utils import MajorUnit, MinorUnit
 @pytest.fixture
 def bank_account():
     return BankAccount("Test Account", MinorUnit.from_major(1_000.00), AccountType.CHECKING)
+
+
+def test_type_key_in_serialized_account_type(bank_account):
+    assert SerialAccountType[bank_account.TYPE_KEY] == BankAccount
 
 
 def test_initialization(bank_account):
@@ -82,6 +86,7 @@ def test_to_dict(bank_account):
     assert d["name_in"] == "Test Account"
     assert d["balance_in"] == MinorUnit.from_major(1_000.00)
     assert d["account_type_in"] == AccountType.CHECKING.value
+    assert d["serial_type_in"] == SerialAccountType.bank_account
 
 
 def test_from_dict_round_trip(bank_account):

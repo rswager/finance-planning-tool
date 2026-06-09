@@ -18,6 +18,8 @@ class BankAccount(Chargeable):
     transaction activity.
     """
 
+    TYPE_KEY = "bank_account"
+
     def __init__(self, name_in: str, balance_in: MinorUnit, account_type_in: AccountType) -> None:
         """
         Initialize a new BankAccount.
@@ -52,6 +54,7 @@ class BankAccount(Chargeable):
             "name_in": self.account_name,
             "balance_in": int(self.balance_minor),
             "account_type_in": self.account_type.value,
+            "serial_type_in": self.TYPE_KEY,
         }
 
     @property

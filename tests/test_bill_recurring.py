@@ -4,7 +4,7 @@ import pytest
 
 from models.accounts.bank_account import BankAccount
 from models.bills.bill_recurring import RecurringBill
-from models.core.enum_type import AccountType, FrequencyType
+from models.core.enum_type import AccountType, FrequencyType, SerialAccountType
 from models.core.utils import MajorUnit, MinorUnit
 
 
@@ -23,6 +23,10 @@ def recurring_bill(bank_account):
         frequency_type_in=FrequencyType.WEEKLY,
         payment_method_in=bank_account,
     )
+
+
+def test_type_key_in_serialized_account_type(recurring_bill):
+    assert SerialAccountType[recurring_bill.TYPE_KEY] == RecurringBill
 
 
 def test_initialization(recurring_bill, bank_account):
@@ -69,6 +73,7 @@ def test_to_dict(recurring_bill, bank_account):
         "frequency_type_in",
         "payment_method_in",
         "round_up",
+        "serial_type_in",
     }
     assert d["name_in"] == "Electric Bill"
     assert d["minimum_payment_in"] == int(MinorUnit.from_major(100.00))
@@ -77,6 +82,7 @@ def test_to_dict(recurring_bill, bank_account):
     assert d["frequency_type_in"] == FrequencyType.WEEKLY.value
     assert d["payment_method_in"] == bank_account.account_name
     assert d["round_up"] is False
+    assert d["serial_type_in"] == SerialAccountType.bill_recurring
 
 
 def test_from_dict_round_trip(recurring_bill, bank_account):
