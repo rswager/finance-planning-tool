@@ -6,11 +6,16 @@ from models.accounts.bank_account import BankAccount
 from models.core.enum_type import AccountType
 from models.core.ledger import BankAccountLedgerRow
 from models.core.utils import MajorUnit, MinorUnit
+from models.persistence.serial_lookup import SerialTypeLookup
 
 
 @pytest.fixture
 def bank_account():
     return BankAccount("Test Account", MinorUnit.from_major(1_000.00), AccountType.CHECKING)
+
+
+def test_type_key_in_serialized_account_type(bank_account):
+    assert SerialTypeLookup[bank_account.TYPE_KEY].value == BankAccount
 
 
 def test_initialization(bank_account):
@@ -78,10 +83,12 @@ def test_zero_transaction(bank_account):
 
 def test_to_dict(bank_account):
     d = bank_account.to_dict()
-    assert set(d.keys()) == {"name_in", "balance_in", "account_type_in"}
+    assert set(d.keys()) == {"name_in", "balance_in", "account_type_in", "serial_type_in"}
     assert d["name_in"] == "Test Account"
     assert d["balance_in"] == MinorUnit.from_major(1_000.00)
     assert d["account_type_in"] == AccountType.CHECKING.value
+    # We assert that serial_type_in is IN SerialTypeLookup by not catching a raise
+    SerialTypeLookup[d["serial_type_in"]]
 
 
 def test_from_dict_round_trip(bank_account):

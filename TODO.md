@@ -18,17 +18,8 @@
 
 Add `to_dict` and `from_dict` class methods to each model. Order matters — objects with no dependencies come first so the registry can be built up before objects that reference others.
 
-| Priority | Item                                                                                                                                                                               |
-|----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Done     | `BankAccount` — no object references; serialize standalone                                                                                                                         |
-| Done     | `BillBase` — raises `NotImplementedError` on both methods; concrete subclasses must implement                                                                                      |
-| Done     | `RecurringBill` — extends `BillBase`; no extra fields beyond base                                                                                                                  |
-| Done     | `FinancedBill` — extends `BillBase`; adds `apr_rate`                                                                                                                               |
-| Done     | `RevolvingCreditBill` — extends `FinancedBill`; adds `credit_limit`                                                                                                                |
-| Done     | `bill_*` — tests added for to_dict, from_dict round-trip, and missing-key errors                                                                                                   |
-| Done     | `Income` — `to_dict` / `from_dict` implemented; pass 1 creates with empty `account_contributions`; pass 2 calls `set_account_contribution` with resolved accounts                |
-| Done     | `BillBase` — make `payment_method_in` optional (default `None`); add `payment_method` property that raises clearly if accessed before linking; add `update_payment_method(account: Chargeable)` method for pass 2 |
-| Done     | `Chargeable` protocol — add `account_name` to narrow accidental implementors (e.g. `FinancedBill` satisfies it via `make_a_transaction` but is not intended to be chargeable); also investigate whether the protocol approach is the right long-term pattern vs. an alternative (e.g. explicit base class or registry) for tracking what is chargeable as the codebase grows |
+| Priority | Item |
+|----------|------|
 | Low      | `RevolvingCreditBill` — `payment_method_in` should ideally only accept `BankAccount`; two-pass design may have resolved the original constraint; revisit when implementing payment method deletion or narrowing |
 | Done     | Consider reorganizing `models/` into subfolders (e.g. `accounts/`, `bills/`) — directory is growing and grouping would improve navigation                                          |
 
@@ -43,9 +34,18 @@ The `payment_method` property raises a clear `RuntimeError` if accessed before `
 
 ### File Save / Load
 
-A top-level module (separate from the models) owns load/save orchestration.
+A top-level persistence module (separate from the models) owns load/save orchestration.
 
-| Priority | Item |
-|----------|------|
-| High | Write all models to a single JSON file via a top-level serializer |
-| High | On load: deserialize in order (BankAccounts → RevolvingCreditBills → Income → Bills), building the registry incrementally so each step can resolve references from the previous step |
+| Priority    | Item                                                                                                                                                                  |
+|-------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Done        | Add `TYPE_KEY` class-level constant to each serializable class (accounts, bills, etc.)                                                                                |
+| Done        | Update `to_dict()` on each serializable class to include `"type": self.TYPE_KEY`                                                                                      |
+| Done        | Create dispatch table in the persistence layer mapping `TYPE_KEY` strings to classes                                                                                  |
+| Done        | Build JSON writer — writes list of dicts to a JSON file                                                                                                               |
+| Done        | Build JSON reader — reads JSON file, returns list of dicts                                                                                                            |
+| High        | Build serializer — takes model objects, calls `to_dict()` on each, passes results to JSON writer                                                                      |
+| High        | Build deserializer — reads dicts from JSON reader, uses dispatch table + `from_dict()` for two-phase reconstruction into model objects                                |
+| Done        | Write a test verifying every serializable class's `TYPE_KEY` is present in the dispatch table                                                                         |
+| Done        | Use `pathlib.Path` for all file paths in the persistence layer to ensure OS-agnostic behavior                                                                         |
+
+**TYPE_KEY / dispatch table:** Each serializable class defines a stable `TYPE_KEY = "some_string"` constant. `to_dict()` emits this as `"type"`. The persistence layer holds a dispatch table `{TYPE_KEY: Class}` — the only place that imports model classes, avoiding circular imports. A class rename does not silently break saved files because `TYPE_KEY` is an explicit constant, not derived from the class name.
