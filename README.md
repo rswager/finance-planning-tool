@@ -196,15 +196,19 @@ finance-planning-tool/
 │   │   ├── bill_recurring.py
 │   │   └── bill_revolving_credit.py
 │   ├── core/                # shared infrastructure (enums, utils, ledger, protocols)
+│   │   ├── chargeable.py
 │   │   ├── enum_type.py
 │   │   ├── interest.py
 │   │   ├── ledger.py
-│   │   ├── protocols.py
 │   │   ├── trigger_days.py
 │   │   └── utils.py
-│   └── income/              # income sources
-│       └── income.py
+│   ├── income/              # income sources
+│   │   └── income.py
+│   └── persistence/         # file I/O and serialization
+│       ├── json_reader_writer.py
+│       └── serial_lookup.py
 ├── tests/                   # pytest unit tests
+├── _dirs.py                 # app data directory constants (cross-platform)
 ├── main.py                  # simulation entry point (outputs Excel workbook)
 ├── pyproject.toml           # project metadata, dependencies, tool config
 ├── pixi.lock                # fully resolved dependency lockfile
