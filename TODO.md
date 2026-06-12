@@ -41,9 +41,11 @@ A top-level persistence module (separate from the models) owns load/save orchest
 | Done        | Add `TYPE_KEY` class-level constant to each serializable class (accounts, bills, etc.)                                                                                |
 | Done        | Update `to_dict()` on each serializable class to include `"type": self.TYPE_KEY`                                                                                      |
 | Done        | Create dispatch table in the persistence layer mapping `TYPE_KEY` strings to classes                                                                                  |
-| High        | Build JSON writer — groups objects by Chargeable / non-Chargeable, calls `to_dict()`, writes to file                                                                  |
-| High        | Build JSON reader — reads file, two-phase reconstruction using dispatch table                                                                                         |
+| Done        | Build JSON writer — writes list of dicts to a JSON file                                                                                                               |
+| Done        | Build JSON reader — reads JSON file, returns list of dicts                                                                                                            |
+| High        | Build serializer — takes model objects, calls `to_dict()` on each, passes results to JSON writer                                                                      |
+| High        | Build deserializer — reads dicts from JSON reader, uses dispatch table + `from_dict()` for two-phase reconstruction into model objects                                |
 | Done        | Write a test verifying every serializable class's `TYPE_KEY` is present in the dispatch table                                                                         |
-| High        | Use `pathlib.Path` for all file paths in the persistence layer to ensure OS-agnostic behavior                                                                         |
+| Done        | Use `pathlib.Path` for all file paths in the persistence layer to ensure OS-agnostic behavior                                                                         |
 
 **TYPE_KEY / dispatch table:** Each serializable class defines a stable `TYPE_KEY = "some_string"` constant. `to_dict()` emits this as `"type"`. The persistence layer holds a dispatch table `{TYPE_KEY: Class}` — the only place that imports model classes, avoiding circular imports. A class rename does not silently break saved files because `TYPE_KEY` is an explicit constant, not derived from the class name.

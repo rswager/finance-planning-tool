@@ -1,5 +1,6 @@
-import os
 from pathlib import Path
 
-LOCAL_APP_DATA = Path(os.environ.get("LOCALAPPDATA", Path.home() / ".local")) / "finance-planning-tool"
+from platformdirs import user_data_dir
+
+LOCAL_APP_DATA = Path(user_data_dir("finance_planning_tool", "SABRS"))
 SAVED_OBJECT_DATA = LOCAL_APP_DATA / "saved_objects"
