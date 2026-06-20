@@ -145,3 +145,8 @@ def test_from_dict_missing_key_raises(income, bank_accounts):
     del d["round_down_in"]
     with pytest.raises(KeyError):
         Income.from_dict(d, registry)
+
+
+def test_initialize_simulation_date(income):
+    income.initialize_simulation_date(date(2025, 11, 14))
+    assert income._trigger_days.trigger_date == date(2025, 11, 15)

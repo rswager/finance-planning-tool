@@ -119,7 +119,7 @@ class Ledger:
         return len(self._ledger)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     my_ledge = StandardLedgerRow(row_number=1, date=date(2021, 1, 1), description="My Ledger", credit=MajorUnit(100))
     my_bank = BankAccountLedgerRow(
         row_number=1,

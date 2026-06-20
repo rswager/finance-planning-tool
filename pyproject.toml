@@ -24,6 +24,7 @@ platformdirs = ">=4.9"
 
 [tool.pixi.feature.dev.dependencies]
 pytest = ">=8.3"
+pytest-cov = ">=6.0"
 pre-commit = ">=4.0"
 ruff = ">=0.11"
 
@@ -37,7 +38,7 @@ typecheck   = "ty check"
 ruff        = "ruff check ."
 ruff-fix    = "ruff check . --fix"
 ruff-format = "ruff format ."
-test        = "pytest tests/"
+test        = "pytest tests/ --cov=. --cov-report=term-missing"
 
 [tool.pixi.environments]
 default = { features = ["dev"], solve-group = "default" }
@@ -51,3 +52,17 @@ select = ["E", "F", "W", "I", "B", "UP"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+addopts = "--cov=. --cov-report=term-missing"
+
+[tool.coverage.run]
+omit = [
+    "tests/*",
+    "venv/*",
+    ".venv/*",
+    "main.py",
+    ".pixi/*",
+    "_dirs.py"
+]
+
+[tool.coverage.report]
+fail_under = 80

@@ -40,6 +40,10 @@ def test_raw_copy_ledger_is_copy(bank_account):
     assert len(bank_account.raw_copy_ledger) == 0
 
 
+def test_ledger_header(bank_account):
+    assert bank_account.ledger_header == BankAccountLedgerRow.COLUMNS
+
+
 def test_make_transaction_updates_ledger_and_balance(bank_account):
     tx_date = date(2025, 11, 8)
     bank_account.make_a_transaction(

@@ -145,3 +145,40 @@ def test_bring_trigger_date_to_target_date_raises_on_invalid_target_type(weekly_
     weekly_trigger.trigger_date = date(2025, 1, 1)
     with pytest.raises(TypeError):
         weekly_trigger.bring_trigger_date_to_target_date("2025/1/1")  # type: ignore
+
+
+@pytest.mark.parametrize(
+    "init_date,final_date,forwards,trigger",
+    [
+        (date(2025, 1, 1), None, True, TriggerDays(FrequencyType.SINGULAR)),
+        (date(2025, 1, 1), None, False, TriggerDays(FrequencyType.SINGULAR)),
+        (date(2025, 1, 1), date(2025, 1, 2), True, TriggerDays(FrequencyType.DAILY)),
+        (date(2025, 1, 1), date(2024, 12, 31), False, TriggerDays(FrequencyType.DAILY)),
+        (date(2025, 1, 1), date(2025, 1, 8), True, TriggerDays(FrequencyType.WEEKLY)),
+        (date(2025, 1, 1), date(2024, 12, 25), False, TriggerDays(FrequencyType.WEEKLY)),
+        (date(2025, 1, 1), date(2025, 1, 15), True, TriggerDays(FrequencyType.BI_WEEKLY)),
+        (date(2025, 1, 1), date(2024, 12, 18), False, TriggerDays(FrequencyType.BI_WEEKLY)),
+        (date(2025, 1, 1), date(2025, 2, 1), True, TriggerDays(FrequencyType.MONTHLY)),
+        (date(2025, 1, 1), date(2024, 12, 1), False, TriggerDays(FrequencyType.MONTHLY)),
+        (date(2025, 1, 1), date(2026, 1, 1), True, TriggerDays(FrequencyType.YEARLY)),
+        (date(2025, 1, 1), date(2024, 1, 1), False, TriggerDays(FrequencyType.YEARLY)),
+        (date(2025, 1, 1), date(2026, 1, 1), True, TriggerDays(FrequencyType.YEARLY)),
+        (date(2025, 1, 1), date(2024, 1, 1), False, TriggerDays(FrequencyType.YEARLY)),
+    ],
+)
+def test_set_next_trigger_date(init_date: date, final_date: date, forwards: bool, trigger: TriggerDays):
+    trigger.trigger_date = init_date
+    trigger._set_next_trigger_date(current_trigger_date=init_date, forwards=forwards)
+    assert trigger.trigger_date == final_date
+
+
+def test_set_next_trigger_day_raises_when_trigger_not_set(weekly_trigger: TriggerDays):
+    weekly_trigger._frequency = None  # ty: ignore[invalid-assignment]
+    with pytest.raises(ValueError):
+        weekly_trigger._set_next_trigger_date(date(2025, 1, 1))
+
+
+def test_set_next_trigger_day_raises_when_frequency_invalid(weekly_trigger: TriggerDays):
+    weekly_trigger._frequency = "Invalid"  # ty: ignore[invalid-assignment]
+    with pytest.raises(ValueError):
+        weekly_trigger._set_next_trigger_date(date(2025, 1, 1))

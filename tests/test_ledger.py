@@ -1,4 +1,4 @@
-import datetime
+from datetime import date
 
 import pytest
 
@@ -31,7 +31,7 @@ def test_add_valid_entry(ledger):
     """Adding a valid entry should append it to the ledger."""
     entry = StandardLedgerRow(
         row_number=1,
-        date=datetime.date(2025, 11, 8),
+        date=date(2025, 11, 8),
         description="Deposit",
         credit=MajorUnit(100.00),
     )
@@ -43,7 +43,7 @@ def test_add_invalid_entry_length(ledger):
     """Entries with wrong number of fields should raise ValueError."""
     bad_entry = BankAccountLedgerRow(
         row_number=2,
-        date=datetime.date(2025, 11, 8),
+        date=date(2025, 11, 8),
         description="Deposit",
         credit=MajorUnit(100),
         debit=MajorUnit(0),
@@ -59,7 +59,7 @@ def test_ledger_returns_copy(ledger):
     copy.append(
         StandardLedgerRow(
             row_number=2,
-            date=datetime.date(2025, 11, 8),
+            date=date(2025, 11, 8),
             description="Deposit",
             credit=MajorUnit(100.00),
         )
@@ -67,5 +67,6 @@ def test_ledger_returns_copy(ledger):
     assert len(ledger.raw_copy_ledger) == 0  # Ledger should remain unchanged
 
 
-if __name__ == "__main__":
-    pytest.main([__file__])
+def test_standard_ledger_row_iter():
+    row = StandardLedgerRow(row_number=1, date=date(2025, 1, 1), description="Test", credit=MajorUnit(100))
+    assert list(row) == [1, date(2025, 1, 1), "Test", MajorUnit(100)]
