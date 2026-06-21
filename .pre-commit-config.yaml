@@ -32,3 +32,9 @@ repos:
         language: system
         types: [python]
         pass_filenames: false
+
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.3.0
+    hooks:
+      - id: codespell
+        args: ["--skip=.pixi/*,*.lock,*.json,.coverage,.gitignore"]
