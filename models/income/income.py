@@ -52,6 +52,11 @@ class Income:
         self._account_contributions: list[tuple[BankAccount, float]] = []
         self.set_account_contribution(account_contributions_in)
 
+    @property
+    def account_name(self) -> str:
+        """Return the name of the income source."""
+        return self._income_name
+
     @classmethod
     def from_dict(
         cls,

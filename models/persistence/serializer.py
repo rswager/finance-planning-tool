@@ -1,4 +1,7 @@
+from models.accounts.bank_account import BankAccount
+from models.bills.bill_base import BillBase
 from models.core.chargeable import Chargeable
+from models.income.income import Income
 from models.persistence.serial_lookup import SerialTypeLookup
 
 
@@ -53,18 +56,22 @@ def convert_persistence_dict_to_dict_of_objects(persistence_dict: dict) -> dict:
 
     # Let's updated payment methods and account contributions now that everythign is built
     for each in return_dict.keys():
+        account = return_dict[each]
         # If we have to add a payment_method then we need to do that.
-        if hasattr(return_dict[each], "update_payment_method"):
-            chargeable_name = persistence_dict[each]["payment_method_in"]
-            # assert issubclass(chargeable_dict[chargeable_name], Chargeable)
-            return_dict[each].update_payment_method(chargeable_dict[chargeable_name])
+        if isinstance(account, BillBase):
+            chargeable_acccount = chargeable_dict[persistence_dict[each]["payment_method_in"]]
+            assert isinstance(chargeable_acccount, Chargeable)
+            assert hasattr(account, "update_payment_method")
+            account.update_payment_method(chargeable_acccount)
 
         # If we have account contributions to make we make them
-        if hasattr(return_dict[each], "set_account_contribution"):
+        if isinstance(account, Income):
             contribution_list = []
-            for account in persistence_dict[each]["account_contributions_in"]:
-                contribution_list.append((chargeable_dict[account["account_name"]], account["contribution"]))
-            return_dict[each].set_account_contribution(contribution_list)
+            for acc in persistence_dict[each]["account_contributions_in"]:
+                cont_account = return_dict[acc["account_name"]]
+                assert isinstance(cont_account, BankAccount)
+                contribution_list.append((cont_account, acc["contribution"]))
+            account.set_account_contribution(contribution_list)
 
     return return_dict
 

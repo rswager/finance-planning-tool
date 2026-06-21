@@ -109,6 +109,11 @@ def income(bank_accounts):
 
 
 @pytest.fixture
+def all_accounts(bank_accounts, all_bills, income):
+    return [*bank_accounts, *all_bills, income]
+
+
+@pytest.fixture
 def interest_instance():
     return Interest(0.05)
 
