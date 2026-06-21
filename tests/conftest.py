@@ -92,6 +92,11 @@ def credit_bill(checking_account):
 
 
 @pytest.fixture
+def all_bills(financed_bill, recurring_bill, credit_bill):
+    return financed_bill, recurring_bill, credit_bill
+
+
+@pytest.fixture
 def income(bank_accounts):
     acc1, acc2 = bank_accounts
     return Income(
@@ -101,6 +106,11 @@ def income(bank_accounts):
         account_contributions_in=[(acc1, 0.6), (acc2, 0.4)],
         frequency_type_in=FrequencyType.WEEKLY,
     )
+
+
+@pytest.fixture
+def all_accounts(bank_accounts, all_bills, income):
+    return [*bank_accounts, *all_bills, income]
 
 
 @pytest.fixture

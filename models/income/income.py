@@ -52,18 +52,23 @@ class Income:
         self._account_contributions: list[tuple[BankAccount, float]] = []
         self.set_account_contribution(account_contributions_in)
 
+    @property
+    def account_name(self) -> str:
+        """Return the name of the income source."""
+        return self._income_name
+
     @classmethod
-    def from_dict(cls, dict_in, chargeable_registry: dict[str, BankAccount]) -> Self:
+    def from_dict(
+        cls,
+        dict_in,
+    ) -> Self:
         """Given a dictionary, create a Income object from it."""
         try:
             return cls(
                 name_in=dict_in["name_in"],
                 income_in=MinorUnit(dict_in["income_in"]),
                 initial_pay_date_in=date.fromisoformat(dict_in["initial_pay_date_in"]),
-                account_contributions_in=[
-                    (chargeable_registry[account["account_name"]], account["contribution"])
-                    for account in dict_in["account_contributions_in"]
-                ],
+                account_contributions_in=[],
                 frequency_type_in=FrequencyType(dict_in["frequency_type_in"]),
                 round_down=dict_in["round_down_in"],
             )
@@ -96,9 +101,9 @@ class Income:
 
         Raises
         ------
-        ValueError
-            If any individual contribution is not between 0 and 1, or if total contributions
-            exceed 100%.
+            ValueError
+                If any individual contribution is not between 0 and 1, or if total contributions
+                exceed 100%.
         """
         for account_reference, percent_contribution in contributions:
             if not (0 <= percent_contribution <= 1):
@@ -115,8 +120,8 @@ class Income:
 
         Parameters
         ----------
-        date_in : date
-            The day to process.
+            date_in : date
+                The day to process.
         """
         if self._trigger_days.date_triggered(date_in):
             self.deposit(transaction_date=date_in)
@@ -127,8 +132,8 @@ class Income:
 
         Parameters
         ----------
-        transaction_date : date
-            The date of the deposit.
+            transaction_date : date
+                The date of the deposit.
         """
         allocated = MinorUnit(0)
         for i, (account_reference, contribution_percentage) in enumerate(self._account_contributions):
@@ -150,8 +155,8 @@ class Income:
 
         Parameters
         ----------
-        simulation_start_date : date
-            The date the simulation begins. The trigger date will be advanced or
-            rewound to the first scheduled occurrence on or after this date.
+            simulation_start_date : date
+                The date the simulation begins. The trigger date will be advanced or
+                rewound to the first scheduled occurrence on or after this date.
         """
         self._trigger_days.bring_trigger_date_to_target_date(simulation_start_date)

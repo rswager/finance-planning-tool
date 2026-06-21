@@ -195,7 +195,7 @@ finance-planning-tool/
 │   │   ├── bill_financed.py
 │   │   ├── bill_recurring.py
 │   │   └── bill_revolving_credit.py
-│   ├── core/                # shared infrastructure (enums, utils, ledger, protocols)
+│   ├── core/                # shared infrastructure (enums, utils, ledger)
 │   │   ├── chargeable.py
 │   │   ├── enum_type.py
 │   │   ├── interest.py
@@ -206,7 +206,8 @@ finance-planning-tool/
 │   │   └── income.py
 │   └── persistence/         # file I/O and serialization
 │       ├── json_reader_writer.py
-│       └── serial_lookup.py
+│       ├── serial_lookup.py
+│       └── serializer.py
 ├── tests/                   # pytest unit tests
 ├── _dirs.py                 # app data directory constants (cross-platform)
 ├── main.py                  # simulation entry point (outputs Excel workbook)

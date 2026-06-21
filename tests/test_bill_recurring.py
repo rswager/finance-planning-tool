@@ -70,8 +70,8 @@ def test_to_dict(recurring_bill, checking_account):
 
 
 def test_from_dict_round_trip(recurring_bill, checking_account):
-    registry = {checking_account.account_name: checking_account}
-    reconstructed = RecurringBill.from_dict(recurring_bill.to_dict(), registry)
+    reconstructed = RecurringBill.from_dict(recurring_bill.to_dict())
+    reconstructed.update_payment_method(checking_account)
     assert reconstructed.to_dict() == recurring_bill.to_dict()
 
 
@@ -79,4 +79,4 @@ def test_from_dict_missing_key_raises(recurring_bill, checking_account):
     d = recurring_bill.to_dict()
     del d["minimum_payment_in"]
     with pytest.raises(KeyError):
-        RecurringBill.from_dict(d, {checking_account.account_name: checking_account})
+        RecurringBill.from_dict(d)

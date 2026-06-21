@@ -93,8 +93,8 @@ def test_to_dict(financed_bill, checking_account):
 
 
 def test_from_dict_round_trip(financed_bill, checking_account):
-    registry = {checking_account.account_name: checking_account}
-    reconstructed = FinancedBill.from_dict(financed_bill.to_dict(), registry)
+    reconstructed = FinancedBill.from_dict(financed_bill.to_dict())
+    reconstructed.update_payment_method(checking_account)
     assert reconstructed.to_dict() == financed_bill.to_dict()
 
 
@@ -102,4 +102,4 @@ def test_from_dict_missing_key_raises(financed_bill, checking_account):
     d = financed_bill.to_dict()
     del d["apr_rate_in"]
     with pytest.raises(KeyError):
-        FinancedBill.from_dict(d, {checking_account.account_name: checking_account})
+        FinancedBill.from_dict(d)

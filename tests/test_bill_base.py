@@ -60,7 +60,7 @@ def test_to_dict_raises_not_implemented(bill_base):
 
 def test_from_dict_raises_not_implemented():
     with pytest.raises(NotImplementedError):
-        BillBase.from_dict({}, {})
+        BillBase.from_dict({})
 
 
 def test_update_payment_method(bill_base, checking_account, saving_account):
