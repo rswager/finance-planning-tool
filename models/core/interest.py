@@ -26,13 +26,13 @@ class Interest:
 
         Parameters
         ----------
-        apr_rate_in : float
-            Annual Percentage Rate as a fraction between 0 and 1.
+            apr_rate_in : float
+                Annual Percentage Rate as a fraction between 0 and 1.
 
         Raises
         ------
-        ValueError
-            If apr_rate_in is not between 0 and 1.
+            ValueError
+                If apr_rate_in is not between 0 and 1.
         """
         if not (0 <= apr_rate_in <= 1):
             raise ValueError("APR must be a percentage as a fraction between 0 and 1 (e.g., 5% → 0.05)")
@@ -45,21 +45,21 @@ class Interest:
 
         Parameters
         ----------
-        balance_in : MinorUnit
-            The account balance on which to calculate interest.
-        date_in : date
-            The date for which the daily interest is being calculated. Determines
-            whether to use 365 or 366 days in the year.
+            balance_in : MinorUnit
+                The account balance on which to calculate interest.
+            date_in : date
+                The date for which the daily interest is being calculated. Determines
+                whether to use 365 or 366 days in the year.
 
         Returns
         -------
-        MinorUnit
-            The daily interest amount in minor units.
+            MinorUnit
+                The daily interest amount in minor units.
 
         Notes
         -----
-        - Interest is always calculated on the absolute value of the balance.
-        - The cumulative interest (_interest_to_date) is updated with this amount.
+            - Interest is always calculated on the absolute value of the balance.
+            - The cumulative interest (_interest_to_date) is updated with this amount.
         """
         interest: MinorUnit = MinorUnit(0)
         if abs(balance_in) > 0:

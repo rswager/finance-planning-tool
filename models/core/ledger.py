@@ -64,8 +64,8 @@ class Ledger:
 
         Parameters
         ----------
-        ledger_row_type : type[StandardLedgerRow]
-                The ledger row class to use for this bill (e.g. RecurringLedgerRow, InterestLedgerRow).
+            ledger_row_type : type[StandardLedgerRow]
+                    The ledger row class to use for this bill (e.g. RecurringLedgerRow, InterestLedgerRow).
         """
         self._ledger_row_type = ledger_row_type
         self._header: list[str] = ledger_row_type.COLUMNS  # type: ignore[attr-defined]
@@ -97,13 +97,13 @@ class Ledger:
 
         Parameters
         ----------
-        entry : StandardLedgerRow
-            A StandardLedgerRow (and Inherited Dataclasses) of values corresponding to each column in the ledger.
+            entry : StandardLedgerRow
+                A StandardLedgerRow (and Inherited Dataclasses) of values corresponding to each column in the ledger.
 
         Raises
         ------
-        ValueError
-            If the entry does not match the number of columns in the ledger.
+            ValueError
+                If the entry does not match the number of columns in the ledger.
         """
         # Append a new entry to the ledger
         if len(entry) != self._col_count:

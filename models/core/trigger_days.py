@@ -25,8 +25,8 @@ class TriggerDays:
 
         Parameters
         ----------
-        frequency_in : FrequencyType
-            How often the trigger should occur.
+            frequency_in : FrequencyType
+                How often the trigger should occur.
         """
         self._trigger_date: date | None = None
         self._frequency: FrequencyType = frequency_in

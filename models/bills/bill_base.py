@@ -104,9 +104,9 @@ class BillBase:
 
         Parameters
         ----------
-        simulation_start_date : date
-            The date the simulation begins. The trigger date will be advanced or
-            rewound to the first scheduled occurrence on or after this date.
+            simulation_start_date : date
+                The date the simulation begins. The trigger date will be advanced or
+                rewound to the first scheduled occurrence on or after this date.
         """
         self._trigger_days.bring_trigger_date_to_target_date(simulation_start_date)
 
