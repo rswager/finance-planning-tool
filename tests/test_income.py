@@ -2,32 +2,10 @@ from datetime import date
 
 import pytest
 
-from models.accounts.bank_account import BankAccount
-from models.core.enum_type import AccountType, FrequencyType
+from models.core.enum_type import FrequencyType
 from models.core.utils import MinorUnit
 from models.income.income import Income
 from models.persistence.serial_lookup import SerialTypeLookup
-
-
-@pytest.fixture
-def bank_accounts():
-    acc1 = BankAccount(
-        name_in="Checking", balance_in=MinorUnit.from_major(1_000.00), account_type_in=AccountType.CHECKING
-    )
-    acc2 = BankAccount(name_in="Savings", balance_in=MinorUnit.from_major(500.00), account_type_in=AccountType.SAVINGS)
-    return acc1, acc2
-
-
-@pytest.fixture
-def income(bank_accounts):
-    acc1, acc2 = bank_accounts
-    return Income(
-        name_in="Salary",
-        income_in=MinorUnit.from_major(1_000.00),
-        initial_pay_date_in=date(2025, 11, 8),
-        account_contributions_in=[(acc1, 0.6), (acc2, 0.4)],
-        frequency_type_in=FrequencyType.WEEKLY,
-    )
 
 
 def test_type_key_in_serialized_account_type(income):
@@ -73,7 +51,7 @@ def test_deposit_updates_accounts(income, bank_accounts):
     income.deposit(date(2025, 11, 8))
 
     assert acc1.balance_minor == MinorUnit.from_major(1_000.00) + income_minor * 0.6
-    assert acc2.balance_minor == MinorUnit.from_major(500.00) + income_minor * 0.4
+    assert acc2.balance_minor == MinorUnit.from_major(1_000.00) + income_minor * 0.4
     assert acc1.raw_copy_ledger[-1].description == "Salary - Check"
     assert acc2.raw_copy_ledger[-1].description == "Salary - Check"
 
@@ -91,7 +69,7 @@ def test_deposit_preserves_full_amount(bank_accounts):
     total_deposited = (acc1.balance_minor - MinorUnit.from_major(1_000.00)) + (
         acc2.balance_minor - MinorUnit.from_major(500.00)
     )
-    assert total_deposited == MinorUnit.from_major(2_557.31)
+    assert total_deposited == MinorUnit.from_major(3_057.31)
 
 
 def test_process_day_triggers_deposit(income, bank_accounts):

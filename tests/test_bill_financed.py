@@ -2,39 +2,19 @@ from datetime import date
 
 import pytest
 
-from models.accounts.bank_account import BankAccount
 from models.bills.bill_financed import FinancedBill
 from models.core.enum_type import AccountType, FrequencyType
 from models.core.utils import MinorUnit
 from models.persistence.serial_lookup import SerialTypeLookup
 
 
-@pytest.fixture
-def bank_account():
-    return BankAccount("Checking", MinorUnit.from_major(1000.00), AccountType.CHECKING)
-
-
-@pytest.fixture
-def financed_bill(bank_account):
-    return FinancedBill(
-        name_in="Test Loan",
-        balance_in=MinorUnit.from_major(500.00),
-        account_type_in=AccountType.LOAN,
-        initial_pay_date_in=date(2025, 11, 10),
-        frequency_type_in=FrequencyType.WEEKLY,
-        minimum_payment_in=MinorUnit.from_major(50.00),
-        payment_method_in=bank_account,
-        apr_rate_in=0.05,
-    )
-
-
 def test_type_key_in_serialized_account_type(financed_bill):
     assert SerialTypeLookup[financed_bill.TYPE_KEY].value == FinancedBill
 
 
-def test_initialization(financed_bill, bank_account):
+def test_initialization(financed_bill, checking_account):
     assert financed_bill.ledger_col_count == 7
-    assert bank_account.balance_minor == MinorUnit.from_major(1_000.00)
+    assert checking_account.balance_minor == MinorUnit.from_major(1_000.00)
 
 
 def test_apply_daily_interest(financed_bill):
@@ -46,16 +26,16 @@ def test_apply_daily_interest(financed_bill):
     assert abs(entry.balance) > abs(start_balance)
 
 
-def test_make_payment(financed_bill, bank_account):
+def test_make_payment(financed_bill, checking_account):
     initial_loan_balance = financed_bill.loan_balance_minor
-    initial_bank_balance = bank_account.balance_minor
+    initial_bank_balance = checking_account.balance_minor
 
     financed_bill.make_payment(date(2025, 11, 10))
 
     assert financed_bill.raw_copy_ledger[-1].description == "Minimum Payment"
     assert abs(financed_bill.loan_balance_minor) < abs(initial_loan_balance)
-    assert bank_account.balance_minor < initial_bank_balance
-    assert bank_account.raw_copy_ledger[-1].debit > 0
+    assert checking_account.balance_minor < initial_bank_balance
+    assert checking_account.raw_copy_ledger[-1].debit > 0
 
 
 def test_process_day_no_trigger(financed_bill):
@@ -65,27 +45,27 @@ def test_process_day_no_trigger(financed_bill):
     assert abs(financed_bill.loan_balance_minor) > abs(initial_loan_balance)
 
 
-def test_process_day_with_trigger(financed_bill, bank_account):
+def test_process_day_with_trigger(financed_bill, checking_account):
     initial_loan_balance = financed_bill.loan_balance_minor
-    initial_bank_balance = bank_account.balance_minor
+    initial_bank_balance = checking_account.balance_minor
 
     financed_bill.process_day(date(2025, 11, 10))
 
     assert len(financed_bill.raw_copy_ledger) == 2
     assert abs(financed_bill.loan_balance_minor) < abs(initial_loan_balance)
-    assert bank_account.balance_minor < initial_bank_balance
-    assert bank_account.raw_copy_ledger[-1].debit > 0
+    assert checking_account.balance_minor < initial_bank_balance
+    assert checking_account.raw_copy_ledger[-1].debit > 0
 
 
-def test_min_payment_capped(financed_bill, bank_account):
+def test_min_payment_capped(financed_bill, checking_account):
     financed_bill._accountInfo._balance = MinorUnit.from_major(-30.00)
     financed_bill.make_payment(date(2025, 11, 10))
 
     assert financed_bill.loan_balance_minor == 0
-    assert bank_account.raw_copy_ledger[-1].debit == 30
+    assert checking_account.raw_copy_ledger[-1].debit == 30
 
 
-def test_to_dict(financed_bill, bank_account):
+def test_to_dict(financed_bill, checking_account):
     d = financed_bill.to_dict()
     assert set(d.keys()) == {
         "name_in",
@@ -105,21 +85,21 @@ def test_to_dict(financed_bill, bank_account):
     assert d["initial_pay_date_in"] == "2025-11-10"
     assert d["frequency_type_in"] == FrequencyType.WEEKLY.value
     assert d["minimum_payment_in"] == int(MinorUnit.from_major(50.00))
-    assert d["payment_method_in"] == bank_account.account_name
+    assert d["payment_method_in"] == checking_account.account_name
     assert d["apr_rate_in"] == 0.05
     assert d["round_up"] is False
     # We assert that serial_type_in is IN SerialTypeLookup by not catching a raise
     SerialTypeLookup[d["serial_type_in"]]
 
 
-def test_from_dict_round_trip(financed_bill, bank_account):
-    registry = {bank_account.account_name: bank_account}
+def test_from_dict_round_trip(financed_bill, checking_account):
+    registry = {checking_account.account_name: checking_account}
     reconstructed = FinancedBill.from_dict(financed_bill.to_dict(), registry)
     assert reconstructed.to_dict() == financed_bill.to_dict()
 
 
-def test_from_dict_missing_key_raises(financed_bill, bank_account):
+def test_from_dict_missing_key_raises(financed_bill, checking_account):
     d = financed_bill.to_dict()
     del d["apr_rate_in"]
     with pytest.raises(KeyError):
-        FinancedBill.from_dict(d, {bank_account.account_name: bank_account})
+        FinancedBill.from_dict(d, {checking_account.account_name: checking_account})
