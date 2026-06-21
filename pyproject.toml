@@ -66,3 +66,6 @@ omit = [
 
 [tool.coverage.report]
 fail_under = 80
+
+[tool.codespell]
+skip = ".pixi/*,*.lock,*.json,.coverage,.gitignore"
