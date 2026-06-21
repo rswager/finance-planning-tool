@@ -10,7 +10,8 @@ from models.bills.bill_recurring import RecurringBill
 from models.bills.bill_revolving_credit import RevolvingCreditBill
 from models.core.enum_type import AccountType, FrequencyType
 from models.core.interest import Interest
-from models.core.ledger import StandardLedgerRow
+from models.core.ledger import Ledger, StandardLedgerRow
+from models.core.trigger_days import TriggerDays
 from models.core.utils import MinorUnit
 from models.income.income import Income
 
@@ -105,3 +106,58 @@ def income(bank_accounts):
 @pytest.fixture
 def interest_instance():
     return Interest(0.05)
+
+
+@pytest.fixture
+def ledger():
+    """Ledger instance initialized with default columns."""
+    return Ledger(ledger_row_type=StandardLedgerRow)
+
+
+@pytest.fixture
+def monthly_trigger():
+    return TriggerDays(FrequencyType.MONTHLY)
+
+
+@pytest.fixture
+def biweekly_trigger():
+    return TriggerDays(FrequencyType.BI_WEEKLY)
+
+
+@pytest.fixture
+def weekly_trigger():
+    return TriggerDays(FrequencyType.WEEKLY)
+
+
+@pytest.fixture()
+def valid_file_path(tmp_path):
+    d = tmp_path / "sub"
+    d.mkdir()
+    return d / "temp.json"
+
+
+@pytest.fixture()
+def invalid_dir_file_path(tmp_path):
+    d = tmp_path / "sub"
+    d.mkdir()
+    return d
+
+
+@pytest.fixture()
+def invalid_missing_file_path(tmp_path):
+    d = tmp_path / "sub"
+    d.mkdir()
+    return tmp_path / "subs" / "temp.json"
+
+
+@pytest.fixture()
+def full_dict_entry():
+    return [
+        {"id": 1, "name": "hello"},
+        {"id": 2, "name": "world"},
+    ]
+
+
+@pytest.fixture()
+def empty_dict_entry():
+    return []

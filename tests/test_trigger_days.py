@@ -6,38 +6,6 @@ from dateutil.relativedelta import relativedelta
 from models.core.enum_type import FrequencyType
 from models.core.trigger_days import TriggerDays
 
-# --- Fixtures ---
-
-
-@pytest.fixture
-def monthly_trigger():
-    return TriggerDays(FrequencyType.MONTHLY)
-
-
-@pytest.fixture
-def biweekly_trigger():
-    return TriggerDays(FrequencyType.BI_WEEKLY)
-
-
-@pytest.fixture
-def weekly_trigger():
-    return TriggerDays(FrequencyType.WEEKLY)
-
-
-@pytest.fixture
-def daily_trigger():
-    return TriggerDays(FrequencyType.DAILY)
-
-
-@pytest.fixture
-def yearly_trigger():
-    return TriggerDays(FrequencyType.YEARLY)
-
-
-@pytest.fixture
-def singular_trigger():
-    return TriggerDays(FrequencyType.SINGULAR)
-
 
 # --- Tests ---
 def test_trigger_date_setter(monthly_trigger):

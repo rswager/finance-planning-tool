@@ -2,19 +2,8 @@ from datetime import date
 
 import pytest
 
-from models.core.ledger import BankAccountLedgerRow, Ledger, StandardLedgerRow
+from models.core.ledger import BankAccountLedgerRow, StandardLedgerRow
 from models.core.utils import MajorUnit
-
-# --- Fixtures ---
-
-
-@pytest.fixture
-def ledger():
-    """Ledger instance initialized with default columns."""
-    return Ledger(ledger_row_type=StandardLedgerRow)
-
-
-# --- Tests ---
 
 
 def test_ledger_initialization(ledger):
