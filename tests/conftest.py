@@ -9,8 +9,10 @@ from models.bills.bill_financed import FinancedBill
 from models.bills.bill_recurring import RecurringBill
 from models.bills.bill_revolving_credit import RevolvingCreditBill
 from models.core.enum_type import AccountType, FrequencyType
+from models.core.interest import Interest
 from models.core.ledger import StandardLedgerRow
 from models.core.utils import MinorUnit
+from models.income.income import Income
 
 
 @pytest.fixture
@@ -26,6 +28,11 @@ def checking_account():
 @pytest.fixture
 def saving_account():
     return BankAccount("Saving", MinorUnit.from_major(1_000.00), AccountType.SAVINGS)
+
+
+@pytest.fixture
+def bank_accounts(checking_account, saving_account):
+    return checking_account, saving_account
 
 
 @pytest.fixture
@@ -81,3 +88,20 @@ def credit_bill(checking_account):
         apr_rate_in=0.12,
         credit_limit_in=MinorUnit.from_major(5_000.00),
     )
+
+
+@pytest.fixture
+def income(bank_accounts):
+    acc1, acc2 = bank_accounts
+    return Income(
+        name_in="Salary",
+        income_in=MinorUnit.from_major(1_000.00),
+        initial_pay_date_in=date(2025, 11, 8),
+        account_contributions_in=[(acc1, 0.6), (acc2, 0.4)],
+        frequency_type_in=FrequencyType.WEEKLY,
+    )
+
+
+@pytest.fixture
+def interest_instance():
+    return Interest(0.05)

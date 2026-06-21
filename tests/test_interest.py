@@ -7,11 +7,6 @@ from models.core.interest import Interest
 from models.core.utils import MinorUnit
 
 
-@pytest.fixture
-def interest_instance():
-    return Interest(0.05)
-
-
 def test_daily_interest_non_leap(interest_instance):
     bal = MinorUnit.from_major(1_000.00)
     test_date = date(2025, 11, 8)
