@@ -68,7 +68,7 @@ class RevolvingCreditBill(FinancedBill, Chargeable):
         self._credit_limit = credit_limit_in
 
     @classmethod
-    def from_dict(cls, dict_in, chargeable_registry: dict[str, Chargeable]) -> Self:
+    def from_dict(cls, dict_in) -> Self:
         """Given a dictionary, create a RevolvingCreditBill object from it.
 
         Note: chargeable_registry should only contain BankAccount entries.
@@ -83,7 +83,7 @@ class RevolvingCreditBill(FinancedBill, Chargeable):
                 initial_pay_date_in=date.fromisoformat(dict_in["initial_pay_date_in"]),
                 frequency_type_in=FrequencyType(dict_in["frequency_type_in"]),
                 minimum_payment_in=MinorUnit(dict_in["minimum_payment_in"]),
-                payment_method_in=chargeable_registry[dict_in["payment_method_in"]],
+                payment_method_in=None,
                 apr_rate_in=dict_in["apr_rate_in"],
                 credit_limit_in=MinorUnit(dict_in["credit_limit_in"]),
                 round_up=dict_in["round_up"],

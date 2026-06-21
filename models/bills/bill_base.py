@@ -58,7 +58,7 @@ class BillBase:
         self._payment_method: Chargeable | None = payment_method_in
 
     @classmethod
-    def from_dict(cls, dict_in, chargeable_registry: dict[str, Chargeable]) -> Self:
+    def from_dict(cls, dict_in) -> Self:
         raise NotImplementedError(
             "Use a concrete subclass's from_dict instead. (RecurringBill, FinancedBill, RevolvingCreditBill)"
         )

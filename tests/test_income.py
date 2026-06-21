@@ -112,17 +112,18 @@ def test_to_dict(income, bank_accounts):
 
 
 def test_from_dict_round_trip(income, bank_accounts):
-    registry = {bank_account.account_name: bank_account for bank_account in bank_accounts}
-    reconstructed = Income.from_dict(income.to_dict(), registry)
-    assert reconstructed.to_dict() == income.to_dict()
+    acc1, acc2 = bank_accounts
+    income_dict = income.to_dict()
+    reconstructed = Income.from_dict(income_dict)
+    reconstructed.set_account_contribution([(acc1, 0.6), (acc2, 0.4)])
+    assert reconstructed.to_dict() == income_dict
 
 
 def test_from_dict_missing_key_raises(income, bank_accounts):
     d = income.to_dict()
-    registry = {bank_account.account_name: bank_account for bank_account in bank_accounts}
     del d["round_down_in"]
     with pytest.raises(KeyError):
-        Income.from_dict(d, registry)
+        Income.from_dict(d)
 
 
 def test_initialize_simulation_date(income):

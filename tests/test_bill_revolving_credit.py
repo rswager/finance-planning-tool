@@ -63,8 +63,8 @@ def test_to_dict(credit_bill, checking_account):
 
 
 def test_from_dict_round_trip(credit_bill, checking_account):
-    registry = {checking_account.account_name: checking_account}
-    reconstructed = RevolvingCreditBill.from_dict(credit_bill.to_dict(), registry)
+    reconstructed = RevolvingCreditBill.from_dict(credit_bill.to_dict())
+    reconstructed.update_payment_method(checking_account)
     assert reconstructed.to_dict() == credit_bill.to_dict()
 
 
@@ -72,4 +72,4 @@ def test_from_dict_missing_key_raises(credit_bill, checking_account):
     d = credit_bill.to_dict()
     del d["credit_limit_in"]
     with pytest.raises(KeyError):
-        RevolvingCreditBill.from_dict(d, {checking_account.account_name: checking_account})
+        RevolvingCreditBill.from_dict(d)

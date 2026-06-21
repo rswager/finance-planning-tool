@@ -59,7 +59,7 @@ class RecurringBill(BillBase):
         )
 
     @classmethod
-    def from_dict(cls, dict_in, chargeable_registry: dict[str, Chargeable]) -> Self:
+    def from_dict(cls, dict_in) -> Self:
         """Given a dictionary, create a RecurringBill object from it."""
         try:
             return cls(
@@ -68,7 +68,7 @@ class RecurringBill(BillBase):
                 account_type_in=AccountType(dict_in["account_type_in"]),
                 initial_pay_date_in=date.fromisoformat(dict_in["initial_pay_date_in"]),
                 frequency_type_in=FrequencyType(dict_in["frequency_type_in"]),
-                payment_method_in=chargeable_registry[dict_in["payment_method_in"]],
+                payment_method_in=None,
                 round_up=dict_in["round_up"],
             )
         except KeyError as e:

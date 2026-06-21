@@ -53,17 +53,17 @@ class Income:
         self.set_account_contribution(account_contributions_in)
 
     @classmethod
-    def from_dict(cls, dict_in, chargeable_registry: dict[str, BankAccount]) -> Self:
+    def from_dict(
+        cls,
+        dict_in,
+    ) -> Self:
         """Given a dictionary, create a Income object from it."""
         try:
             return cls(
                 name_in=dict_in["name_in"],
                 income_in=MinorUnit(dict_in["income_in"]),
                 initial_pay_date_in=date.fromisoformat(dict_in["initial_pay_date_in"]),
-                account_contributions_in=[
-                    (chargeable_registry[account["account_name"]], account["contribution"])
-                    for account in dict_in["account_contributions_in"]
-                ],
+                account_contributions_in=[],
                 frequency_type_in=FrequencyType(dict_in["frequency_type_in"]),
                 round_down=dict_in["round_down_in"],
             )

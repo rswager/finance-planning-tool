@@ -6,6 +6,7 @@ from xlsxwriter.utility import xl_col_to_name
 from xlsxwriter.workbook import Workbook
 from xlsxwriter.worksheet import Worksheet
 
+from _dirs import LOCAL_APP_DATA, SAVED_OBJECT_DATA
 from models.accounts.bank_account import BankAccount
 from models.bills.bill_financed import FinancedBill
 from models.bills.bill_recurring import RecurringBill
@@ -14,6 +15,12 @@ from models.core.enum_type import AccountType, FrequencyType
 from models.core.ledger import StandardLedgerRow
 from models.core.utils import MinorUnit
 from models.income.income import Income
+from models.persistence.json_reader_writer import write_object_to_file
+from models.persistence.serializer import convert_objects_to_persistence_dict
+
+# Make sure our Directories are set up.
+os.makedirs(LOCAL_APP_DATA, exist_ok=True)
+os.makedirs(SAVED_OBJECT_DATA, exist_ok=True)
 
 
 def add_table(
@@ -66,12 +73,12 @@ def add_chart(workbook_in: Workbook, worksheet_in: Worksheet, table_name_in: str
 round_up_expenses_round_down_income = False
 accounts = {
     "primary_checking": BankAccount(
-        name_in="Primary Checking",
+        name_in="primary_checking",
         account_type_in=AccountType.CHECKING,
         balance_in=MinorUnit.from_major(571.75),
     ),
     "primary_savings": BankAccount(
-        name_in="Primary Savings",
+        name_in="primary_savings",
         account_type_in=AccountType.SAVINGS,
         balance_in=MinorUnit.from_major(15_380.29),
     ),
@@ -79,7 +86,7 @@ accounts = {
 
 revolving_credit = {
     "discover_card": RevolvingCreditBill(
-        name_in="Discovery",
+        name_in="discover_card",
         balance_in=MinorUnit.from_major(10_923.60),
         account_type_in=AccountType.REVOLVING,
         initial_pay_date_in=date(2025, 11, 28),
@@ -94,7 +101,7 @@ revolving_credit = {
 
 incomes = {
     "primary_Income": Income(
-        name_in="Primary Job",
+        name_in="primary_Income",
         income_in=MinorUnit.from_major(2_604.9),
         initial_pay_date_in=date(2025, 11, 6),
         account_contributions_in=[
@@ -242,6 +249,12 @@ bills = {
 }
 
 
+write_object_to_file(
+    file_path=SAVED_OBJECT_DATA / "temp.json",
+    output_data=convert_objects_to_persistence_dict(bills | incomes | revolving_credit | accounts),
+)
+
+quit()
 today = date(2025, 11, 1)
 end_date = date(today.year + 10, today.month, today.day)
 
