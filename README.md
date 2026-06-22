@@ -81,7 +81,7 @@ pixi run ruff-format    # format all files
 pixi run typecheck      # run ty type checking
 pixi run check          # run all pre-commit hooks against every file
 pixi run codespell      # run codespell to highlight common typos
-pixi run codespell-fix  # run codespell in interactive more to fix common typos
+pixi run codespell-fix  # run codespell in interactive mode to fix common typos
 ```
 
 ---
