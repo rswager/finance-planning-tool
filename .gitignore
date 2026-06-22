@@ -216,4 +216,4 @@ __marimo__/
 .idea/
 
 # Local task tracking (session-specific, not for version control)
-TODO.local.md
+*.local-only.md
