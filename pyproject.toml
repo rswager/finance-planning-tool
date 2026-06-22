@@ -30,15 +30,18 @@ ruff = ">=0.11"
 
 [tool.pixi.feature.dev.pypi-dependencies]
 ty = ">=0.0.1"
+codespell = ">=2.4"
 
 [tool.pixi.feature.dev.tasks]
-setup       = "pre-commit install"
-check       = "pre-commit run --all-files"
-typecheck   = "ty check"
-ruff        = "ruff check ."
-ruff-fix    = "ruff check . --fix"
-ruff-format = "ruff format ."
-test        = "pytest tests/ --cov=. --cov-report=term-missing"
+setup           = "pre-commit install"
+check           = "pre-commit run --all-files"
+typecheck       = "ty check"
+ruff            = "ruff check ."
+ruff-fix        = "ruff check . --fix"
+ruff-format     = "ruff format ."
+test            = "pytest tests/ --cov=. --cov-report=term-missing"
+codespell       = "codespell"
+codespell-fix   = "codespell --write-changes --interactive 2"
 
 [tool.pixi.environments]
 default = { features = ["dev"], solve-group = "default" }

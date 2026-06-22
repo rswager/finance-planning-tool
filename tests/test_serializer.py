@@ -21,7 +21,7 @@ def test_convert_persistence_dict_to_dict_of_objects(all_accounts):
         object_dict[each.account_name] = each
     # Convert to the Persistence Dict
     persistence_dict = convert_objects_to_persistence_dict(object_dict)
-    # Rebulid the Object Dict (they will be new instance so they cannot be compariable)
+    # Rebuild the Object Dict (they will be new instance so they cannot be comparable)
     new_object_dict = convert_persistence_dict_to_dict_of_objects(persistence_dict)
     # We can convert these to a new persistence dict that is the same as the persistence_dict
     assert persistence_dict == convert_objects_to_persistence_dict(new_object_dict)

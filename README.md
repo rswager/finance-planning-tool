@@ -119,6 +119,14 @@ Configuration lives under `[tool.ruff]` in `pyproject.toml`.
 - `pixi run pytest tests/test_income.py` — runs a single test file
 - `pixi run pytest tests/test_income.py::test_to_dict` — runs a single test function
 
+### codespell
+
+[codespell](https://github.com/codespell-project/codespell) is a spell checker designed for source code. It finds common misspellings in comments, documentation, strings, variable names, and other text files without flagging valid code syntax.
+
+- `pixi run codespell` — checks the project for spelling mistakes
+- `pixi run codespell-fix` — interactively fixes common misspellings with user
+
+
 ### pre-commit
 
 [pre-commit](https://pre-commit.com) runs a set of checks automatically before each `git commit`. It prevents bad code from entering the repository without requiring manual tool runs.

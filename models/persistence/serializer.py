@@ -54,7 +54,7 @@ def convert_persistence_dict_to_dict_of_objects(persistence_dict: dict) -> dict:
         if issubclass(ObjectCls, Chargeable):
             chargeable_dict[each] = return_dict[each]
 
-    # Let's updated payment methods and account contributions now that everythign is built
+    # Let's updated payment methods and account contributions now that everything is built
     for each in return_dict.keys():
         account = return_dict[each]
         # If we have to add a payment_method then we need to do that.
