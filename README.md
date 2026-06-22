@@ -147,7 +147,7 @@ Hooks configured in `.pre-commit-config.yaml`:
 | `ruff-format` | Formats Python files |
 | `ty` | Runs type checking |
 | `pytest` | Runs the test suite |
-| `codespell | Identify common typos |
+| `codespell` | Identify common typos |
 #### First-time setup
 
 After `pixi install`, initialize the pre-commit hooks once:
