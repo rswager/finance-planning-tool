@@ -74,12 +74,14 @@ The start date, end date, account balances, and all bill/income parameters are c
 ## Development tasks
 
 ```bash
-pixi run test          # run the test suite
-pixi run ruff          # lint the codebase
-pixi run ruff-fix      # lint and auto-fix what ruff can
-pixi run ruff-format   # format all files
-pixi run typecheck     # run ty type checking
-pixi run check         # run all pre-commit hooks against every file
+pixi run test           # run the test suite
+pixi run ruff           # lint the codebase
+pixi run ruff-fix       # lint and auto-fix what ruff can
+pixi run ruff-format    # format all files
+pixi run typecheck      # run ty type checking
+pixi run check          # run all pre-commit hooks against every file
+pixi run codespell      # run codespell to highlight common typos
+pixi run codespell-fix  # run codespell in interactive more to fix common typos
 ```
 
 ---
@@ -145,7 +147,7 @@ Hooks configured in `.pre-commit-config.yaml`:
 | `ruff-format` | Formats Python files |
 | `ty` | Runs type checking |
 | `pytest` | Runs the test suite |
-
+| `codespell | Identify common typos |
 #### First-time setup
 
 After `pixi install`, initialize the pre-commit hooks once:
