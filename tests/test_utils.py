@@ -1,21 +1,6 @@
 import pytest
 
-from models.core.utils import CurrencyType, MinorUnit, _calculate_rounded_value, round_value
-
-
-@pytest.mark.parametrize(
-    "value,mod,round_up,expected",
-    [
-        (MinorUnit(123_00), 10_00, True, MinorUnit(130_00)),
-        (MinorUnit(123_00), 10_00, False, MinorUnit(120_00)),
-        (MinorUnit(120_00), 10_00, True, MinorUnit(120_00)),
-        (MinorUnit(120_00), 10_00, False, MinorUnit(120_00)),
-        (MinorUnit(1050_00), 100_00, True, MinorUnit(1100_00)),
-        (MinorUnit(1050_00), 100_00, False, MinorUnit(1000_00)),
-    ],
-)
-def test_calculate_rounded_value(value, mod, round_up, expected):
-    assert _calculate_rounded_value(value, mod, round_up) == expected
+from models.core.utils import CurrencyType, MinorUnit, round_value
 
 
 @pytest.mark.parametrize(

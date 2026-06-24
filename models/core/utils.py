@@ -49,10 +49,10 @@ class MinorUnit(int):
         return MinorUnit(int.__abs__(self))
 
     def __mul__(self, other: int | float) -> MinorUnit:
-        return MinorUnit(int(int(self) * other))
+        return MinorUnit(round(int(self) * other))
 
     def __truediv__(self, other: int | float) -> MinorUnit:
-        return MinorUnit(int(int(self) / other))
+        return MinorUnit(round(int(self) / other))
 
     def __radd__(self, other: int) -> MinorUnit:
         return MinorUnit(int.__add__(self, other))
@@ -73,7 +73,7 @@ class MinorUnit(int):
     @classmethod
     def from_major(cls, value: float) -> MinorUnit:
         """Convert from the major unit (e.g. dollars) into minor units."""
-        return cls(int(value * cls._currency.conversion))
+        return cls(round(value * cls._currency.conversion))
 
     @classmethod
     def set_currency(cls, currency: CurrencyType) -> None:
