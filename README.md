@@ -74,12 +74,12 @@ The start date, end date, account balances, and all bill/income parameters are c
 ## Development tasks
 
 ```bash
+pixi run check          # run all pre-commit hooks against every file
 pixi run test           # run the test suite
 pixi run ruff           # lint the codebase
 pixi run ruff-fix       # lint and auto-fix what ruff can
 pixi run ruff-format    # format all files
 pixi run typecheck      # run ty type checking
-pixi run check          # run all pre-commit hooks against every file
 pixi run codespell      # run codespell to highlight common typos
 pixi run codespell-fix  # run codespell in interactive mode to fix common typos
 pixi run secrets-scan   # run detects secret to scan and update baseline
