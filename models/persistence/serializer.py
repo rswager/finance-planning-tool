@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from models.accounts.bank_account import BankAccount
 from models.bills.bill_base import BillBase
 from models.core.chargeable import Chargeable
