@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Self
+from typing import Any, Self
 
 from models.accounts.bank_account import BankAccount
 from models.core.enum_type import FrequencyType
@@ -60,10 +60,7 @@ class Income:
         return self._income_name
 
     @classmethod
-    def from_dict(
-        cls,
-        dict_in,
-    ) -> Self:
+    def from_dict(cls, dict_in: dict[str, Any]) -> Self:
         """Given a dictionary, create a Income object from it."""
         try:
             return cls(

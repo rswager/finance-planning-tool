@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Self, cast
+from typing import Any, Self, cast
 
 from models.accounts.account_information import AccountInformation
 from models.core.chargeable import Chargeable
@@ -39,7 +39,7 @@ class BankAccount(Chargeable):
         self._ledger = Ledger(ledger_row_type=BankAccountLedgerRow)
 
     @classmethod
-    def from_dict(cls, dict_in) -> Self:
+    def from_dict(cls, dict_in: dict[str, Any]) -> Self:
         """Given a dictionary, create a BankAccount object from it."""
         try:
             return cls(

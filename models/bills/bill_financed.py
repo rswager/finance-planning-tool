@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Self, cast
+from typing import Any, Self, cast
 
 from models.bills.bill_base import BillBase
 from models.core.chargeable import Chargeable
@@ -71,7 +71,7 @@ class FinancedBill(BillBase):
         self._interest = Interest(apr_rate_in)
 
     @classmethod
-    def from_dict(cls, dict_in) -> Self:
+    def from_dict(cls, dict_in: dict[str, Any]) -> Self:
         """Given a dictionary, create a FinancedBill object from it."""
         try:
             return cls(

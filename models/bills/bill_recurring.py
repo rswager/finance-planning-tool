@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Self, cast
+from typing import Any, Self, cast
 
 from models.bills.bill_base import BillBase
 from models.core.chargeable import Chargeable
@@ -61,7 +61,7 @@ class RecurringBill(BillBase):
         )
 
     @classmethod
-    def from_dict(cls, dict_in) -> Self:
+    def from_dict(cls, dict_in: dict[str, Any]) -> Self:
         """Given a dictionary, create a RecurringBill object from it."""
         try:
             return cls(

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Self
+from typing import Any, Self
 
 from models.bills.bill_financed import FinancedBill
 from models.core.chargeable import Chargeable
@@ -70,7 +70,7 @@ class RevolvingCreditBill(FinancedBill, Chargeable):
         self._credit_limit = credit_limit_in
 
     @classmethod
-    def from_dict(cls, dict_in) -> Self:
+    def from_dict(cls, dict_in: dict[str, Any]) -> Self:
         """Given a dictionary, create a RevolvingCreditBill object from it.
 
         Note: chargeable_registry should only contain BankAccount entries.
