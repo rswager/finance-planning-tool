@@ -107,6 +107,19 @@ Key files:
 
 Configuration lives under `[tool.ruff]` in `pyproject.toml`.
 
+### codespell
+
+[codespell](https://github.com/codespell-project/codespell) is a spell checker designed for source code. It finds common misspellings in comments, documentation, strings, variable names, and other text files without flagging valid code syntax.
+
+- `pixi run codespell` — checks the project for spelling mistakes
+- `pixi run codespell-fix` — interactively fixes common misspellings with user
+
+### Detect Secrets
+
+[Detect Secrets](https://github.com/Yelp/detect-secrets) is a module designed for detecting secrets inside of code bases. It gives a convenient way for identifying exisisting secrets and for identifying and preventing new secrets from entering the code base.
+
+- `pixi run secrets-scan` — Scan the code base and commit it to the baseline
+- `pixi run secrets-audit` — Walk through the results and classify them as TP/FP
 ### ty
 
 [ty](https://github.com/astral-sh/ty) is a fast Python type checker from Astral (the same team behind Ruff and uv). It checks type annotations without requiring a fully annotated codebase.
@@ -121,13 +134,6 @@ Configuration lives under `[tool.ruff]` in `pyproject.toml`.
 - `pixi run pytest tests/test_income.py` — runs a single test file
 - `pixi run pytest tests/test_income.py::test_to_dict` — runs a single test function
 
-### codespell
-
-[codespell](https://github.com/codespell-project/codespell) is a spell checker designed for source code. It finds common misspellings in comments, documentation, strings, variable names, and other text files without flagging valid code syntax.
-
-- `pixi run codespell` — checks the project for spelling mistakes
-- `pixi run codespell-fix` — interactively fixes common misspellings with user
-
 
 ### pre-commit
 
@@ -135,19 +141,21 @@ Configuration lives under `[tool.ruff]` in `pyproject.toml`.
 
 Hooks configured in `.pre-commit-config.yaml`:
 
-| Hook | What it does |
-|---|---|
-| `end-of-file-fixer` | Ensures every file ends with a newline |
-| `trailing-whitespace` | Strips trailing whitespace |
-| `check-toml` | Validates `pyproject.toml` syntax |
-| `check-merge-conflict` | Blocks commits that contain unresolved merge conflict markers |
-| `debug-statements` | Catches leftover `breakpoint()` / `pdb` calls |
-| `check-added-large-files` | Blocks files over 500 KB from being committed |
-| `ruff` | Lints and auto-fixes Python files |
-| `ruff-format` | Formats Python files |
-| `ty` | Runs type checking |
-| `pytest` | Runs the test suite |
-| `codespell` | Identify common typos |
+| Hook                      | What it does                                                  |
+|---------------------------|---------------------------------------------------------------|
+| `end-of-file-fixer`       | Ensures every file ends with a newline                        |
+| `trailing-whitespace`     | Strips trailing whitespace                                    |
+| `check-toml`              | Validates `pyproject.toml` syntax                             |
+| `check-merge-conflict`    | Blocks commits that contain unresolved merge conflict markers |
+| `debug-statements`        | Catches leftover `breakpoint()` / `pdb` calls                 |
+| `check-added-large-files` | Blocks files over 500 KB from being committed                 |
+| `ruff`                    | Lints and auto-fixes Python files                             |
+| `ruff-format`             | Formats Python files                                          |
+| `codespell`               | Identify common typos                                         |
+| `Detect Secrets`          | Detect passwords and ... secrets                              |
+| `ty`                      | Runs type checking                                            |
+| `pytest`                  | Runs the test suite                                           |
+
 #### First-time setup
 
 After `pixi install`, initialize the pre-commit hooks once:
