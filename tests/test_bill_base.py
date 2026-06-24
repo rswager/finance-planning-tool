@@ -2,10 +2,8 @@ from datetime import date
 
 import pytest
 
-from models.bills.bill_base import BillBase
-from models.core.enum_type import AccountType, FrequencyType
+from models.core.enum_type import AccountType
 from models.core.ledger import StandardLedgerRow
-from models.core.utils import MinorUnit
 
 
 def test_account_name(bill_base):
@@ -38,19 +36,9 @@ def test_payment_method_invalid(bill_base):
         _ = bill_base.payment_method
 
 
-def test_initialize_simulation_date(checking_account):
-    bill = BillBase(
-        name_in="Test Bill",
-        balance_in=MinorUnit(0),
-        minimum_payment_in=MinorUnit.from_major(50.00),
-        account_type_in=AccountType.REOCCURRING,
-        initial_pay_date_in=date(2025, 11, 10),
-        frequency_type_in=FrequencyType.WEEKLY,
-        payment_method_in=checking_account,
-        ledger_row_type=StandardLedgerRow,
-    )
-    bill.initialize_simulation_date(date(2025, 12, 1))
-    assert not bill._trigger_days.date_triggered(date(2025, 11, 10))
+def test_initialize_simulation_date(bill_base, checking_account):
+    bill_base.initialize_simulation_date(date(2025, 12, 1))
+    assert not bill_base._trigger_days.date_triggered(date(2025, 11, 10))
 
 
 def test_to_dict_raises_not_implemented(bill_base):
@@ -58,9 +46,9 @@ def test_to_dict_raises_not_implemented(bill_base):
         bill_base.to_dict()
 
 
-def test_from_dict_raises_not_implemented():
+def test_from_dict_raises_not_implemented(bill_base):
     with pytest.raises(NotImplementedError):
-        BillBase.from_dict({})
+        bill_base.from_dict({})
 
 
 def test_update_payment_method(bill_base, checking_account, saving_account):

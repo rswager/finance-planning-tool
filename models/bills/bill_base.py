@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 from datetime import date
 from typing import Self
 
@@ -11,7 +12,7 @@ from models.core.trigger_days import TriggerDays
 from models.core.utils import MinorUnit, round_value
 
 
-class BillBase:
+class BillBase(ABC):
     def __init__(
         self,
         name_in: str,
@@ -60,12 +61,14 @@ class BillBase:
         self._payment_method: Chargeable | None = payment_method_in
 
     @classmethod
+    @abstractmethod
     def from_dict(cls, dict_in) -> Self:
         raise NotImplementedError(
             "Use a concrete subclass's from_dict instead. (RecurringBill, FinancedBill, RevolvingCreditBill)"
         )
 
-    def to_dict(self) -> dict:
+    @abstractmethod
+    def to_dict(self) -> dict:  # pragma: no cover
         raise NotImplementedError(
             "Use a concrete subclass's to_dict instead. (RecurringBill, FinancedBill, RevolvingCreditBill)"
         )
