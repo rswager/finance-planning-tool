@@ -40,6 +40,7 @@ class Income:
             account_contributions_in : List[Tuple[BankAccount, float]]
                 A list of tuples, each containing a BankAccount and a fraction representing
                 the portion of the income to deposit into that account. Fractions must sum ≤ 1.
+                NOTE: Typing as BankAccount is intentional as income deposits only go to bank accocunts.
             frequency_type_in : FrequencyType
                 The frequency of payments (e.g., MONTHLY, BI_WEEKLY).
             round_down : bool, optional

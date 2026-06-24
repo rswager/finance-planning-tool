@@ -74,6 +74,7 @@ Do not flag these as issues — they are deliberate:
 
 - **`round_up_down`** — a single bool that applies conservative rounding throughout: expenses round up, income rounds down. This is intentional budgeting behavior.
 - **`Mortgage` / `Mortgage_Escrow` split** — these are two separate entries by design. `Mortgage` covers principal and interest (a `FinancedBill` with a diminishing balance), and `Mortgage_Escrow` covers insurance and taxes (a `RecurringBill` that never pays off). They are not duplicates.
+- **`Income` — account_contributions type with BankAccount, as income deposits only gotes to bank accounts.**
 
 ## Communication
 
