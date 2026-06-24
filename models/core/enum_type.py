@@ -3,6 +3,34 @@ from __future__ import annotations
 from enum import Enum
 
 
+class AccountType(Enum):
+    """
+    Enumeration of different types of financial accounts supported in the system.
+
+    Members
+    -------
+        CHECKING : int
+            Standard checking account.
+        SAVINGS : int
+            Savings account intended for storing funds with interest.
+        LOAN : int
+            Loan account tracking borrowed amounts and repayments.
+        REVOLVING : int
+            Revolving credit account, such as a credit card.
+        SUBSCRIPTION : int
+            Account representing ongoing subscription-based charges.
+        REOCCURRING : int
+            Account for recurring charges or payments that repeat on a schedule.
+    """
+
+    CHECKING = 1
+    SAVINGS = 2
+    LOAN = 3
+    REVOLVING = 4
+    SUBSCRIPTION = 5
+    REOCCURRING = 6
+
+
 class FrequencyType(Enum):
     """
     Enumeration of schedule frequencies used to determine how often an event
@@ -30,31 +58,3 @@ class FrequencyType(Enum):
     DAILY = 4
     YEARLY = 5
     SINGULAR = 6
-
-
-class AccountType(Enum):
-    """
-    Enumeration of different types of financial accounts supported in the system.
-
-    Members
-    -------
-        CHECKING : int
-            Standard checking account.
-        SAVINGS : int
-            Savings account intended for storing funds with interest.
-        LOAN : int
-            Loan account tracking borrowed amounts and repayments.
-        REVOLVING : int
-            Revolving credit account, such as a credit card.
-        SUBSCRIPTION : int
-            Account representing ongoing subscription-based charges.
-        REOCCURRING : int
-            Account for recurring charges or payments that repeat on a schedule.
-    """
-
-    CHECKING = 1
-    SAVINGS = 2
-    LOAN = 3
-    REVOLVING = 4
-    SUBSCRIPTION = 5
-    REOCCURRING = 6
