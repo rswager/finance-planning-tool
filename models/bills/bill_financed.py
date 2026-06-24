@@ -92,7 +92,7 @@ class FinancedBill(BillBase):
         """Return the Dictionary representation of the FinancedBill object."""
         return {
             "name_in": self.account_name,
-            "balance_in": int(self._accountInfo._initial_balance),
+            "balance_in": int(self._account_info._initial_balance),
             "account_type_in": self.account_type.value,
             "initial_pay_date_in": self._initial_pay_date.isoformat(),
             "frequency_type_in": self._trigger_days._frequency.value,
@@ -111,12 +111,12 @@ class FinancedBill(BillBase):
     @property
     def loan_balance_minor(self) -> MinorUnit:
         """MinorUnit: The current outstanding balance in minor units (e.g. cents)."""
-        return self._accountInfo.balance
+        return self._account_info.balance
 
     @property
     def loan_balance_major(self) -> MajorUnit:
         """MajorUnit: The current outstanding balance in major units (e.g. dollars)."""
-        return self._accountInfo.balance.to_major()
+        return self._account_info.balance.to_major()
 
     def make_payment(self, date_in: date) -> None:
         """
@@ -125,10 +125,10 @@ class FinancedBill(BillBase):
         If the remaining balance is less than the minimum payment, only the
         remaining balance is paid.
         """
-        if self._accountInfo.balance != 0:
+        if self._account_info.balance != 0:
             min_payment = self._minimum_payment
-            if abs(self._accountInfo.balance) < self._minimum_payment:
-                min_payment = abs(self._accountInfo.balance)
+            if abs(self._account_info.balance) < self._minimum_payment:
+                min_payment = abs(self._account_info.balance)
 
             self.make_a_transaction(date_in=date_in, action="Minimum Payment", credit=min_payment, debit=MinorUnit(0))
             self.payment_method.make_a_transaction(
@@ -174,7 +174,7 @@ class FinancedBill(BillBase):
             debit : MinorUnit
                 Amount subtracted from the account.
         """
-        self._accountInfo.update_balance(credit=credit, debit=debit)
+        self._account_info.update_balance(credit=credit, debit=debit)
         self._ledger.add_entry_to_ledger(
             InterestLedgerRow(
                 row_number=self._ledger.row_number,
@@ -182,7 +182,7 @@ class FinancedBill(BillBase):
                 description=action,
                 credit=credit.to_major(),
                 debit=debit.to_major(),
-                balance=self._accountInfo.balance.to_major(),
+                balance=self._account_info.balance.to_major(),
                 interest_to_date=self._interest.interest_to_date.to_major(),
             )
         )

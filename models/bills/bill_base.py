@@ -49,7 +49,7 @@ class BillBase(ABC):
             round_up : bool, optional
                 If True, rounds the minimum payment up for conservative budgeting.
         """
-        self._accountInfo = AccountInformation(name_in=name_in, balance_in=balance_in, account_type_in=account_type_in)
+        self._account_info = AccountInformation(name_in=name_in, balance_in=balance_in, account_type_in=account_type_in)
         self._ledger = Ledger(ledger_row_type=ledger_row_type)
         self._minimum_payment = (
             minimum_payment_in if not round_up else round_value(minimum_payment_in, round_up=round_up)
@@ -62,7 +62,7 @@ class BillBase(ABC):
 
     @classmethod
     @abstractmethod
-    def from_dict(cls, dict_in) -> Self:
+    def from_dict(cls, dict_in) -> Self:  # pragma: no cover
         raise NotImplementedError(
             "Use a concrete subclass's from_dict instead. (RecurringBill, FinancedBill, RevolvingCreditBill)"
         )
@@ -76,12 +76,12 @@ class BillBase(ABC):
     @property
     def account_name(self) -> str:
         """str: The name of this bill."""
-        return self._accountInfo.account_name
+        return self._account_info.account_name
 
     @property
     def account_type(self) -> AccountType:
         """AccountType: The type of this account (e.g., LOAN, REVOLVING)."""
-        return self._accountInfo.account_type
+        return self._account_info.account_type
 
     @property
     def raw_copy_ledger(self) -> list[StandardLedgerRow]:

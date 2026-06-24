@@ -97,7 +97,7 @@ class RevolvingCreditBill(FinancedBill, Chargeable):
         """Return the Dictionary representation of the FinancedBill object."""
         return {
             "name_in": self.account_name,
-            "balance_in": int(self._accountInfo._initial_balance),
+            "balance_in": int(self._account_info._initial_balance),
             "account_type_in": self.account_type.value,
             "initial_pay_date_in": self._initial_pay_date.isoformat(),
             "frequency_type_in": self._trigger_days._frequency.value,
@@ -112,4 +112,4 @@ class RevolvingCreditBill(FinancedBill, Chargeable):
     @property
     def exceeded_credit_limit(self) -> bool:
         """bool: True if the current balance exceeds the credit limit."""
-        return abs(self._accountInfo.balance) > self._credit_limit
+        return abs(self._account_info.balance) > self._credit_limit

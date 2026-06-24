@@ -58,7 +58,7 @@ def test_process_day_with_trigger(financed_bill, checking_account):
 
 
 def test_min_payment_capped(financed_bill, checking_account):
-    financed_bill._accountInfo._balance = MinorUnit.from_major(-30.00)
+    financed_bill._account_info._balance = MinorUnit.from_major(-30.00)
     financed_bill.make_payment(date(2025, 11, 10))
 
     assert financed_bill.loan_balance_minor == 0
