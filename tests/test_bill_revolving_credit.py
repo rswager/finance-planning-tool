@@ -22,7 +22,7 @@ def test_credit_limit_not_exceeded(credit_bill):
 
 
 def test_credit_limit_exceeded(credit_bill, checking_account):
-    credit_bill._accountInfo._balance = MinorUnit.from_major(6_000.00)
+    credit_bill._account_info._balance = MinorUnit.from_major(6_000.00)
     assert credit_bill.exceeded_credit_limit is True
 
 

@@ -17,6 +17,18 @@ repos:
         args: [--fix]
       - id: ruff-format
 
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.4.2
+    hooks:
+      - id: codespell
+        args: [ "--skip=.pixi/*,*.lock,*.json,.coverage,.gitignore" ]
+
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        args: [ "--baseline", ".secrets.baseline", "--exclude-files", "\\.pixi/|venv/|\\.venv/" ]
+
   - repo: local
     hooks:
       - id: ty
@@ -32,9 +44,3 @@ repos:
         language: system
         types: [python]
         pass_filenames: false
-
-  - repo: https://github.com/codespell-project/codespell
-    rev: v2.4.2
-    hooks:
-      - id: codespell
-        args: ["--skip=.pixi/*,*.lock,*.json,.coverage,.gitignore"]

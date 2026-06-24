@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Self, cast
+from typing import Any, Self, cast
 
 from models.accounts.account_information import AccountInformation
 from models.core.chargeable import Chargeable
@@ -35,11 +35,11 @@ class BankAccount(Chargeable):
             account_type_in : AccountType
                 The type of account (e.g., SAVINGS, CHECKING, CREDIT).
         """
-        self._accountInfo = AccountInformation(name_in, balance_in, account_type_in)
+        self._account_info = AccountInformation(name_in, balance_in, account_type_in)
         self._ledger = Ledger(ledger_row_type=BankAccountLedgerRow)
 
     @classmethod
-    def from_dict(cls, dict_in) -> Self:
+    def from_dict(cls, dict_in: dict[str, Any]) -> Self:
         """Given a dictionary, create a BankAccount object from it."""
         try:
             return cls(
@@ -62,12 +62,12 @@ class BankAccount(Chargeable):
     @property
     def balance_minor(self) -> MinorUnit:
         """MinorUnit: The current balance in minor units (e.g. cents)."""
-        return self._accountInfo.balance
+        return self._account_info.balance
 
     @property
     def balance_major(self) -> MajorUnit:
         """MajorUnit: The current balance in major units (e.g. dollars)."""
-        return self._accountInfo.balance.to_major()
+        return self._account_info.balance.to_major()
 
     @property
     def raw_copy_ledger(self) -> list[BankAccountLedgerRow]:
@@ -86,12 +86,12 @@ class BankAccount(Chargeable):
     @property
     def account_name(self) -> str:
         """str: The name assigned to this account."""
-        return self._accountInfo.account_name
+        return self._account_info.account_name
 
     @property
     def account_type(self) -> AccountType:
         """AccountType: The type/category of this account."""
-        return self._accountInfo.account_type
+        return self._account_info.account_type
 
     def make_a_transaction(self, date_in: date, action: str, credit: MinorUnit, debit: MinorUnit) -> None:
         """
@@ -108,7 +108,7 @@ class BankAccount(Chargeable):
             debit : MinorUnit
                 Amount subtracted from the account balance.
         """
-        self._accountInfo.update_balance(credit=credit, debit=debit)
+        self._account_info.update_balance(credit=credit, debit=debit)
         self._ledger.add_entry_to_ledger(
             BankAccountLedgerRow(
                 row_number=self._ledger.row_number,
@@ -116,6 +116,6 @@ class BankAccount(Chargeable):
                 description=action,
                 credit=credit.to_major(),
                 debit=debit.to_major(),
-                balance=self._accountInfo.balance.to_major(),
+                balance=self._account_info.balance.to_major(),
             )
         )

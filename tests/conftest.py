@@ -1,4 +1,5 @@
 from datetime import date
+from typing import Self
 
 import pytest
 
@@ -38,7 +39,15 @@ def bank_accounts(checking_account, saving_account):
 
 @pytest.fixture
 def bill_base(checking_account):
-    return BillBase(
+    class ConcreteBillBase(BillBase):
+        @classmethod
+        def from_dict(cls, dict_in) -> Self:
+            raise NotImplementedError
+
+        def to_dict(self) -> dict:
+            raise NotImplementedError
+
+    return ConcreteBillBase(
         name_in="Test Bill",
         balance_in=MinorUnit(0),
         minimum_payment_in=MinorUnit.from_major(50.00),

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Self, cast
+from typing import Any, Self, cast
 
 from models.bills.bill_base import BillBase
 from models.core.chargeable import Chargeable
@@ -61,7 +61,7 @@ class RecurringBill(BillBase):
         )
 
     @classmethod
-    def from_dict(cls, dict_in) -> Self:
+    def from_dict(cls, dict_in: dict[str, Any]) -> Self:
         """Given a dictionary, create a RecurringBill object from it."""
         try:
             return cls(
@@ -115,7 +115,7 @@ class RecurringBill(BillBase):
             date_in : date
                 The date on which the payment is applied.
         """
-        self._accountInfo.update_balance(credit=self._minimum_payment)
+        self._account_info.update_balance(credit=self._minimum_payment)
         self.payment_method.make_a_transaction(
             date_in=date_in,
             action=f"{self.account_name}-Payment",
@@ -129,6 +129,6 @@ class RecurringBill(BillBase):
                 description="Minimum Payment",
                 credit=self._minimum_payment.to_major(),
                 debit=MajorUnit(0),
-                paid_to_date=self._accountInfo.balance.to_major(),
+                paid_to_date=self._account_info.balance.to_major(),
             )
         )

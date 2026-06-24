@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import date
-from typing import Self
+from typing import Any, Self
 
 from models.bills.bill_financed import FinancedBill
 from models.core.chargeable import Chargeable
@@ -70,7 +70,7 @@ class RevolvingCreditBill(FinancedBill, Chargeable):
         self._credit_limit = credit_limit_in
 
     @classmethod
-    def from_dict(cls, dict_in) -> Self:
+    def from_dict(cls, dict_in: dict[str, Any]) -> Self:
         """Given a dictionary, create a RevolvingCreditBill object from it.
 
         Note: chargeable_registry should only contain BankAccount entries.
@@ -97,7 +97,7 @@ class RevolvingCreditBill(FinancedBill, Chargeable):
         """Return the Dictionary representation of the FinancedBill object."""
         return {
             "name_in": self.account_name,
-            "balance_in": int(self._accountInfo._initial_balance),
+            "balance_in": int(self._account_info._initial_balance),
             "account_type_in": self.account_type.value,
             "initial_pay_date_in": self._initial_pay_date.isoformat(),
             "frequency_type_in": self._trigger_days._frequency.value,
@@ -112,4 +112,4 @@ class RevolvingCreditBill(FinancedBill, Chargeable):
     @property
     def exceeded_credit_limit(self) -> bool:
         """bool: True if the current balance exceeds the credit limit."""
-        return abs(self._accountInfo.balance) > self._credit_limit
+        return abs(self._account_info.balance) > self._credit_limit
