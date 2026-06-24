@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from calendar import isleap
 from datetime import date
 from math import ceil
