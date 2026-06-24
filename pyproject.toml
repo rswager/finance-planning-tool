@@ -56,6 +56,7 @@ select = ["E", "F", "W", "I", "B", "UP"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "--cov=. --cov-report=term-missing"
+pythonpath = ["."]
 
 [tool.coverage.run]
 omit = [
