@@ -14,7 +14,7 @@ When planning work with 3 or more steps, record tasks in a git-ignored `TODO.loc
 
 Solve the actual problem at hand, not a more general one — this guards against over-engineering and scope creep.
 
-Use names, types, and signatures to give callers correct expectations. Code's job is to satisfy those expectations without surprises.
+Use names, types, and signatures to give callers correct expectations. Code's job is to satisfy those expectations without surprises. Inputs should accept the broadest type that works. Outputs should be more precise, as to tell the caller exactly what they are getting.
 
 Code must be correct, reliable, performant, and well-tested.
 

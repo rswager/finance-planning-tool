@@ -1,17 +1,19 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from pathlib import Path
+from typing import Any
 
 
-def write_object_to_file(file_path: Path, output_data: dict) -> None:
+def write_object_to_file(file_path: Path, output_data: Mapping[str, Any]) -> None:
     """Given a list of dict representation of Objects, write them to a file.
 
     Parameters
     -----------
         file_path: Path
             Location and name to write file to
-        output_data: list[dict]
+        output_data: Mapping[str, Any]
             List of dict representation of Objects to write to file. Refer to to_dict() methods
 
     Raises
@@ -30,7 +32,7 @@ def write_object_to_file(file_path: Path, output_data: dict) -> None:
     file_path.write_text(json.dumps(output_data, indent=2))
 
 
-def read_object_from_file(file_path: Path) -> dict:
+def read_object_from_file(file_path: Path) -> dict[str, Any]:
     """Given a file path, read and return a list of dict representation objects.
 
     Parameters
@@ -45,7 +47,7 @@ def read_object_from_file(file_path: Path) -> dict:
 
     Returns
     -----------
-        dict
+        dict[str, Any]
             List of dict representation of Objects to read from file. Refer to to_dict() methods
     """
     if not file_path.is_file():
