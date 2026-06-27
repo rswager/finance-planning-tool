@@ -1,3 +1,4 @@
+from models.persistence import SerialTypeLookup
 from models.persistence.serializer import (
     convert_objects_to_persistence_dict,
     convert_persistence_dict_to_dict_of_objects,
@@ -25,3 +26,21 @@ def test_convert_persistence_dict_to_dict_of_objects(all_accounts):
     new_object_dict = convert_persistence_dict_to_dict_of_objects(persistence_dict)
     # We can convert these to a new persistence dict that is the same as the persistence_dict
     assert persistence_dict == convert_objects_to_persistence_dict(new_object_dict)
+
+
+def test_convert_persistence_dict_to_dict_of_objects_drops_malformed_serial_key():
+    object_dict = {
+        "Gas": {
+            "name_in": "Gas",
+            "minimum_payment_in": 1000,
+            "account_type_in": 6,
+            "initial_pay_date_in": "2025-11-01",
+            "frequency_type_in": 3,
+            "payment_method_in": "primary_checking",
+            "round_up": False,
+            "serial_type_in": "malformed_serial_key",
+        }
+    }
+    assert object_dict["Gas"]["serial_type_in"] not in SerialTypeLookup
+    new_object_dict = convert_persistence_dict_to_dict_of_objects(object_dict)
+    assert len(new_object_dict) == 0

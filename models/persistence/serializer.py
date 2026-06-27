@@ -49,8 +49,12 @@ def convert_persistence_dict_to_dict_of_objects(persistence_dict: Mapping[str, A
 
     # Build all of our objects
     for key, p_dict in persistence_dict.items():
-        ObjectCls = SerialTypeLookup[p_dict["serial_type_in"]].value
-        return_dict[key] = ObjectCls.from_dict(dict_in=p_dict)
+        try:
+            ObjectCls = SerialTypeLookup[p_dict["serial_type_in"]].value
+            return_dict[key] = ObjectCls.from_dict(dict_in=p_dict)
+        except KeyError as e:
+            print(f"Skipping {key}: {e} — malformed 'serial_type_in'")
+            continue
 
         # if they are chargeable let's store them for later
         if issubclass(ObjectCls, Chargeable):
