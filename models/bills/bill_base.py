@@ -1,3 +1,5 @@
+"""Base class for all Bill type Objects. This class is not intended for direct use"""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
