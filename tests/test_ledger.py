@@ -2,7 +2,7 @@ from datetime import date
 
 import pytest
 
-from models.core.ledger import BankAccountLedgerRow, StandardLedgerRow
+from models.core.ledger import BankAccountLedgerRow, InterestLedgerRow, RecurringLedgerRow, StandardLedgerRow
 from models.core.utils import MajorUnit
 
 
@@ -59,3 +59,45 @@ def test_ledger_returns_copy(ledger):
 def test_standard_ledger_row_iter():
     row = StandardLedgerRow(row_number=1, date=date(2025, 1, 1), description="Test", credit=MajorUnit(100))
     assert list(row) == [1, date(2025, 1, 1), "Test", MajorUnit(100)]
+
+
+@pytest.mark.parametrize(
+    "ledger_type",
+    [
+        (StandardLedgerRow),
+        (BankAccountLedgerRow),
+        (InterestLedgerRow),
+        (RecurringLedgerRow),
+    ],
+)
+def test_COLUMNS_immutable_index_assignment(ledger_type):
+    with pytest.raises(TypeError):
+        ledger_type.COLUMNS[0] = "Not Allowed"
+
+
+@pytest.mark.parametrize(
+    "ledger_type",
+    [
+        (StandardLedgerRow),
+        (BankAccountLedgerRow),
+        (InterestLedgerRow),
+        (RecurringLedgerRow),
+    ],
+)
+def test_COLUMNS_immutable_del(ledger_type):
+    with pytest.raises(TypeError):
+        del ledger_type.COLUMNS[0]
+
+
+@pytest.mark.parametrize(
+    "ledger_type",
+    [
+        (StandardLedgerRow),
+        (BankAccountLedgerRow),
+        (InterestLedgerRow),
+        (RecurringLedgerRow),
+    ],
+)
+def test_COLUMNS_immutable_slice_assignment(ledger_type):
+    with pytest.raises(TypeError):
+        ledger_type.COLUMNS[0:2] = ("A", "B")

@@ -122,7 +122,7 @@ Configuration lives under `[tool.ruff]` in `pyproject.toml`.
 
 - `pixi run secrets-scan` — Scan the code base and commit it to the baseline
 - `pixi run secrets-audit` — Walk through the results and classify them as TP/FP
-  
+
 ### ty
 
 [ty](https://github.com/astral-sh/ty) is a fast Python type checker from Astral (the same team behind Ruff and uv). It checks type annotations without requiring a fully annotated codebase.
