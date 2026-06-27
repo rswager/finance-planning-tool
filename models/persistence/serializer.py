@@ -39,10 +39,7 @@ def convert_objects_to_persistence_dict(dict_of_objects: Mapping[str, Any]) -> d
             }
 
     """
-    persistence_dict = {}
-    for key, obj in dict_of_objects.items():
-        persistence_dict[key] = obj.to_dict()
-    return persistence_dict
+    return {key: obj.to_dict() for key, obj in dict_of_objects.items()}
 
 
 def convert_persistence_dict_to_dict_of_objects(persistence_dict: Mapping[str, Any]) -> dict[str, Any]:
