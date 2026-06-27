@@ -69,10 +69,7 @@ def convert_persistence_dict_to_dict_of_objects(persistence_dict: Mapping[str, A
                 print(f"UPDATE PAYMENT - Skipping {key}: {e} — malformed payment_method_in")
                 continue
 
-            if not isinstance(chargeable_account, Chargeable):  # pragma: no cover  - not reachable
-                print(f"UPDATE PAYMENT - Skipping {key}: {chargeable_account.account_name} — not a Chargeable account")
-                continue
-
+            assert isinstance(chargeable_account, Chargeable)
             account.update_payment_method(chargeable_account)
 
         # If we have account contributions to make we make them
