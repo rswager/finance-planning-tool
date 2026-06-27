@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
+from typing import Any
+
 from models.accounts.bank_account import BankAccount
 from models.bills.bill_base import BillBase
 from models.core.chargeable import Chargeable
@@ -7,13 +10,13 @@ from models.income.income import Income
 from models.persistence.serial_lookup import SerialTypeLookup
 
 
-def convert_objects_to_persistence_dict(dict_of_objects: dict) -> dict:
+def convert_objects_to_persistence_dict(dict_of_objects: Mapping[str, Any]) -> dict[str, Any]:
     """
     Convert a dict of objects to a persistence dict.
 
     Parameters
     ----------
-        dict_of_objects : dict
+        dict_of_objects : Mapping[str, Any]
             Dictionary of objects in the form of account_name: Object
             For Example:
             {
@@ -25,7 +28,7 @@ def convert_objects_to_persistence_dict(dict_of_objects: dict) -> dict:
 
     Returns
     ----------
-        dict
+        dict[str, Any]
             Dictionary of to_dict() objects in the form of account_name: Object.to_dict()
                         For Example:
             {
@@ -36,13 +39,13 @@ def convert_objects_to_persistence_dict(dict_of_objects: dict) -> dict:
             }
 
     """
-    return_list = {}
+    persistence_dict = {}
     for key, obj in dict_of_objects.items():
-        return_list[key] = obj.to_dict()
-    return return_list
+        persistence_dict[key] = obj.to_dict()
+    return persistence_dict
 
 
-def convert_persistence_dict_to_dict_of_objects(persistence_dict: dict) -> dict:
+def convert_persistence_dict_to_dict_of_objects(persistence_dict: Mapping[str, Any]) -> dict[str, Any]:
     """Convert a persistence dict to a dict of objects in the form of account_name: Object.from_dict()."""
     return_dict = {}
     chargeable_dict = {}
