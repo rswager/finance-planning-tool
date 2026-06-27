@@ -39,10 +39,7 @@ def convert_objects_to_persistence_dict(dict_of_objects: Mapping[str, Any]) -> d
             }
 
     """
-    persistence_dict = {}
-    for key, obj in dict_of_objects.items():
-        persistence_dict[key] = obj.to_dict()
-    return persistence_dict
+    return {key: obj.to_dict() for key, obj in dict_of_objects.items()}
 
 
 def convert_persistence_dict_to_dict_of_objects(persistence_dict: Mapping[str, Any]) -> dict[str, Any]:
@@ -52,28 +49,43 @@ def convert_persistence_dict_to_dict_of_objects(persistence_dict: Mapping[str, A
 
     # Build all of our objects
     for key, p_dict in persistence_dict.items():
-        ObjectCls = SerialTypeLookup[p_dict["serial_type_in"]].value
-        return_dict[key] = ObjectCls.from_dict(dict_in=p_dict)
+        try:
+            ObjectCls = SerialTypeLookup[p_dict["serial_type_in"]].value
+            return_dict[key] = ObjectCls.from_dict(dict_in=p_dict)
+        except KeyError as e:
+            print(f"BUILDING - Skipping {key}: {e} — malformed 'serial_type_in'")
+            continue
 
         # if they are chargeable let's store them for later
         if issubclass(ObjectCls, Chargeable):
             chargeable_dict[key] = return_dict[key]
 
-    # Let's updated payment methods and account contributions now that everything is built
+    # Lets updated payment methods and account contributions now that everything is built
     for key, account in return_dict.items():
-        # If we have to add a payment_method then we need to do that.
         if isinstance(account, BillBase):
-            chargeable_acccount = chargeable_dict[persistence_dict[key]["payment_method_in"]]
-            assert isinstance(chargeable_acccount, Chargeable)
-            assert hasattr(account, "update_payment_method")
-            account.update_payment_method(chargeable_acccount)
+            try:
+                chargeable_account = chargeable_dict[persistence_dict[key]["payment_method_in"]]
+            except KeyError as e:
+                print(f"UPDATE PAYMENT - Skipping {key}: {e} — malformed payment_method_in")
+                continue
+
+            assert isinstance(chargeable_account, Chargeable)
+            account.update_payment_method(chargeable_account)
 
         # If we have account contributions to make we make them
         if isinstance(account, Income):
             contribution_list = []
             for acc in persistence_dict[key]["account_contributions_in"]:
-                cont_account = return_dict[acc["account_name"]]
-                assert isinstance(cont_account, BankAccount)
+                try:
+                    cont_account = return_dict[acc["account_name"]]
+                except KeyError as e:
+                    print(f"ACCOUNT CONTRIBUTIONS - Skipping {key}: {e} — account not found in return_dict")
+                    continue
+
+                if not isinstance(cont_account, BankAccount):
+                    print(f"ACCOUNT CONTRIBUTIONS - Skipping {key}: {acc['account_name']} — not a BankAccount")
+                    continue
+
                 contribution_list.append((cont_account, acc["contribution"]))
             account.set_account_contribution(contribution_list)
 

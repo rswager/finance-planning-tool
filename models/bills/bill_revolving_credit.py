@@ -71,12 +71,7 @@ class RevolvingCreditBill(FinancedBill, Chargeable):
 
     @classmethod
     def from_dict(cls, dict_in: dict[str, Any]) -> Self:
-        """Given a dictionary, create a RevolvingCreditBill object from it.
-
-        Note: chargeable_registry should only contain BankAccount entries.
-        RevolvingCreditBill.__init__ enforces this — passing any other Chargeable
-        will raise a type error at construction.
-        """
+        """Given a dictionary, create a RevolvingCreditBill object from it."""
         try:
             return cls(
                 name_in=dict_in["name_in"],
@@ -94,7 +89,7 @@ class RevolvingCreditBill(FinancedBill, Chargeable):
             raise KeyError(f"Missing required field: {e.args[0]}") from e
 
     def to_dict(self) -> dict:
-        """Return the Dictionary representation of the FinancedBill object."""
+        """Return the Dictionary representation of the RevolvingCreditBill object."""
         return {
             "name_in": self.account_name,
             "balance_in": int(self._account_info._initial_balance),

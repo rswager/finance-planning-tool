@@ -1,3 +1,5 @@
+"""An abstract for denoting an account that can be charged against (I.E can pay a bill)"""
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
