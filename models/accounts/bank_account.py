@@ -80,7 +80,7 @@ class BankAccount(Chargeable):
         return self._ledger.col_count
 
     @property
-    def ledger_header(self) -> list[str]:
+    def ledger_header(self) -> tuple[str, ...]:
         return self._ledger.header
 
     @property

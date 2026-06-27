@@ -16,7 +16,7 @@ class StandardLedgerRow:
     date: date
     description: str
     credit: MajorUnit
-    COLUMNS: ClassVar[list[str]] = ["No.", "Date", "Description", "Credit"]
+    COLUMNS: ClassVar[tuple[str, ...]] = ("No.", "Date", "Description", "Credit")
 
     def __iter__(self) -> Iterator[Any]:
         return iter(astuple(self))
@@ -29,20 +29,20 @@ class StandardLedgerRow:
 class BankAccountLedgerRow(StandardLedgerRow):
     debit: MajorUnit
     balance: MajorUnit
-    COLUMNS: ClassVar[list[str]] = StandardLedgerRow.COLUMNS + ["Debit", "Balance"]
+    COLUMNS: ClassVar[tuple[str, ...]] = StandardLedgerRow.COLUMNS + ("Debit", "Balance")
 
 
 @dataclass(frozen=True)
 class InterestLedgerRow(BankAccountLedgerRow):
     interest_to_date: MajorUnit
-    COLUMNS: ClassVar[list[str]] = BankAccountLedgerRow.COLUMNS + ["Interest To Date"]
+    COLUMNS: ClassVar[tuple[str, ...]] = BankAccountLedgerRow.COLUMNS + ("Interest To Date",)
 
 
 @dataclass(frozen=True)
 class RecurringLedgerRow(StandardLedgerRow):
     debit: MajorUnit
     paid_to_date: MajorUnit
-    COLUMNS: ClassVar[list[str]] = StandardLedgerRow.COLUMNS + ["Debit", "Total Paid To Date"]
+    COLUMNS: ClassVar[tuple[str, ...]] = StandardLedgerRow.COLUMNS + ("Debit", "Total Paid To Date")
 
 
 class Ledger:
@@ -70,7 +70,7 @@ class Ledger:
                     The ledger row class to use for this bill (e.g. RecurringLedgerRow, InterestLedgerRow).
         """
         self._ledger_row_type = ledger_row_type
-        self._header: list[str] = ledger_row_type.COLUMNS  # type: ignore[attr-defined]
+        self._header: tuple[str, ...] = ledger_row_type.COLUMNS
         self._ledger: list[StandardLedgerRow] = []
         self._col_count = len(self._header)
 
@@ -83,7 +83,7 @@ class Ledger:
         return deepcopy(self._ledger)
 
     @property
-    def header(self) -> list[str]:
+    def header(self) -> tuple[str, ...]:
         return self._header
 
     @property
