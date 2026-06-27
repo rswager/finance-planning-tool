@@ -28,7 +28,7 @@ def write_object_to_file(file_path: Path, output_data: Any) -> None:
     if file_path.is_dir():
         raise IsADirectoryError(f"{file_path} is a directory not a writable file")
 
-    file_path.write_text(json.dumps(output_data, indent=2))
+    file_path.write_text(json.dumps(output_data, indent=2), encoding="utf-8")
 
 
 def read_object_from_file(file_path: Path) -> Any:
@@ -52,4 +52,4 @@ def read_object_from_file(file_path: Path) -> Any:
     if not file_path.is_file():
         raise FileNotFoundError(f"{file_path} is not a file")
 
-    return json.loads(file_path.read_text())
+    return json.loads(file_path.read_text(encoding="utf-8"))
