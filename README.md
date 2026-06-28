@@ -102,6 +102,7 @@ pixi run codespell      # run codespell to highlight common typos
 pixi run codespell-fix  # run codespell in interactive mode to fix common typos
 pixi run secrets-scan   # run detects secret to scan and update baseline
 pixi run secrets-audit  # run detects secrets in interactive mode to address secrets found, if any
+pixi run version-bump   # increment the patch version in pyproject.toml (e.g. 0.1.0 → 0.1.1)
 ```
 
 ---
@@ -116,6 +117,27 @@ Key files:
 - `pyproject.toml` — declares dependencies and pixi tasks under `[tool.pixi.*]`
 - `pixi.lock` — the resolved lockfile (committed to source control for reproducibility)
 - `.pixi/` — the local environment directory (git-ignored)
+
+### Hatchling
+
+[Hatchling](https://hatch.pypa.io/latest/build/) is the build backend that packages `finance_planning_tool` for installation. It is declared in the `[build-system]` table of `pyproject.toml` and used by pixi to install the package into the local environment in editable mode — `pixi install` handles this automatically.
+
+The package version is stored in `pyproject.toml` under `[project] version`. To bump it:
+
+- `pixi run version-bump` — increments the patch number (e.g. `0.1.0` → `0.1.1`)
+- `pixi run hatch version minor` — increments the minor number (e.g. `0.1.0` → `0.2.0`)
+- `pixi run hatch version major` — increments the major number (e.g. `0.1.0` → `1.0.0`)
+
+After bumping, update `CHANGELOG.md`, commit, and create an annotated tag so the version is reachable by number later:
+
+```bash
+git add pyproject.toml src/finance_planning_tool/__init__.py CHANGELOG.md
+git commit -m "Release v0.1.1"
+git tag -a v0.1.1 -m "v0.1.1"
+git push origin v0.1.1
+```
+
+Annotated tags (`-a`) carry a message and are stored as full objects in git, which makes them more useful than lightweight tags for marking releases.
 
 ### Ruff
 
