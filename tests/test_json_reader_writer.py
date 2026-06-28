@@ -1,6 +1,6 @@
 import pytest
 
-from src.finance_planning_tool.models.persistence import (
+from finance_planning_tool.models.persistence import (
     read_object_from_file,
     write_object_to_file,
 )

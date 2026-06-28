@@ -4,11 +4,29 @@ A financial modeling tool that lets users enter account and payment details, the
 
 ---
 
+## Goals
+
+- Model daily financial activity (income deposits, interest accrual, bill payments) over a multi-year period for a configurable set of accounts and bills
+- Support bank accounts, recurring bills, financed loans, and revolving credit lines
+- Output a multi-sheet Excel workbook: one sheet per account or bill, each with a transaction ledger table and a projected balance chart
+- Serve as the domain-model foundation for a future GUI
+
+## What this is not
+
+- Not a live budgeting app — no bank integrations, no real-time data
+- Not multi-user
+- Not financial advice — projections are only as accurate as the inputs
+- Not a distributed or production system — personal tool, runs locally
+
+---
+
 ## Getting Started
 
 This project uses [Pixi](https://pixi.sh) to manage the Python environment and development tools. Pixi handles all dependencies — you do not need to create a virtual environment manually.
 
 ### Prerequisites
+
+This project supports Windows, macOS (Intel and Apple Silicon), and Linux.
 
 Install Pixi using the method that matches your OS:
 
@@ -64,7 +82,7 @@ This resolves and installs all dependencies (including dev tools) into an isolat
 `main.py` is the simulation entry point. It walks through every day between a start and end date, processing income deposits, interest accrual, and bill payments for each configured account. When the simulation finishes it writes a multi-sheet Excel workbook to `~/Downloads/Output_Analysis.xlsx` — one sheet per account or bill, each with a transaction ledger table and a projected balance line chart.
 
 ```bash
-pixi run python main.py
+pixi run python src/finance_planning_tool/main.py
 ```
 
 The start date, end date, account balances, and all bill/income parameters are configured directly in `main.py`.
@@ -84,6 +102,7 @@ pixi run codespell      # run codespell to highlight common typos
 pixi run codespell-fix  # run codespell in interactive mode to fix common typos
 pixi run secrets-scan   # run detects secret to scan and update baseline
 pixi run secrets-audit  # run detects secrets in interactive mode to address secrets found, if any
+pixi run version-bump   # increment the patch version in pyproject.toml (e.g. 0.1.0 → 0.1.1)
 ```
 
 ---
@@ -98,6 +117,27 @@ Key files:
 - `pyproject.toml` — declares dependencies and pixi tasks under `[tool.pixi.*]`
 - `pixi.lock` — the resolved lockfile (committed to source control for reproducibility)
 - `.pixi/` — the local environment directory (git-ignored)
+
+### Hatchling
+
+[Hatchling](https://hatch.pypa.io/latest/build/) is the build backend that packages `finance_planning_tool` for installation. It is declared in the `[build-system]` table of `pyproject.toml` and used by pixi to install the package into the local environment in editable mode — `pixi install` handles this automatically.
+
+The package version is stored in `pyproject.toml` under `[project] version`. To bump it:
+
+- `pixi run version-bump` — increments the patch number (e.g. `0.1.0` → `0.1.1`)
+- `pixi run hatch version minor` — increments the minor number (e.g. `0.1.0` → `0.2.0`)
+- `pixi run hatch version major` — increments the major number (e.g. `0.1.0` → `1.0.0`)
+
+After bumping, update `CHANGELOG.md`, commit, and create an annotated tag so the version is reachable by number later:
+
+```bash
+git add pyproject.toml src/finance_planning_tool/__init__.py CHANGELOG.md
+git commit -m "Release v0.1.1"
+git tag -a v0.1.1 -m "v0.1.1"
+git push origin v0.1.1
+```
+
+Annotated tags (`-a`) carry a message and are stored as full objects in git, which makes them more useful than lightweight tags for marking releases.
 
 ### Ruff
 

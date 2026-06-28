@@ -15,9 +15,7 @@ from ..core import (
 from ..income import (
     Income,
 )
-from ..persistence import (
-    SerialTypeLookup,
-)
+from .serial_lookup import SerialTypeLookup
 
 
 def convert_objects_to_persistence_dict(dict_of_objects: Mapping[str, Any]) -> dict[str, Any]:
@@ -105,8 +103,8 @@ def convert_persistence_dict_to_dict_of_objects(persistence_dict: Mapping[str, A
 if __name__ == "__main__":  # pragma: no cover
     from pathlib import Path
 
-    from persistence.json_reader_writer import read_object_from_file
-    from src.finance_planning_tool._dirs import SAVED_OBJECT_DATA
+    from finance_planning_tool._dirs import SAVED_OBJECT_DATA
+    from finance_planning_tool.models.persistence.json_reader_writer import read_object_from_file
 
     print(f"{SAVED_OBJECT_DATA}/test.json")
     object_input = read_object_from_file(Path(f"{SAVED_OBJECT_DATA}/temp.json"))

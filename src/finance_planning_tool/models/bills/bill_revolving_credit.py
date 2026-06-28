@@ -3,15 +3,13 @@ from __future__ import annotations
 from datetime import date
 from typing import Any, Self
 
-from ..bills import (
-    FinancedBill,
-)
 from ..core import (
     AccountType,
     Chargeable,
     FrequencyType,
     MinorUnit,
 )
+from .bill_financed import FinancedBill
 
 
 class RevolvingCreditBill(FinancedBill, Chargeable):

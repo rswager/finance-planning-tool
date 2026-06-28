@@ -3,7 +3,7 @@ from datetime import date
 import pytest
 from dateutil.relativedelta import relativedelta
 
-from src.finance_planning_tool.models.core import (
+from finance_planning_tool.models.core import (
     FrequencyType,
     TriggerDays,
 )

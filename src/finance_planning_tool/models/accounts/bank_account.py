@@ -3,9 +3,6 @@ from __future__ import annotations
 from datetime import date
 from typing import Any, Self, cast
 
-from ..accounts import (
-    AccountInformation,
-)
 from ..core import (
     AccountType,
     BankAccountLedgerRow,
@@ -14,6 +11,7 @@ from ..core import (
     MajorUnit,
     MinorUnit,
 )
+from .account_information import AccountInformation
 
 
 class BankAccount(Chargeable):

@@ -3,9 +3,6 @@ from __future__ import annotations
 from datetime import date
 from typing import Any, Self, cast
 
-from ..bills import (
-    BillBase,
-)
 from ..core import (
     AccountType,
     Chargeable,
@@ -15,6 +12,7 @@ from ..core import (
     MajorUnit,
     MinorUnit,
 )
+from .bill_base import BillBase
 
 
 class FinancedBill(BillBase):

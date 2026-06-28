@@ -1,6 +1,6 @@
 [project]
 name = "finance-planning-tool"
-version = "0.1.0"
+dynamic = ["version"]
 description = "A financial modeling tool for multi-year personal finance projections."
 requires-python = ">=3.13"
 dependencies = [
@@ -9,6 +9,16 @@ dependencies = [
     "PyQt6>=6.9",
     "platformdirs>=4.9",
 ]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "src/finance_planning_tool/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/finance_planning_tool"]
 
 [tool.pixi.workspace]
 channels = ["conda-forge"]
@@ -21,6 +31,8 @@ xlsxwriter = ">=3.2"
 pyqt6 = ">=6.9"
 platformdirs = ">=4.9"
 
+[tool.pixi.pypi-dependencies]
+finance-planning-tool = { path = ".", editable = true }
 
 [tool.pixi.feature.dev.dependencies]
 pytest = ">=8.3"
@@ -32,6 +44,7 @@ ruff = ">=0.11"
 ty = ">=0.0.1"
 codespell = ">=2.4"
 detect-secrets = ">=1.5"
+hatch = ">=1.14"
 
 [tool.pixi.feature.dev.tasks]
 setup           = "pre-commit install"
@@ -40,11 +53,12 @@ typecheck       = "ty check"
 ruff            = "ruff check ."
 ruff-fix        = "ruff check . --fix"
 ruff-format     = "ruff format ."
-test            = "pytest tests/ --cov=. --cov-report=term-missing"
+test            = "pytest tests/"
 codespell       = "codespell"
 codespell-fix   = "codespell --write-changes --interactive 2"
 secrets-scan    = "detect-secrets scan > .secrets.baseline"
 secrets-audit   = "detect-secrets audit .secrets.baseline"
+version-bump    = "hatch version patch"
 
 [tool.pixi.environments]
 default = { features = ["dev"], solve-group = "default" }
@@ -61,17 +75,14 @@ python = ".pixi/envs/default"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "--cov=. --cov-report=term-missing"
-pythonpath = [".","src"]
+addopts = "--cov=finance_planning_tool --cov-report=term-missing"
 
 [tool.coverage.run]
 omit = [
     "tests/*",
-    "venv/*",
-    ".venv/*",
-    "main.py",
     ".pixi/*",
-    "_dirs.py"
+    "src/finance_planning_tool/main.py",
+    "src/finance_planning_tool/_dirs.py",
 ]
 
 [tool.coverage.report]

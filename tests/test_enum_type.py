@@ -1,4 +1,4 @@
-from src.finance_planning_tool.models.core import (
+from finance_planning_tool.models.core import (
     AccountType,
     FrequencyType,
 )
