@@ -2,9 +2,10 @@
 
 ## Tooling
 
-| Priority | Item |
-|----------|------|
-| Medium | Enable ruff `D` (pydocstyle) rules — audit all docstrings for presence and format compliance first; add `ignore = ["D203", "D212"]` and `"tests/*.py" = ["D"]` per-file ignore when ready |
+| Priority | Item                                                                                                                                                                                      |
+|----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| High     | Investigate what [tool.ty.environment] `python =` is needed to work cross platform.                                                                                                       |
+| Medium   | Enable ruff `D` (pydocstyle) rules — audit all docstrings for presence and format compliance first; add `ignore = ["D203", "D212"]` and `"tests/*.py" = ["D"]` per-file ignore when ready |
 
 ## Bugs
 
