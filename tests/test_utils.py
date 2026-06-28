@@ -1,6 +1,10 @@
 import pytest
 
-from models.core.utils import CurrencyType, MinorUnit, round_value
+from src.finance_planning_tool.models.core import (
+    CurrencyType,
+    MinorUnit,
+    round_value,
+)
 
 
 @pytest.mark.parametrize(

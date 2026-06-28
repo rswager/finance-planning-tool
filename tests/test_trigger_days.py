@@ -3,8 +3,10 @@ from datetime import date
 import pytest
 from dateutil.relativedelta import relativedelta
 
-from models.core.enum_type import FrequencyType
-from models.core.trigger_days import TriggerDays
+from src.finance_planning_tool.models.core import (
+    FrequencyType,
+    TriggerDays,
+)
 
 
 # --- Tests ---

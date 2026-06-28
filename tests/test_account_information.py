@@ -1,8 +1,12 @@
 import pytest
 
-from models.accounts.account_information import AccountInformation
-from models.core.enum_type import AccountType
-from models.core.utils import MinorUnit
+from src.finance_planning_tool.models.accounts import (
+    AccountInformation,
+)
+from src.finance_planning_tool.models.core import (
+    AccountType,
+    MinorUnit,
+)
 
 
 def test_initial_balance_and_attributes(sample_account):

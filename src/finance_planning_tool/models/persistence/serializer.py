@@ -3,11 +3,21 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import Any
 
-from models.accounts.bank_account import BankAccount
-from models.bills.bill_base import BillBase
-from models.core.chargeable import Chargeable
-from models.income.income import Income
-from models.persistence.serial_lookup import SerialTypeLookup
+from ..accounts import (
+    BankAccount,
+)
+from ..bills import (
+    BillBase,
+)
+from ..core import (
+    Chargeable,
+)
+from ..income import (
+    Income,
+)
+from ..persistence import (
+    SerialTypeLookup,
+)
 
 
 def convert_objects_to_persistence_dict(dict_of_objects: Mapping[str, Any]) -> dict[str, Any]:
@@ -95,8 +105,8 @@ def convert_persistence_dict_to_dict_of_objects(persistence_dict: Mapping[str, A
 if __name__ == "__main__":  # pragma: no cover
     from pathlib import Path
 
-    from _dirs import SAVED_OBJECT_DATA
-    from models.persistence.json_reader_writer import read_object_from_file
+    from persistence.json_reader_writer import read_object_from_file
+    from src.finance_planning_tool._dirs import SAVED_OBJECT_DATA
 
     print(f"{SAVED_OBJECT_DATA}/test.json")
     object_input = read_object_from_file(Path(f"{SAVED_OBJECT_DATA}/temp.json"))

@@ -3,10 +3,15 @@ from __future__ import annotations
 from datetime import date
 from typing import Any, Self
 
-from models.accounts.bank_account import BankAccount
-from models.core.enum_type import FrequencyType
-from models.core.trigger_days import TriggerDays
-from models.core.utils import MinorUnit, round_value
+from ..accounts import (
+    BankAccount,
+)
+from ..core import (
+    FrequencyType,
+    MinorUnit,
+    TriggerDays,
+    round_value,
+)
 
 
 class Income:
@@ -40,7 +45,7 @@ class Income:
             account_contributions_in : List[Tuple[BankAccount, float]]
                 A list of tuples, each containing a BankAccount and a fraction representing
                 the portion of the income to deposit into that account. Fractions must sum ≤ 1.
-                NOTE: Typing as BankAccount is intentional as income deposits only go to bank accocunts.
+                NOTE: Typing as BankAccount is intentional as income deposits only go to bank accounts.
             frequency_type_in : FrequencyType
                 The frequency of payments (e.g., MONTHLY, BI_WEEKLY).
             round_down : bool, optional
@@ -62,7 +67,7 @@ class Income:
 
     @classmethod
     def from_dict(cls, dict_in: dict[str, Any]) -> Self:
-        """Given a dictionary, create a Income object from it."""
+        """Given a dictionary, create an Income object from it."""
         try:
             return cls(
                 name_in=dict_in["name_in"],

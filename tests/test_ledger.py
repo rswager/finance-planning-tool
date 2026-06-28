@@ -2,8 +2,13 @@ from datetime import date
 
 import pytest
 
-from models.core.ledger import BankAccountLedgerRow, InterestLedgerRow, RecurringLedgerRow, StandardLedgerRow
-from models.core.utils import MajorUnit
+from src.finance_planning_tool.models.core import (
+    BankAccountLedgerRow,
+    InterestLedgerRow,
+    MajorUnit,
+    RecurringLedgerRow,
+    StandardLedgerRow,
+)
 
 
 def test_ledger_initialization(ledger):

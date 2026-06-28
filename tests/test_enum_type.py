@@ -1,4 +1,7 @@
-from models.core.enum_type import AccountType, FrequencyType
+from src.finance_planning_tool.models.core import (
+    AccountType,
+    FrequencyType,
+)
 
 # ----------------------------
 # FrequencyType Tests

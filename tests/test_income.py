@@ -2,10 +2,16 @@ from datetime import date
 
 import pytest
 
-from models.core.enum_type import FrequencyType
-from models.core.utils import MinorUnit
-from models.income.income import Income
-from models.persistence.serial_lookup import SerialTypeLookup
+from src.finance_planning_tool.models.core import (
+    FrequencyType,
+    MinorUnit,
+)
+from src.finance_planning_tool.models.income import (
+    Income,
+)
+from src.finance_planning_tool.models.persistence import (
+    SerialTypeLookup,
+)
 
 
 def test_type_key_in_serialized_account_type(income):

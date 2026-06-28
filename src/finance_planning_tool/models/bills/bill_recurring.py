@@ -3,11 +3,17 @@ from __future__ import annotations
 from datetime import date
 from typing import Any, Self, cast
 
-from models.bills.bill_base import BillBase
-from models.core.chargeable import Chargeable
-from models.core.enum_type import AccountType, FrequencyType
-from models.core.ledger import RecurringLedgerRow
-from models.core.utils import MajorUnit, MinorUnit
+from ..bills import (
+    BillBase,
+)
+from ..core import (
+    AccountType,
+    Chargeable,
+    FrequencyType,
+    MajorUnit,
+    MinorUnit,
+    RecurringLedgerRow,
+)
 
 
 class RecurringBill(BillBase):

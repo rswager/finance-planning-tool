@@ -2,8 +2,10 @@ from datetime import date
 
 import pytest
 
-from models.core.enum_type import AccountType
-from models.core.ledger import StandardLedgerRow
+from src.finance_planning_tool.models.core import (
+    AccountType,
+    StandardLedgerRow,
+)
 
 
 def test_account_name(bill_base):

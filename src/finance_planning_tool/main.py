@@ -8,17 +8,27 @@ from xlsxwriter.utility import xl_col_to_name
 from xlsxwriter.workbook import Workbook
 from xlsxwriter.worksheet import Worksheet
 
-from _dirs import LOCAL_APP_DATA, SAVED_OBJECT_DATA
-from models.accounts.bank_account import BankAccount
-from models.bills.bill_financed import FinancedBill
-from models.bills.bill_recurring import RecurringBill
-from models.bills.bill_revolving_credit import RevolvingCreditBill
-from models.core.enum_type import AccountType, FrequencyType
-from models.core.ledger import StandardLedgerRow
-from models.core.utils import MinorUnit
-from models.income.income import Income
-from models.persistence.json_reader_writer import write_object_to_file
-from models.persistence.serializer import convert_objects_to_persistence_dict
+from finance_planning_tool._dirs import (
+    LOCAL_APP_DATA,
+    SAVED_OBJECT_DATA,
+)
+from finance_planning_tool.models.accounts import (
+    BankAccount,
+)
+from finance_planning_tool.models.bills import (
+    FinancedBill,
+    RecurringBill,
+    RevolvingCreditBill,
+)
+from finance_planning_tool.models.core import (
+    AccountType,
+    FrequencyType,
+    MinorUnit,
+    StandardLedgerRow,
+)
+from finance_planning_tool.models.income import (
+    Income,
+)
 
 # Make sure our Directories are set up.
 os.makedirs(LOCAL_APP_DATA, exist_ok=True)
@@ -26,7 +36,7 @@ os.makedirs(SAVED_OBJECT_DATA, exist_ok=True)
 
 
 def add_table(
-    worksheet_in: Worksheet, table_name_in: str, header_in: list[str], data_in: Sequence[StandardLedgerRow]
+    worksheet_in: Worksheet, table_name_in: str, header_in: tuple[str, ...], data_in: Sequence[StandardLedgerRow]
 ) -> None:
     data = [list(row) for row in data_in]
     if not data:
@@ -73,6 +83,7 @@ def add_chart(workbook_in: Workbook, worksheet_in: Worksheet, table_name_in: str
 
 
 if __name__ == "__main__":
+    print("HI")
     round_up_expenses_round_down_income = False
     accounts = {
         "primary_checking": BankAccount(
@@ -251,12 +262,12 @@ if __name__ == "__main__":
         ),
     }
 
-    write_object_to_file(
-        file_path=SAVED_OBJECT_DATA / "temp.json",
-        output_data=convert_objects_to_persistence_dict(bills | incomes | revolving_credit | accounts),
-    )
-
-    quit()
+    # write_object_to_file(
+    #     file_path=SAVED_OBJECT_DATA / "temp.json",
+    #     output_data=convert_objects_to_persistence_dict(bills | incomes | revolving_credit | accounts),
+    # )
+    #
+    # quit()
     today = date(2025, 11, 1)
     end_date = date(today.year + 10, today.month, today.day)
 

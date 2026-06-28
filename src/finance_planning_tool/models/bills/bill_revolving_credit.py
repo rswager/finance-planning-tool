@@ -3,10 +3,15 @@ from __future__ import annotations
 from datetime import date
 from typing import Any, Self
 
-from models.bills.bill_financed import FinancedBill
-from models.core.chargeable import Chargeable
-from models.core.enum_type import AccountType, FrequencyType
-from models.core.utils import MinorUnit
+from ..bills import (
+    FinancedBill,
+)
+from ..core import (
+    AccountType,
+    Chargeable,
+    FrequencyType,
+    MinorUnit,
+)
 
 
 class RevolvingCreditBill(FinancedBill, Chargeable):

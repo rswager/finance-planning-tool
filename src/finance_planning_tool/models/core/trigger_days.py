@@ -4,7 +4,9 @@ from datetime import date
 
 from dateutil.relativedelta import relativedelta
 
-from models.core.enum_type import FrequencyType
+from ..core import (
+    FrequencyType,
+)
 
 
 class TriggerDays:
