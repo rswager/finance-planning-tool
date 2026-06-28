@@ -3,12 +3,18 @@ from __future__ import annotations
 from datetime import date
 from typing import Any, Self, cast
 
-from models.bills.bill_base import BillBase
-from models.core.chargeable import Chargeable
-from models.core.enum_type import AccountType, FrequencyType
-from models.core.interest import Interest
-from models.core.ledger import InterestLedgerRow
-from models.core.utils import MajorUnit, MinorUnit
+from ..bills import (
+    BillBase,
+)
+from ..core import (
+    AccountType,
+    Chargeable,
+    FrequencyType,
+    Interest,
+    InterestLedgerRow,
+    MajorUnit,
+    MinorUnit,
+)
 
 
 class FinancedBill(BillBase):

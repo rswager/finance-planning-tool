@@ -3,18 +3,26 @@ from typing import Self
 
 import pytest
 
-from models.accounts.account_information import AccountInformation
-from models.accounts.bank_account import BankAccount
-from models.bills.bill_base import BillBase
-from models.bills.bill_financed import FinancedBill
-from models.bills.bill_recurring import RecurringBill
-from models.bills.bill_revolving_credit import RevolvingCreditBill
-from models.core.enum_type import AccountType, FrequencyType
-from models.core.interest import Interest
-from models.core.ledger import Ledger, StandardLedgerRow
-from models.core.trigger_days import TriggerDays
-from models.core.utils import MinorUnit
-from models.income.income import Income
+from src.finance_planning_tool.models.accounts import (
+    AccountInformation,
+    BankAccount,
+)
+from src.finance_planning_tool.models.bills import (
+    BillBase,
+    FinancedBill,
+    RecurringBill,
+    RevolvingCreditBill,
+)
+from src.finance_planning_tool.models.core import (
+    AccountType,
+    FrequencyType,
+    Interest,
+    Ledger,
+    MinorUnit,
+    StandardLedgerRow,
+    TriggerDays,
+)
+from src.finance_planning_tool.models.income import Income
 
 
 @pytest.fixture

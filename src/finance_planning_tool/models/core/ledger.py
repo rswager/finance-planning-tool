@@ -7,7 +7,9 @@ from dataclasses import astuple, dataclass
 from datetime import date
 from typing import Any, ClassVar
 
-from models.core.utils import MajorUnit
+from ..core.utils import (
+    MajorUnit,
+)
 
 
 @dataclass(frozen=True)

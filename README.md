@@ -207,35 +207,38 @@ Examples:
 
 ```
 finance-planning-tool/
-├── models/                  # core domain models (no GUI dependencies)
-│   ├── accounts/            # bank accounts and account information
-│   │   ├── account_information.py
-│   │   └── bank_account.py
-│   ├── bills/               # bill types (recurring, financed, revolving credit)
-│   │   ├── bill_base.py
-│   │   ├── bill_financed.py
-│   │   ├── bill_recurring.py
-│   │   └── bill_revolving_credit.py
-│   ├── core/                # shared infrastructure (enums, utils, ledger)
-│   │   ├── chargeable.py
-│   │   ├── enum_type.py
-│   │   ├── interest.py
-│   │   ├── ledger.py
-│   │   ├── trigger_days.py
-│   │   └── utils.py
-│   ├── income/              # income sources
-│   │   └── income.py
-│   └── persistence/         # file I/O and serialization
-│       ├── json_reader_writer.py
-│       ├── serial_lookup.py
-│       └── serializer.py
-├── tests/                   # pytest unit tests
-├── _dirs.py                 # app data directory constants (cross-platform)
-├── main.py                  # simulation entry point (outputs Excel workbook)
-├── pyproject.toml           # project metadata, dependencies, tool config
-├── pixi.lock                # fully resolved dependency lockfile
-├── .pre-commit-config.yaml  # pre-commit hook definitions
-└── TODO.md                  # known issues and design improvements
+├── src/finance_planning_tool
+│   ├── _dirs.py                        # app data directory constants (cross-platform)
+│   ├── main.py                         # simulation entry point (outputs Excel workbook)
+│   └── models/                         # core domain models (no GUI dependencies)
+│       ├── accounts/                   # bank accounts and account information
+│       │   ├── account_information.py
+│       │   └── bank_account.py
+│       ├── bills/                      # bill types (recurring, financed, revolving credit)
+│       │   ├── bill_base.py
+│       │   ├── bill_financed.py
+│       │   ├── bill_recurring.py
+│       │   └── bill_revolving_credit.py
+│       ├── core/                       # shared infrastructure (enums, utils, ledger)
+│       │   ├── chargeable.py
+│       │   ├── enum_type.py
+│       │   ├── interest.py
+│       │   ├── ledger.py
+│       │   ├── trigger_days.py
+│       │   └── utils.py
+│       ├── income/                     # income sources
+│       │   └── income.py
+│       └── persistence/                # file I/O and serialization
+│           ├── json_reader_writer.py
+│           ├── serial_lookup.py
+│           └── serializer.py
+├── tests/                              # pytest unit tests
+│   ├── conftest.py                     # reusable fixtures
+│   └── test_*.py                       # test files
+├── pyproject.toml                      # project metadata, dependencies, tool config
+├── pixi.lock                           # fully resolved dependency lockfile
+├── .pre-commit-config.yaml             # pre-commit hook definitions
+└── TODO.md                             # known issues and design improvements
 ```
 
 > **AI assistants:** See `CLAUDE.md` for project conventions and guidelines.

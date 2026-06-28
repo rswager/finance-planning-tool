@@ -2,10 +2,18 @@ from datetime import date, timedelta
 
 import pytest
 
-from models.bills.bill_revolving_credit import RevolvingCreditBill
-from models.core.enum_type import AccountType, FrequencyType
-from models.core.utils import MajorUnit, MinorUnit
-from models.persistence.serial_lookup import SerialTypeLookup
+from src.finance_planning_tool.models.bills import (
+    RevolvingCreditBill,
+)
+from src.finance_planning_tool.models.core import (
+    AccountType,
+    FrequencyType,
+    MajorUnit,
+    MinorUnit,
+)
+from src.finance_planning_tool.models.persistence import (
+    SerialTypeLookup,
+)
 
 
 def test_type_key_in_serialized_account_type(credit_bill):

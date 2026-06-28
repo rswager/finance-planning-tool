@@ -5,7 +5,9 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from datetime import date
 
-from models.core.utils import MinorUnit
+from ..core.utils import (
+    MinorUnit,
+)
 
 
 class Chargeable(ABC):

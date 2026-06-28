@@ -2,11 +2,18 @@ from datetime import date
 
 import pytest
 
-from models.accounts.bank_account import BankAccount
-from models.core.enum_type import AccountType
-from models.core.ledger import BankAccountLedgerRow
-from models.core.utils import MajorUnit, MinorUnit
-from models.persistence.serial_lookup import SerialTypeLookup
+from src.finance_planning_tool.models.accounts import (
+    BankAccount,
+)
+from src.finance_planning_tool.models.core import (
+    AccountType,
+    BankAccountLedgerRow,
+    MajorUnit,
+    MinorUnit,
+)
+from src.finance_planning_tool.models.persistence import (
+    SerialTypeLookup,
+)
 
 
 def test_type_key_in_serialized_account_type(checking_account):

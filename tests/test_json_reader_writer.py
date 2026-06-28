@@ -1,6 +1,9 @@
 import pytest
 
-from models.persistence.json_reader_writer import read_object_from_file, write_object_to_file
+from src.finance_planning_tool.models.persistence import (
+    read_object_from_file,
+    write_object_to_file,
+)
 
 
 def test_write_object_to_file(valid_file_path, full_dict_entry):

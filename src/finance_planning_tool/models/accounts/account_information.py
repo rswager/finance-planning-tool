@@ -1,7 +1,9 @@
 from __future__ import annotations
 
-from models.core.enum_type import AccountType
-from models.core.utils import MinorUnit
+from ..core import (
+    AccountType,
+    MinorUnit,
+)
 
 
 class AccountInformation:

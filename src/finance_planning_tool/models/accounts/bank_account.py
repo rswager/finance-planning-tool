@@ -3,11 +3,17 @@ from __future__ import annotations
 from datetime import date
 from typing import Any, Self, cast
 
-from models.accounts.account_information import AccountInformation
-from models.core.chargeable import Chargeable
-from models.core.enum_type import AccountType
-from models.core.ledger import BankAccountLedgerRow, Ledger
-from models.core.utils import MajorUnit, MinorUnit
+from ..accounts import (
+    AccountInformation,
+)
+from ..core import (
+    AccountType,
+    BankAccountLedgerRow,
+    Chargeable,
+    Ledger,
+    MajorUnit,
+    MinorUnit,
+)
 
 
 class BankAccount(Chargeable):

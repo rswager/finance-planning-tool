@@ -2,10 +2,18 @@ from datetime import date
 
 import pytest
 
-from models.bills.bill_recurring import RecurringBill
-from models.core.enum_type import AccountType, FrequencyType
-from models.core.utils import MajorUnit, MinorUnit
-from models.persistence.serial_lookup import SerialTypeLookup
+from src.finance_planning_tool.models.bills import (
+    RecurringBill,
+)
+from src.finance_planning_tool.models.core import (
+    AccountType,
+    FrequencyType,
+    MajorUnit,
+    MinorUnit,
+)
+from src.finance_planning_tool.models.persistence import (
+    SerialTypeLookup,
+)
 
 
 def test_type_key_in_serialized_account_type(recurring_bill):

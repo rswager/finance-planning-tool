@@ -3,8 +3,10 @@ from math import ceil
 
 import pytest
 
-from models.core.interest import Interest
-from models.core.utils import MinorUnit
+from src.finance_planning_tool.models.core import (
+    Interest,
+    MinorUnit,
+)
 
 
 def test_daily_interest_non_leap(interest_instance):
