@@ -3,17 +3,17 @@ from typing import Self
 
 import pytest
 
-from src.finance_planning_tool.models.accounts import (
+from finance_planning_tool.models.accounts import (
     AccountInformation,
     BankAccount,
 )
-from src.finance_planning_tool.models.bills import (
+from finance_planning_tool.models.bills import (
     BillBase,
     FinancedBill,
     RecurringBill,
     RevolvingCreditBill,
 )
-from src.finance_planning_tool.models.core import (
+from finance_planning_tool.models.core import (
     AccountType,
     FrequencyType,
     Interest,
@@ -22,7 +22,7 @@ from src.finance_planning_tool.models.core import (
     StandardLedgerRow,
     TriggerDays,
 )
-from src.finance_planning_tool.models.income import Income
+from finance_planning_tool.models.income import Income
 
 
 @pytest.fixture

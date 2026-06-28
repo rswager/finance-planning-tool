@@ -2,16 +2,16 @@ from datetime import date
 
 import pytest
 
-from src.finance_planning_tool.models.bills import (
+from finance_planning_tool.models.bills import (
     RecurringBill,
 )
-from src.finance_planning_tool.models.core import (
+from finance_planning_tool.models.core import (
     AccountType,
     FrequencyType,
     MajorUnit,
     MinorUnit,
 )
-from src.finance_planning_tool.models.persistence import (
+from finance_planning_tool.models.persistence import (
     SerialTypeLookup,
 )
 

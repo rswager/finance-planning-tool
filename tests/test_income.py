@@ -2,14 +2,14 @@ from datetime import date
 
 import pytest
 
-from src.finance_planning_tool.models.core import (
+from finance_planning_tool.models.core import (
     FrequencyType,
     MinorUnit,
 )
-from src.finance_planning_tool.models.income import (
+from finance_planning_tool.models.income import (
     Income,
 )
-from src.finance_planning_tool.models.persistence import (
+from finance_planning_tool.models.persistence import (
     SerialTypeLookup,
 )
 

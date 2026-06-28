@@ -1,6 +1,6 @@
 import pytest
 
-from src.finance_planning_tool.models.persistence import (
+from finance_planning_tool.models.persistence import (
     SerialTypeLookup,
     convert_objects_to_persistence_dict,
     convert_persistence_dict_to_dict_of_objects,

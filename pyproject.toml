@@ -10,6 +10,13 @@ dependencies = [
     "platformdirs>=4.9",
 ]
 
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/finance_planning_tool"]
+
 [tool.pixi.workspace]
 channels = ["conda-forge"]
 platforms = ["win-64", "linux-64", "osx-64", "osx-arm64"]
@@ -21,6 +28,8 @@ xlsxwriter = ">=3.2"
 pyqt6 = ">=6.9"
 platformdirs = ">=4.9"
 
+[tool.pixi.pypi-dependencies]
+finance-planning-tool = { path = ".", editable = true }
 
 [tool.pixi.feature.dev.dependencies]
 pytest = ">=8.3"
@@ -40,7 +49,7 @@ typecheck       = "ty check"
 ruff            = "ruff check ."
 ruff-fix        = "ruff check . --fix"
 ruff-format     = "ruff format ."
-test            = "pytest tests/ --cov=. --cov-report=term-missing"
+test            = "pytest tests/"
 codespell       = "codespell"
 codespell-fix   = "codespell --write-changes --interactive 2"
 secrets-scan    = "detect-secrets scan > .secrets.baseline"
@@ -61,17 +70,14 @@ python = ".pixi/envs/default"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "--cov=. --cov-report=term-missing"
-pythonpath = [".","src"]
+addopts = "--cov=finance_planning_tool --cov-report=term-missing"
 
 [tool.coverage.run]
 omit = [
     "tests/*",
-    "venv/*",
-    ".venv/*",
-    "main.py",
     ".pixi/*",
-    "_dirs.py"
+    "src/finance_planning_tool/main.py",
+    "src/finance_planning_tool/_dirs.py",
 ]
 
 [tool.coverage.report]

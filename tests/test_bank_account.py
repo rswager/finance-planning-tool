@@ -2,16 +2,16 @@ from datetime import date
 
 import pytest
 
-from src.finance_planning_tool.models.accounts import (
+from finance_planning_tool.models.accounts import (
     BankAccount,
 )
-from src.finance_planning_tool.models.core import (
+from finance_planning_tool.models.core import (
     AccountType,
     BankAccountLedgerRow,
     MajorUnit,
     MinorUnit,
 )
-from src.finance_planning_tool.models.persistence import (
+from finance_planning_tool.models.persistence import (
     SerialTypeLookup,
 )
 

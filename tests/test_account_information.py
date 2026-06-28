@@ -1,9 +1,9 @@
 import pytest
 
-from src.finance_planning_tool.models.accounts import (
+from finance_planning_tool.models.accounts import (
     AccountInformation,
 )
-from src.finance_planning_tool.models.core import (
+from finance_planning_tool.models.core import (
     AccountType,
     MinorUnit,
 )
