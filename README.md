@@ -4,11 +4,29 @@ A financial modeling tool that lets users enter account and payment details, the
 
 ---
 
+## Goals
+
+- Model daily financial activity (income deposits, interest accrual, bill payments) over a multi-year period for a configurable set of accounts and bills
+- Support bank accounts, recurring bills, financed loans, and revolving credit lines
+- Output a multi-sheet Excel workbook: one sheet per account or bill, each with a transaction ledger table and a projected balance chart
+- Serve as the domain-model foundation for a future GUI
+
+## What this is not
+
+- Not a live budgeting app — no bank integrations, no real-time data
+- Not multi-user
+- Not financial advice — projections are only as accurate as the inputs
+- Not a distributed or production system — personal tool, runs locally
+
+---
+
 ## Getting Started
 
 This project uses [Pixi](https://pixi.sh) to manage the Python environment and development tools. Pixi handles all dependencies — you do not need to create a virtual environment manually.
 
 ### Prerequisites
+
+This project supports Windows, macOS (Intel and Apple Silicon), and Linux.
 
 Install Pixi using the method that matches your OS:
 
@@ -64,7 +82,7 @@ This resolves and installs all dependencies (including dev tools) into an isolat
 `main.py` is the simulation entry point. It walks through every day between a start and end date, processing income deposits, interest accrual, and bill payments for each configured account. When the simulation finishes it writes a multi-sheet Excel workbook to `~/Downloads/Output_Analysis.xlsx` — one sheet per account or bill, each with a transaction ledger table and a projected balance line chart.
 
 ```bash
-pixi run python main.py
+pixi run python src/finance_planning_tool/main.py
 ```
 
 The start date, end date, account balances, and all bill/income parameters are configured directly in `main.py`.
